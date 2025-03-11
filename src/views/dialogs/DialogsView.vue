@@ -1,0 +1,3 @@
+<template>
+    Dialogs View
+</template>

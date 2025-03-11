@@ -1,0 +1,3 @@
+<template>
+    Analytics View
+</template>

@@ -1,0 +1,3 @@
+<template>
+    Warehouses View
+</template>
