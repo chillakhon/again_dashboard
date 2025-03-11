@@ -1,3 +1,3 @@
 <template>
-    Product List
+    Product Create
 </template>

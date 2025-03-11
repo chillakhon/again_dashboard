@@ -49,7 +49,7 @@ const routes = [
                     {
                         path: '/products/create',
                         name: 'products-create',
-                        component: () => import('../components/products/list/ProductsList.vue'),
+                        component: () => import('../components/products/create/ProductCreate.vue'),
                     },
                 ]
             },

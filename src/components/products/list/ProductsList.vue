@@ -50,6 +50,7 @@
             </div>
         </div>
     </section>
+    <Delete :open="isDeleteModalOpen" :productId="selectedProductId" @close="toggleDeleteModal" />
 </template>
 
 <script setup>
@@ -60,6 +61,7 @@ import { MenuItem } from '@headlessui/vue'
 import { PhNotePencil, PhTrash } from '@phosphor-icons/vue'
 
 
+import Delete from '../modals/Delete.vue'
 import Loader from '@/components/common/Loader.vue'
 import PageHeading from '@/components/common/PageHeading.vue'
 import Dropdown from '@/components/common/Dropdown.vue'
@@ -83,4 +85,12 @@ const isLoading = computed(() => store.getters['products/isLoading'])
 onMounted(() => {
     getProducts();
 });
+
+const selectedProductId = ref(null);
+const isDeleteModalOpen = ref(false);
+
+const toggleDeleteModal = (customer) => {
+    selectedProductId.value = customer?.id;
+    isDeleteModalOpen.value = !isDeleteModalOpen.value;
+};
 </script>
