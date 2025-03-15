@@ -60,8 +60,22 @@ const routes = [
             },
             {
                 path: '/clients',
-                name: 'Clients',
+                name: 'clients',
+                redirect: '/clients/list',
                 component: () => import('../views/clients/ClientsView.vue'),
+                children:[
+                    {
+                        path: '/clients/list',
+                        name: 'clients-list',
+                        component: () => import('../components/clients/list/ClientsList.vue'),
+                    },
+                    {
+                        path: '/clients/create',
+                        name: 'clients-create',
+                        component: () => import('../components/clients/create/ClientCreate.vue'),
+                    },
+                ]
+
             },
             {
                 path: '/integrations',

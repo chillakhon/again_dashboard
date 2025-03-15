@@ -1,3 +1,3 @@
 <template>
-    Clients View
+    <router-view></router-view>
 </template>

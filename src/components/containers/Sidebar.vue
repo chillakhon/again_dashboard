@@ -151,7 +151,7 @@ const navigation = [
     { name: 'Заказы', href: '/orders', icon: PhBag },
     { name: 'Товары', href: '/products/list', icon: PhPackage },
     { name: 'Доставка', href: '/deliveries', icon: PhTruck },
-    { name: 'Клиенты', href: '/clients', icon: PhUserList },
+    { name: 'Клиенты', href: '/clients/list', icon: PhUserList },
     { name: 'Интеграции', href: '/integrations', icon: PhUnite },
     { name: 'Аналитика', href: '/analytics', icon: PhChartPie },
     { name: 'Диалоги', href: '/dialogs', icon: PhChatTeardropDots },
