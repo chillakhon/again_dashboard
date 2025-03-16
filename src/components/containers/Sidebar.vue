@@ -175,9 +175,9 @@ const navigation = [
     { name: 'Главная', href: '/dashboard', icon: PhHouse },
     { name: 'Склад', href: '/warehouses', icon: PhWarehouse,
         children: [
-            { name: 'ТехКарты', href: '/warehouses/recipes', icon: PhComputerTower },
-            { name: 'Материалы', href: '/warehouses/materials', icon: PhWarehouse },
-            { name: 'Производство', href: '/warehouses/production', icon: PhFactory },
+            { name: 'ТехКарты', href: '/warehouses/recipes/list', icon: PhComputerTower },
+            { name: 'Материалы', href: '/warehouses/materials/list', icon: PhWarehouse },
+            { name: 'Производство', href: '/warehouses/production/list', icon: PhFactory },
         ],
     },
     { name: 'Заказы', href: '/orders/list', icon: PhBag },
