@@ -2,8 +2,8 @@ import axios from 'axios'
 
 class productsApi{
     
-    getProducts(query) {
-        return axios.get("/products", { params: query });
+    getProducts() {
+        return axios.get("/products");
     }
 
     getProduct(id) {
@@ -11,11 +11,15 @@ class productsApi{
     }
     
     create(data) {
-        return axios.post("products", data);
+        return axios.post("/products", data);
+    }
+
+    update(id, data) {
+        return axios.put("/products/" + id, data);
     }
 
     delete(id) {
-        return axios.delete("products/" + id);
+        return axios.delete("/products/" + id);
     }
     
 }

@@ -2,8 +2,8 @@ import axios from 'axios'
 
 class clientsApi{
     
-    getOrders(query) {
-        return axios.get("/orders", { params: query });
+    getOrders() {
+        return axios.get("/orders");
     }
 
     getOrder(id) {
@@ -11,15 +11,15 @@ class clientsApi{
     }
     
     create(data) {
-        return axios.post("orders", data);
+        return axios.post("/orders", data);
     }
 
-    update(data) {
-        return axios.put("/orders/" + id);
+    update(id, data) {
+        return axios.put("/orders/" + id, data);
     }
 
     delete(id) {
-        return axios.delete("orders/" + id);
+        return axios.delete("/orders/" + id);
     }
     
 }

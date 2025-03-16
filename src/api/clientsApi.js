@@ -2,8 +2,8 @@ import axios from 'axios'
 
 class clientsApi{
     
-    getClients(query) {
-        return axios.get("/clients", { params: query });
+    getClients() {
+        return axios.get("/clients");
     }
 
     getClient(id) {
@@ -11,11 +11,15 @@ class clientsApi{
     }
     
     create(data) {
-        return axios.post("clients", data);
+        return axios.post("/clients", data);
+    }
+
+    update(id, data) {
+        return axios.put("/clients/" + id, data);
     }
 
     delete(id) {
-        return axios.delete("clients/" + id);
+        return axios.delete("/clients/" + id);
     }
     
 }
