@@ -42,7 +42,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <Pagination :currentPage="meta?.current_page" :perPage="meta?.per_page" :totalItems="meta?.total_count" :totalPages="meta?.total_pages" />
+                    <!-- <Pagination :currentPage="meta?.current_page" :perPage="meta?.per_page" :totalItems="meta?.total_count" :totalPages="meta?.total_pages" /> -->
                 </div>
                 <div v-else class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
                     <h3 class="text-3xl font-extrabold text-gray-500 sm:text-4xl">Ничего не найдено</h3>
