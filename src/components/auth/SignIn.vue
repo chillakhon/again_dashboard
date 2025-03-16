@@ -25,7 +25,7 @@
 
                     <div v-if="hasError">
                         <span class="text-red-600 font-semibold capitalize">
-                            {{ hasError }}
+                            Произошла ошибка
                         </span>
                     </div>
 
