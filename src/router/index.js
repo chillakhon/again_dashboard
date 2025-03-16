@@ -34,6 +34,19 @@ const routes = [
                 path: '/orders',
                 name: 'orders',
                 component: () => import('../views/orders/OrdersView.vue'),
+                redirect: '/orders/list',
+                children: [
+                    {
+                        path: '/orders/list',
+                        name: 'orders-list',
+                        component: () => import('../components/orders/list/OrdersList.vue'),
+                    },
+                    {
+                        path: '/orders/create',
+                        name: 'orders-create',
+                        component: () => import('../components/orders/create/OrderCreate.vue'),
+                    },
+                ]
             },
             {
                 path: '/products',

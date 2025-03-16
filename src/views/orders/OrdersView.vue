@@ -1,3 +1,3 @@
 <template>
-    Orders View
+    <router-view></router-view>
 </template>

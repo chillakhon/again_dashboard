@@ -148,7 +148,7 @@ const store = useStore()
 const navigation = [
     { name: 'Главная', href: '/dashboard', icon: PhHouse },
     { name: 'Склад', href: '/warehouses', icon: PhWarehouse },
-    { name: 'Заказы', href: '/orders', icon: PhBag },
+    { name: 'Заказы', href: '/orders/list', icon: PhBag },
     { name: 'Товары', href: '/products/list', icon: PhPackage },
     { name: 'Доставка', href: '/deliveries', icon: PhTruck },
     { name: 'Клиенты', href: '/clients/list', icon: PhUserList },
