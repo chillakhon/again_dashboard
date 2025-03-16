@@ -18,24 +18,37 @@
                                 </div>
                             </TransitionChild>
                             <!-- Sidebar component, swap this element with another sidebar if you like -->
-                            <div class="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-4">
+                            <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 py-4">
                                 <div class="flex h-16 shrink-0 items-center">
-                                    <img class="h-8 w-auto" :src='logo' alt="Again" />
+                                    <img class="h-8 w-auto" :src='logo' alt="Again"/>
                                 </div>
                                 <nav class="flex flex-1 flex-col">
                                     <ul role="list" class="flex flex-1 flex-col gap-y-7">
                                         <li>
                                             <ul role="list" class="-mx-2 space-y-1">
                                                 <li v-for="item in updatedNavigation" :key="item.name">
-                                                    <router-link :to="item.href" :class="[item.current ? 'bg-gray-50 text-red-600' : 'text-gray-700 hover:bg-gray-50 hover:text-red-600', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
+                                                    <router-link v-if="!item.children" :to="item.href" :class="[item.current ? 'bg-gray-50 text-red-600' : 'text-gray-700 hover:bg-gray-50 hover:text-red-600', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
                                                         <component :is="item.icon" :class="[item.current ? 'text-red-600' : 'text-gray-400 group-hover:text-red-600', 'size-6 shrink-0']" aria-hidden="true" />
                                                         {{ item.name }}
                                                     </router-link>
+                                                    <Disclosure as="div" v-else v-slot="{ open }">
+                                                        <DisclosureButton :class="[item.current ? 'bg-gray-50' : 'hover:bg-gray-50', 'flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm/6 font-semibold text-gray-700']">
+                                                            <component :is="item.icon" class="size-6 shrink-0 text-gray-400" aria-hidden="true" />
+                                                            {{ item.name }}
+                                                            <PhCaretRight :class="[open ? 'rotate-90 text-gray-500' : 'text-gray-400', 'ml-auto size-5 shrink-0']" aria-hidden="true" />
+                                                        </DisclosureButton>
+                                                        <DisclosurePanel as="ul" class="mt-1 px-2">
+                                                            <li v-for="subItem in item.children" :key="subItem.name">
+                                                                <router-link :to="subItem.href" :class="[subItem.current ? 'bg-gray-50 text-red-600' : 'text-gray-700 hover:bg-gray-50 hover:text-red-600', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
+                                                                    <component :is="subItem.icon" :class="[subItem.current ? 'text-red-600' : 'text-gray-400 group-hover:text-red-600', 'size-6 shrink-0']" aria-hidden="true" />
+                                                                    {{ subItem.name }}
+                                                                </router-link>
+                                                            </li>
+                                                        </DisclosurePanel>
+                                                    </Disclosure>
                                                 </li>
                                             </ul>
                                         </li>
-                                      
-
                                         <li class="mt-auto">
                                             <router-link to="/settings" class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-red-600">
                                                 <PhGear class="size-6 shrink-0 text-gray-400 group-hover:text-red-600" aria-hidden="true" />
@@ -54,23 +67,37 @@
         <!-- Static sidebar for desktop -->
         <div class="hidden lg:fixed lg:inset-y-0 lg:z-30 lg:flex lg:w-72 lg:flex-col">
             <!-- Sidebar component, swap this element with another sidebar if you like -->
-            <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 pb-4">
+            <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 py-4">
                 <div class="flex h-16 shrink-0 items-center">
-                    <img class="h-8 w-auto" :src='logo' alt="Again" />
+                    <img class="h-8 w-auto" :src='logo' alt="Again"/>
                 </div>
                 <nav class="flex flex-1 flex-col">
                     <ul role="list" class="flex flex-1 flex-col gap-y-7">
                         <li>
                             <ul role="list" class="-mx-2 space-y-1">
                                 <li v-for="item in updatedNavigation" :key="item.name">
-                                    <router-link :to="item.href" :class="[item.current ? 'bg-gray-50 text-red-600' : 'text-gray-700 hover:bg-gray-50 hover:text-red-600', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
+                                    <router-link v-if="!item.children" :to="item.href" :class="[item.current ? 'bg-gray-50 text-red-600' : 'text-gray-700 hover:bg-gray-50 hover:text-red-600', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
                                         <component :is="item.icon" :class="[item.current ? 'text-red-600' : 'text-gray-400 group-hover:text-red-600', 'size-6 shrink-0']" aria-hidden="true" />
                                         {{ item.name }}
                                     </router-link>
+                                    <Disclosure as="div" v-else v-slot="{ open }">
+                                        <DisclosureButton :class="[item.current ? 'bg-gray-50' : 'hover:bg-gray-50', 'flex w-full items-center gap-x-3 rounded-md p-2 text-left text-sm/6 font-semibold text-gray-700']">
+                                            <component :is="item.icon" class="size-6 shrink-0 text-gray-400" aria-hidden="true" />
+                                            {{ item.name }}
+                                            <PhCaretRight :class="[open ? 'rotate-90 text-gray-500' : 'text-gray-400', 'ml-auto size-5 shrink-0']" aria-hidden="true" />
+                                        </DisclosureButton>
+                                        <DisclosurePanel as="ul" class="mt-1 px-2">
+                                            <li v-for="subItem in item.children" :key="subItem.name">
+                                                <router-link :to="subItem.href" :class="[subItem.current ? 'bg-gray-50 text-red-600' : 'text-gray-700 hover:bg-gray-50 hover:text-red-600', 'group flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold']">
+                                                    <component :is="subItem.icon" :class="[subItem.current ? 'text-red-600' : 'text-gray-400 group-hover:text-red-600', 'size-6 shrink-0']" aria-hidden="true" />
+                                                    {{ subItem.name }}
+                                                </router-link>
+                                            </li>
+                                        </DisclosurePanel>
+                                    </Disclosure>
                                 </li>
                             </ul>
                         </li>
-                      
                         <li class="mt-auto">
                             <router-link to="/settings" class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm/6 font-semibold text-gray-700 hover:bg-gray-50 hover:text-red-600">
                                 <PhGear class="size-6 shrink-0 text-gray-400 group-hover:text-red-600" aria-hidden="true" />
@@ -129,7 +156,6 @@
                     </div>
                 </div>
             </div>
-    
         </div>
     </div>
 </template>
@@ -138,8 +164,8 @@
 import { ref, computed } from 'vue'
 import { useStore } from 'vuex';
 import { useRoute } from 'vue-router';
-import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems, TransitionChild, TransitionRoot } from '@headlessui/vue'
-import { PhList, PhBell, PhHouse, PhWarehouse, PhBag, PhPackage, PhTruck, PhUserList, PhUnite, PhChartPie, PhChatTeardropDots, PhUser, PhGear, PhCaretDown, PhMagnifyingGlass, PhX, } from '@phosphor-icons/vue';
+import { Dialog, DialogPanel, Menu, MenuButton, MenuItem, MenuItems, Disclosure, DisclosureButton, DisclosurePanel, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import { PhList, PhBell, PhHouse, PhWarehouse, PhComputerTower, PhDresser, PhFactory, PhBag, PhPackage, PhTruck, PhUserList, PhUnite, PhChartPie, PhChatTeardropDots, PhUser, PhGear, PhCaretDown, PhCaretRight, PhMagnifyingGlass, PhX, } from '@phosphor-icons/vue';
 
 const logo = '/logo.svg'
 
@@ -147,7 +173,13 @@ const store = useStore()
 
 const navigation = [
     { name: 'Главная', href: '/dashboard', icon: PhHouse },
-    { name: 'Склад', href: '/warehouses', icon: PhWarehouse },
+    { name: 'Склад', href: '/warehouses', icon: PhWarehouse,
+        children: [
+            { name: 'ТехКарты', href: '/warehouses/recipes', icon: PhComputerTower },
+            { name: 'Материалы', href: '/warehouses/materials', icon: PhWarehouse },
+            { name: 'Производство', href: '/warehouses/production', icon: PhFactory },
+        ],
+    },
     { name: 'Заказы', href: '/orders/list', icon: PhBag },
     { name: 'Товары', href: '/products/list', icon: PhPackage },
     { name: 'Доставка', href: '/deliveries', icon: PhTruck },
