@@ -3,7 +3,11 @@ import axios from 'axios'
 class productsApi{
     
     getProducts(query) {
-        return axios.get( "/products", { params: query });
+        return axios.get("/products", { params: query });
+    }
+
+    getProduct(id) {
+        return axios.get("/products/" + id);
     }
     
     create(data) {

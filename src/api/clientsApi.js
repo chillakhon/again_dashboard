@@ -3,7 +3,11 @@ import axios from 'axios'
 class clientsApi{
     
     getClients(query) {
-        return axios.get( "/clients", { params: query });
+        return axios.get("/clients", { params: query });
+    }
+
+    getClient(id) {
+        return axios.get("/clients/" + id);
     }
     
     create(data) {

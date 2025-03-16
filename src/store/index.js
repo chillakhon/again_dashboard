@@ -21,7 +21,7 @@ const store = createStore ({
         auth: authModule, 
 
         orders: ordersModule,
-        order: orderModule, 
+        order: orderModule,
         orderActions: orderActionsModule,
 
         products: productsModule,

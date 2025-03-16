@@ -36,7 +36,7 @@ export default {
             commit( 'set_loadStatus', true );
             commit( 'set_error', null );
             try {
-                const response = await ordersApi.getOrders( state.queryParams );
+                const response = await ordersApi.getOrders();
                 commit( 'set_orders', response.data.data );
 
                 commit( 'set_current_page', response.data.current_page );
