@@ -88,6 +88,4 @@ const toggleDeleteModal = (order) => {
     selectedOrderId.value = order?.id;
     isDeleteModalOpen.value = !isDeleteModalOpen.value;
 };
-
-
 </script>
