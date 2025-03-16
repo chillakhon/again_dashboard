@@ -2,6 +2,8 @@ import { createStore } from 'vuex'
 
 import authModule from './modules/auth/auth.js';
 
+import warehousesModule from './modules/warehouses/warehouses.js';
+
 import ordersModule from './modules/orders/orders.js';
 import orderModule from './modules/orders/order.js';
 import orderActionsModule from './modules/orders/actions.js';
@@ -19,6 +21,8 @@ import clientActionsModule from './modules/clients/actions.js';
 const store = createStore ({
     modules: {
         auth: authModule, 
+
+        warehouses: warehousesModule,
 
         orders: ordersModule,
         order: orderModule,
