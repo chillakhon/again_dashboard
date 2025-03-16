@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
+import { comma } from 'postcss/lib/list';
 
 const routes = [
     {
@@ -29,6 +30,28 @@ const routes = [
                 path: '/warehouses',
                 name: 'warehouses',
                 component: () => import('../views/warehouses/WarehousesView.vue'),
+                children: [
+                    {
+                        path: '/warehouses/materials/list',
+                        name: 'materials-list',
+                        component: () => import('../components/warehouses/materials/list/MaterialsList.vue'),
+                    },
+                    {
+                        path: '/warehouses/materials/create',
+                        name: 'materials-create',
+                        component: () => import('../components/warehouses/materials/create/MaterialCreate.vue'),
+                    },
+                    {
+                        path: '/warehouses/recipes/list',
+                        name: 'recipes-list',
+                        component: () => import('../components/warehouses/recipes/list/RecipesList.vue'),
+                    },
+                    {
+                        path: '/warehouses/recipes/create',
+                        name: 'recipes-create',
+                        component: () => import('../components/warehouses/recipes/create/RecipeCreate.vue'),
+                    },
+                ]
             },
             {
                 path: '/orders',

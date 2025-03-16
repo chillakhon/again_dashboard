@@ -2,6 +2,10 @@ import { createStore } from 'vuex'
 
 import authModule from './modules/auth/auth.js';
 
+import materialsModule from './modules/warehouses/materials/materials.js';
+import materialModule from './modules/warehouses/materials/material.js';
+import materialActionsModule from './modules/warehouses/materials/action.js';
+
 import ordersModule from './modules/orders/orders.js';
 import orderModule from './modules/orders/order.js';
 import orderActionsModule from './modules/orders/actions.js';
@@ -19,6 +23,10 @@ import clientActionsModule from './modules/clients/actions.js';
 const store = createStore ({
     modules: {
         auth: authModule, 
+
+        materials: materialsModule,
+        material: materialModule,
+        materialActions: materialActionsModule,
 
         orders: ordersModule,
         order: orderModule,
