@@ -46,15 +46,15 @@ const store = useStore()
 const props = defineProps(['open', 'clientId']);
 const emit = defineEmits(['close']); 
 
-const getOrders = () => store.dispatch('orders/getOrders')
-const deleteOrder = (id) => store.dispatch('orderActions/deleteOrder', id)
+const getClients = () => store.dispatch('clients/getClients')
+const deleteClient = (id) => store.dispatch('clientActions/deleteClient', id)
 
-const status = computed(() => store.getters['orderActions/status'])
-const error = computed(() => store.getters['orderActions/error'])
-const isLoading = computed(() => store.getters['orderActions/isLoading'])
+const status = computed(() => store.getters['clientActions/status'])
+const error = computed(() => store.getters['clientActions/error'])
+const isLoading = computed(() => store.getters['clientActions/isLoading'])
 
 const handleDelete = (id) => {
-    deleteOrder(id)
+    deleteClient(id)
 }
 
 watch(status, (newValue) => {
