@@ -11,7 +11,7 @@
                                 <tr>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">ID</th>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 lg:pl-8">Название</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Unit ID</th>
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Unit Name</th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8">
                                         <span class="sr-only">Edit</span>
                                     </th>
@@ -21,7 +21,7 @@
                                 <tr v-for="material in materials" :key="material?.id">
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3  text-sm text-gray-500">{{ material?.id }}</td>
                                     <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8">{{ material?.title }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ material?.unit_id }}</td>
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ getUnitName(material?.unit_id) }}</td>
                                     <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
                                         <Dropdown>
                                             <MenuItem v-slot="{ active }">
@@ -80,9 +80,23 @@ const materials = computed(() => store.getters['materials/materials'])
 const hasError = computed(() => store.getters['materials/hasError'])
 const isLoading = computed(() => store.getters['materials/isLoading'])
 
+
+const getUnits = () => store.dispatch('units/getUnits')
+
+const units = computed(() => store.getters['units/units'])
+
 onMounted(() => {
     getMaterials();
+    getUnits();
 });
+
+const getUnitName = (unitId) => {
+    if (!units.value || !Array.isArray(units.value)) return 'Неизвестная единица';
+    
+    const unit = units.value.find(unit => unit.id === unitId);
+    return unit ? unit.name : 'Неизвестная единица'; // Fallback text
+};
+
 
 const selectedMaterialId = ref(null);
 const isDeleteModalOpen = ref(false);
