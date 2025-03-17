@@ -22,7 +22,7 @@ export default {
             commit( 'set_error', null );
             try {
                 const response = await warehousesApi.getUnits();
-                commit( 'set_units', response.data.data );
+                commit( 'set_units', response.data );
             } catch ( error ) {
                 commit( 'set_error', error.response?.data?.message || 'Units Fetch Failed' );
             } finally {

@@ -12,6 +12,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mt-8">
+                        <label for="unit" class="block text-sm/6 font-medium text-gray-900">Мера измерения</label>
+                            <div class="mt-2 grid grid-cols-1">
+                            <select v-model="data.unit_id" id="unit" name="unit" autocomplete="unit" class="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-1.5 pl-3 pr-8 text-base text-gray-900 outline outline-1 -outline-offset-1 outline-gray-300 focus:outline focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6">
+                                <option disabled value="">Выберите единицу измерения</option>
+                                <option v-for="unit in units" :key="unit.id" :value="unit.id">
+                                    {{ unit.name }}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="mt-6 flex items-center justify-end gap-x-6">
                         <button type="submit" :disabled="isLoading" class="rounded-md bg-red-600 px-8 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
                             <span v-if="!isLoading">Создать</span>
@@ -25,9 +36,11 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from 'vue';
+import { ref, reactive, computed, onMounted, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
+import { PhCaretDown } from '@phosphor-icons/vue';
+
 
 import PageHeading from '@/components/common/PageHeading.vue'
 
@@ -38,14 +51,22 @@ const pageTitle = 'Добавить материал';
 
 const data = reactive({
     title: '',
-    unit_id: 1,
+    unit_id: '',
 })
+
+
+const getUnits = () => store.dispatch('units/getUnits')
+const units = computed(() => store.getters['units/units'])
 
 const create = (data) => store.dispatch('materialActions/createMaterial', data)
 
 const status = computed(() => store.getters['materialActions/status'])
 const error = computed(() => store.getters['materialActions/error'])
 const isLoading = computed(() => store.getters['materialActions/isLoading'])
+
+onMounted(() => {
+    getUnits();
+});
 
 const handleCreate = () => {
     create(data)
