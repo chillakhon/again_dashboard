@@ -10,6 +10,8 @@ import recipesModule from './modules/warehouses/recipes/recipes.js';
 import recipeModule from './modules/warehouses/recipes/recipe.js';
 import recipeActionsModule from './modules/warehouses/recipes/actions.js';
 
+import unitsModule from './modules/warehouses/units/units.js'
+
 import ordersModule from './modules/orders/orders.js';
 import orderModule from './modules/orders/order.js';
 import orderActionsModule from './modules/orders/actions.js';
@@ -23,7 +25,6 @@ import clientModule from './modules/clients/client.js';
 import clientActionsModule from './modules/clients/actions.js';
 
 
-
 const store = createStore ({
     modules: {
         auth: authModule, 
@@ -35,6 +36,8 @@ const store = createStore ({
         recipes: recipesModule,
         recipe: recipeModule,
         recipeActions: recipeActionsModule,
+
+        units: unitsModule,
 
         orders: ordersModule,
         order: orderModule,

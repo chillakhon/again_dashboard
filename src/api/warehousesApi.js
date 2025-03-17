@@ -45,6 +45,12 @@ class warehousesApi{
     deleteRecipe(id) {
         return axios.delete("/recipes/" + id);
     }
+
+    //Units Api
+
+    getUnits() {
+        return axios.get("/units");
+    }
     
 }
 
