@@ -17,6 +17,20 @@ export default {
 
     actions: {
 
+        async createProduct ( { commit }, data ){
+            commit( 'set_loadStatus', true );
+            commit( 'set_status', null );
+            commit( 'set_error', null );
+            try {
+                const response = await productsApi.create( data );
+                commit( 'set_status', response.data.message );
+            } catch ( error ) {
+                commit( 'set_error', error.response?.data?.error || 'Creating Product Failed, Try Again' );
+            } finally {
+                commit( 'set_loadStatus', false );
+            }
+        },
+
         async deleteProduct ( { commit }, id ){
             commit( 'set_loadStatus', true );
             commit( 'set_status', null );

@@ -41,7 +41,6 @@ import { useStore } from 'vuex';
 import { useRouter } from 'vue-router';
 import { PhCaretDown } from '@phosphor-icons/vue';
 
-
 import PageHeading from '@/components/common/PageHeading.vue'
 
 const store = useStore()
