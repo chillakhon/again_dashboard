@@ -16,6 +16,19 @@ export default {
     },
 
     actions: {
+        async createMaterial ( { commit }, data ){
+            commit( 'set_loadStatus', true );
+            commit( 'set_status', null );
+            commit( 'set_error', null );
+            try {
+                const response = await warehousesApi.createMaterial( data );
+                commit( 'set_status', response.data.message );
+            } catch ( error ) {
+                commit( 'set_error', error.response?.data?.error || 'Creating Material Failed, Try Again' );
+            } finally {
+                commit( 'set_loadStatus', false );
+            }
+        },
 
         async deleteMaterial ( { commit }, id ){
             commit( 'set_loadStatus', true );

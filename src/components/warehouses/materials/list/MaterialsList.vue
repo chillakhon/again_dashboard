@@ -10,7 +10,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">ID</th>
-                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 lg:pl-8">Name</th>
+                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 lg:pl-8">Название</th>
                                     <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Unit ID</th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8">
                                         <span class="sr-only">Edit</span>
@@ -50,12 +50,17 @@
             </div>
         </div>
     </section>
+    <Delete :open="isDeleteModalOpen" :materialId="selectedMaterialId" @close="toggleDeleteModal" />
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
+import { MenuItem } from '@headlessui/vue'
+import { PhNotePencil, PhTrash } from '@phosphor-icons/vue'
+
+import Delete from '../modals/Delete.vue'
 import Loader from '@/components/common/Loader.vue'
 import PageHeading from '@/components/common/PageHeading.vue'
 import Dropdown from '@/components/common/Dropdown.vue'

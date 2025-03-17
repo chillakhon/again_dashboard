@@ -4,7 +4,11 @@ import authModule from './modules/auth/auth.js';
 
 import materialsModule from './modules/warehouses/materials/materials.js';
 import materialModule from './modules/warehouses/materials/material.js';
-import materialActionsModule from './modules/warehouses/materials/action.js';
+import materialActionsModule from './modules/warehouses/materials/actions.js';
+
+import recipesModule from './modules/warehouses/recipes/recipes.js';
+import recipeModule from './modules/warehouses/recipes/recipe.js';
+import recipeActionsModule from './modules/warehouses/recipes/actions.js';
 
 import ordersModule from './modules/orders/orders.js';
 import orderModule from './modules/orders/order.js';
@@ -27,6 +31,10 @@ const store = createStore ({
         materials: materialsModule,
         material: materialModule,
         materialActions: materialActionsModule,
+        
+        recipes: recipesModule,
+        recipe: recipeModule,
+        recipeActions: recipeActionsModule,
 
         orders: ordersModule,
         order: orderModule,
