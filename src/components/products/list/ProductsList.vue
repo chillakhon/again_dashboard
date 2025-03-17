@@ -60,7 +60,6 @@ import { useStore } from 'vuex';
 import { MenuItem } from '@headlessui/vue'
 import { PhNotePencil, PhTrash } from '@phosphor-icons/vue'
 
-
 import Delete from '../modals/Delete.vue'
 import Loader from '@/components/common/Loader.vue'
 import PageHeading from '@/components/common/PageHeading.vue'
