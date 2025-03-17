@@ -17,6 +17,20 @@ export default {
 
     actions: {
 
+        async createOrder ( { commit }, data ){
+            commit( 'set_loadStatus', true );
+            commit( 'set_status', null );
+            commit( 'set_error', null );
+            try {
+                const response = await ordersApi.create( data );
+                commit( 'set_status', response.data.message );
+            } catch ( error ) {
+                commit( 'set_error', error.response?.data?.error || 'Creating Order Failed, Try Again' );
+            } finally {
+                commit( 'set_loadStatus', false );
+            }
+        },
+
         async deleteOrder ( { commit }, id ){
             commit( 'set_loadStatus', true );
             commit( 'set_status', null );
