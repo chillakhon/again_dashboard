@@ -15,5 +15,8 @@ require('./store/modules/auth/subscriber.js');
 const access_token = Cookies.get('access_token');
 
 store.dispatch( 'auth/attempt', access_token ).then(() => {
-    createApp(App).use(store).use(router).mount('#app')
+    createApp(App)
+        .use(store)
+        .use(router)
+        .mount('#app')
 })
