@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import store from '@/store'
-import { comma } from 'postcss/lib/list';
 
 const routes = [
     {
@@ -13,8 +12,15 @@ const routes = [
                 return next({ path: redirectTo });
             }
             next()
-        }
+        },
     },
+
+    {
+        path: '/auth/logout',
+        name: 'logout',
+        component: () => import('../views/LogOut.vue'),
+    },
+
     {
         path: '/',
         name: 'MainView',

@@ -1,5 +1,6 @@
 import authApi from '@/api/authApi.js'
 import { ref } from 'vue';
+import Cookies from 'js-cookie';
 
 export default {
     namespaced: true,
@@ -53,6 +54,7 @@ export default {
                 commit( 'set_error', 'Failed to fetch user info' );
             }
         },
+
     },
     
     mutations: {

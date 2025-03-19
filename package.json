@@ -17,6 +17,7 @@
         "@vitejs/plugin-vue": "^5.2.3",
         "@vue-leaflet/vue-leaflet": "^0.10.1",
         "@vueuse/core": "^13.0.0",
+        "ag-grid-vue3": "^33.1.1",
         "autoprefixer": "^10.4.20",
         "axios": "^1.7.7",
         "class-variance-authority": "^0.7.1",
