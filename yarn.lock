@@ -1317,14 +1317,7 @@ ag-charts-types@11.1.1:
   resolved "https://registry.npmjs.org/ag-charts-types/-/ag-charts-types-11.1.1.tgz"
   integrity sha512-bRmUcf5VVhEEekhX8Vk0NSwa8Te8YM/zchjyYKR2CX4vDYiwoohM1Jg9RFvbIhVbLC1S6QrPEbx5v2C6RDfpSA==
 
-ag-grid-community@33.1.1:
-  version "33.1.1"
-  resolved "https://registry.npmjs.org/ag-grid-community/-/ag-grid-community-33.1.1.tgz"
-  integrity sha512-CNubIro0ipj4nfQ5WJPG9Isp7UI6MMDvNzrPdHNf3W+IoM8Uv3RUhjEn7xQqpQHuu6o/tMjrqpacipMUkhzqnw==
-  dependencies:
-    ag-charts-types "11.1.1"
-
-ag-grid-community@^33.1.1:
+ag-grid-community@33.1.1, ag-grid-community@^33.1.1:
   version "33.1.1"
   resolved "https://registry.yarnpkg.com/ag-grid-community/-/ag-grid-community-33.1.1.tgz#04f0317317ea1d35f128dc1a4f8e70a04aa27774"
   integrity sha512-CNubIro0ipj4nfQ5WJPG9Isp7UI6MMDvNzrPdHNf3W+IoM8Uv3RUhjEn7xQqpQHuu6o/tMjrqpacipMUkhzqnw==

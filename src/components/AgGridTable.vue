@@ -6,7 +6,7 @@
          class="font-medium text-[30px]">
       {{ props.title }}
     </div>
-    <Button v-on:click="onBtExport()" class="bg-blue-500">
+    <Button v-on:click="onBtExport()" class="bg-blue-500 hover:bg-blue-400 active:bg-blue-500">
       Экспорт
     </Button>
   </div>
@@ -27,11 +27,7 @@
         flex: 1,
         minWidth: 150,
         filter: true,
-        floatingFilter: false,
-        cellClassRules: {
-        'editable-cell': (params) => params.column.isCellEditable(params),
-        'empty-editable-cell': (params) => params.column.isCellEditable(params) && !params.value
-          },
+        floatingFilter: false
   }"
   >
   </ag-grid-vue>
@@ -43,18 +39,23 @@ import {onBeforeMount, reactive, ref} from 'vue';
 import {AgGridVue} from "ag-grid-vue3";
 import {
   AllCommunityModule,
+  ClientSideRowModelModule,
   ModuleRegistry,
   RowDragModule,
-  RowSelectionModule,
-  ClientSideRowModelModule
+  RowSelectionModule
 } from 'ag-grid-community';
 
 import {AgChartsCommunityModule,} from "ag-charts-community";
-import {ContextMenuModule, ExcelExportModule, RowGroupingModule, SparklinesModule} from "ag-grid-enterprise";
-
-import { TreeDataModule } from "ag-grid-enterprise";
+import {
+  ContextMenuModule,
+  ExcelExportModule,
+  RowGroupingModule,
+  SparklinesModule,
+  TreeDataModule
+} from "ag-grid-enterprise";
 
 ModuleRegistry.registerModules([
+  ClientSideRowModelModule,
   AllCommunityModule,
   ContextMenuModule,
   RowGroupingModule,
@@ -62,7 +63,6 @@ ModuleRegistry.registerModules([
   RowSelectionModule,
   ExcelExportModule,
   TreeDataModule,
-  ClientSideRowModelModule,
   SparklinesModule.with(AgChartsCommunityModule),
 ]);
 
