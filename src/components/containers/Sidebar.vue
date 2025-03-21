@@ -190,9 +190,9 @@ const navigation = [
 ]
 
 const userNavigation = [
-    { name: 'Your profile', href: '#' },
-    { name: 'Sign out', href: '/auth/logout' },
-]
+  { name: 'Ваш профиль', href: '#' },
+  { name: 'Выйти', href: '/auth/logout' },
+];
 
 const user = computed(() => store.getters['auth/user'])
 

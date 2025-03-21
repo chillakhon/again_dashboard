@@ -45,17 +45,14 @@ import {
   RowSelectionModule
 } from 'ag-grid-community';
 
-import {AgChartsCommunityModule,} from "ag-charts-community";
 import {
   ContextMenuModule,
   ExcelExportModule,
   RowGroupingModule,
-  SparklinesModule,
   TreeDataModule
 } from "ag-grid-enterprise";
 
 ModuleRegistry.registerModules([
-  ClientSideRowModelModule,
   AllCommunityModule,
   ContextMenuModule,
   RowGroupingModule,
@@ -63,26 +60,8 @@ ModuleRegistry.registerModules([
   RowSelectionModule,
   ExcelExportModule,
   TreeDataModule,
-  SparklinesModule.with(AgChartsCommunityModule),
+  ClientSideRowModelModule,
 ]);
-
-
-const treeDataChildrenField = 'variants';
-
-
-const autoGroupColumnDef = ref({
-  headerName: "Артикул",
-  field: "variants",
-  cellRenderer: (params) => {
-    return params.data.variants.length
-        ? `<span style="cursor:pointer; color:blue;">▼ ${params.data.variants.length} вариантов</span>`
-        : "0 вариантов";
-  },
-  cellRendererParams: {
-    suppressCount: true,
-  },
-});
-
 
 const props = defineProps({
   dataAg: {
@@ -97,8 +76,21 @@ const props = defineProps({
     type: String,
     default: '',
   },
+
+  autoGroupColumnDef: {
+    type: Object,
+    default:  {}
+  },
+
+  treeDataChildrenField: {
+    type: String,
+    default: ''
+  }
+
 })
 
+const treeDataChildrenField = ref(props.treeDataChildrenField);
+const autoGroupColumnDef = ref(props.autoGroupColumnDef);
 const rowData = reactive(props.dataAg)
 const colDefs = reactive(props.colsAg)
 const gridApi = ref(null);
@@ -110,6 +102,8 @@ function onBtExport() {
 function onGridReady(params) {
   gridApi.value = params.api;
 }
+
+
 
 const enterpriseErrors = [
   '****************************************************************************************************************************',
@@ -155,6 +149,10 @@ onBeforeMount(() => {
 
 .ag-input-wrapper:before {
   display: none;
+}
+
+.ag-watermark {
+  display: none !important;
 }
 
 </style>
