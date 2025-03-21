@@ -6,7 +6,7 @@
          class="font-medium text-[30px]">
       {{ props.title }}
     </div>
-    <Button v-on:click="onBtExport()" class="bg-blue-500">
+    <Button v-on:click="onBtExport()" class="bg-blue-500 hover:bg-blue-400 active:bg-blue-500">
       Экспорт
     </Button>
   </div>
@@ -27,11 +27,7 @@
         flex: 1,
         minWidth: 150,
         filter: true,
-        floatingFilter: false,
-        cellClassRules: {
-        'editable-cell': (params) => params.column.isCellEditable(params),
-        'empty-editable-cell': (params) => params.column.isCellEditable(params) && !params.value
-          },
+        floatingFilter: false
   }"
   >
   </ag-grid-vue>
@@ -43,16 +39,18 @@ import {onBeforeMount, reactive, ref} from 'vue';
 import {AgGridVue} from "ag-grid-vue3";
 import {
   AllCommunityModule,
+  ClientSideRowModelModule,
   ModuleRegistry,
   RowDragModule,
-  RowSelectionModule,
-  ClientSideRowModelModule
+  RowSelectionModule
 } from 'ag-grid-community';
 
-import {AgChartsCommunityModule,} from "ag-charts-community";
-import {ContextMenuModule, ExcelExportModule, RowGroupingModule, SparklinesModule} from "ag-grid-enterprise";
-
-import { TreeDataModule } from "ag-grid-enterprise";
+import {
+  ContextMenuModule,
+  ExcelExportModule,
+  RowGroupingModule,
+  TreeDataModule
+} from "ag-grid-enterprise";
 
 ModuleRegistry.registerModules([
   AllCommunityModule,
@@ -63,26 +61,7 @@ ModuleRegistry.registerModules([
   ExcelExportModule,
   TreeDataModule,
   ClientSideRowModelModule,
-  SparklinesModule.with(AgChartsCommunityModule),
 ]);
-
-
-const treeDataChildrenField = 'variants';
-
-
-const autoGroupColumnDef = ref({
-  headerName: "Артикул",
-  field: "variants",
-  cellRenderer: (params) => {
-    return params.data.variants.length
-        ? `<span style="cursor:pointer; color:blue;">▼ ${params.data.variants.length} вариантов</span>`
-        : "0 вариантов";
-  },
-  cellRendererParams: {
-    suppressCount: true,
-  },
-});
-
 
 const props = defineProps({
   dataAg: {
@@ -97,8 +76,21 @@ const props = defineProps({
     type: String,
     default: '',
   },
+
+  autoGroupColumnDef: {
+    type: Object,
+    default:  {}
+  },
+
+  treeDataChildrenField: {
+    type: String,
+    default: ''
+  }
+
 })
 
+const treeDataChildrenField = ref(props.treeDataChildrenField);
+const autoGroupColumnDef = ref(props.autoGroupColumnDef);
 const rowData = reactive(props.dataAg)
 const colDefs = reactive(props.colsAg)
 const gridApi = ref(null);
@@ -110,6 +102,8 @@ function onBtExport() {
 function onGridReady(params) {
   gridApi.value = params.api;
 }
+
+
 
 const enterpriseErrors = [
   '****************************************************************************************************************************',
@@ -155,6 +149,10 @@ onBeforeMount(() => {
 
 .ag-input-wrapper:before {
   display: none;
+}
+
+.ag-watermark {
+  display: none !important;
 }
 
 </style>
