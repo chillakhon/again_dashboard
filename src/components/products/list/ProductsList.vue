@@ -38,7 +38,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {ref, onMounted} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import axios from "axios";
 import Loader from "@/components/common/Loader.vue";
@@ -110,7 +110,9 @@ const autoGroupColumnDef = ref({
   },
 })
 
-fetchData(currentPage.value)
+onMounted(() => {
+  fetchData(currentPage.value)
+})
 
 async function deleteProduct(id) {
   await axios.delete(`products/${id}`)
