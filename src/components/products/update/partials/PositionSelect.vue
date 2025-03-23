@@ -1,5 +1,5 @@
 <template>
-  <Accordion type="single" collapsible default-value="item-1">
+  <Accordion type="single" collapsible>
     <AccordionItem value="item-1">
       <AccordionTrigger>
         <span class="pl-1 text-sm">Расположение</span>
