@@ -16,7 +16,7 @@
 
           <!--        о таваре-->
           <div class="border p-2 rounded-lg">
-            <Accordion type="single" collapsible>
+            <Accordion type="single" collapsible default-value="item-1">
               <AccordionItem value="item-1">
                 <AccordionTrigger>
                   <span class="pl-1 text-md text-sm">О товаре</span>
