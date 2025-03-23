@@ -1,16 +1,16 @@
 <template>
   <div class="space-y-4">
-    <!--    <div v-for="image in product.images" :key="image.id">-->
-    <!--      <img :src="`${back_url}/products/${product.id}/image?path=${image.path}`" alt="">-->
-    <!--    </div>-->
     <div
         class="border-dashed border-2 p-4 cursor-pointer text-center rounded-lg"
         @dragover.prevent
         @drop="handleDrop"
         @click="triggerFileInput"
     >
-      <input type="file" ref="fileInput" multiple accept="image/*" class="hidden" @change="handleFiles"/>
-      <p class="text-gray-500">Перетащите файлы сюда или нажмите, чтобы выбрать</p>
+      <input type="file" ref="fileInput" multiple accept="image/jpeg, image/png, image/jpg, image/gif" class="hidden"
+             @change="handleFiles"/>
+      <p class="text-gray-500">
+        Перетащите файлы сюда или нажмите, чтобы выбрать. Допустимые форматы: JPEG, PNG, JPG.
+      </p>
     </div>
     <div v-if="images.length || product.images?.length"
          class="grid grid-cols-3 gap-4 border border-gray-300 rounded-lg p-2">
@@ -31,8 +31,6 @@
       </div>
     </div>
   </div>
-
-  <!--  <Button type="button" @click="saveImages">Сохранить</Button>-->
 </template>
 
 <script setup lang="ts">
@@ -42,13 +40,11 @@ import {Button} from "@/components/ui/button";
 import axios from "axios";
 import {toast} from 'vue-sonner'
 
-
 const back_url = ref(process.env.VUE_APP_BASE_URL)
 
 const product = defineModel<Product>('product');
 
 const images = ref<string[]>([]);
-
 
 const fileInput = ref<HTMLInputElement | null>(null);
 
@@ -69,8 +65,16 @@ const handleFiles = (event: Event) => {
 };
 
 const processFiles = (filesList: FileList) => {
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/gif'];
+
   for (let i = 0; i < filesList.length; i++) {
     const file = filesList[i];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(`Файл "${file.name}" не является допустимым изображением. Разрешены только форматы: jpeg, png, jpg, gif.`);
+      continue;
+    }
+
     if (file.type.startsWith('image/')) {
       const reader = new FileReader();
       reader.onload = (e) => {
@@ -90,6 +94,7 @@ const removeImage = (index: number) => {
   images.value.splice(index, 1); // Удаляем base64
   product.value.imageFiles.splice(index, 1); // Удаляем файл
 };
+
 const removeImageToBack = async (index: number, image: any) => {
   product.value.images.splice(product.value.images.indexOf(index), 1);
 
@@ -103,8 +108,6 @@ const removeImageToBack = async (index: number, image: any) => {
         })
       })
 };
-
-
 </script>
 
 <style scoped>
@@ -113,4 +116,3 @@ const removeImageToBack = async (index: number, image: any) => {
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
 }
 </style>
-
