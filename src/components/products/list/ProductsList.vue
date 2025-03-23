@@ -45,7 +45,11 @@ import Loader from "@/components/common/Loader.vue";
 import Button from "@/components/ui/button/Button.vue";
 import AgGridTable from "@/components/AgGridTable.vue";
 import {toast} from 'vue-sonner'
+import {useRouter} from "vue-router";
+import product from "@/models/Product";
 
+const back_url = ref(process.env.VUE_APP_BASE_URL)
+const router = useRouter()
 
 const data = ref([]);
 const totalItems = ref(0);
@@ -56,8 +60,23 @@ const renderTable = ref(0)
 
 
 const colDefs = ref([
-  {headerName: "Фото", field: "photo", maxWidth: 100,},
-  {headerName: "Название", field: "name"},
+  {
+    headerName: "Фото",
+    field: "images",
+    maxWidth: 100,
+    cellRenderer: (params) => {
+      return `<img src="${back_url.value}/products/${params.data.product_id ?? params.data.id}/main-image" class="border border-green-400 rounded-lg" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;"  alt=""/>`;
+    },
+  },
+
+  {
+    headerName: "Название",
+    field: "name",
+    cellStyle: {color: "blue", cursor: "pointer"},
+    onCellClicked: (params) => {
+      router.push(`/product/update/${params.data.product_id ?? params.data.id}`);
+    }
+  },
   {headerName: "Параметры", field: "model"},
   {headerName: "Остаток", field: "stock_quantity"},
   {headerName: "Цена", field: "cost_price"},
