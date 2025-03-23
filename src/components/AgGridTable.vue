@@ -17,7 +17,7 @@
       :rowDragManaged="true"
       :rowDragEntireRow="false"
 
-      :treeData="true"
+      :treeData="treeData"
       :treeDataChildrenField="treeDataChildrenField"
       :autoGroupColumnDef="autoGroupColumnDef"
 
@@ -77,6 +77,10 @@ const props = defineProps({
     default: '',
   },
 
+  treeData: {
+    type: Boolean,
+    default: false
+  },
   autoGroupColumnDef: {
     type: Object,
     default:  {}

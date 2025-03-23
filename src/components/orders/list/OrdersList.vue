@@ -1,94 +1,133 @@
 <template>
-    <section>
-        <PageHeading :title="pageTitle" :create="createLink"/>
-        <Loader v-if="isLoading"/>
-        <div v-else class="px-4 sm:px-6 lg:px-8">
-            <div class="mt-8 flow-root">
-                <div v-if="orders && orders.length != 0" class="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-                    <div class="inline-block min-w-full py-2 align-middle">
-                        <table class="min-w-full divide-y divide-gray-300">
-                            <thead>
-                                <tr>
-                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">ID</th>
-                                    <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6 lg:pl-8">Name</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Title</th>
-                                    <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 lg:pr-8">
-                                        <span class="sr-only">Edit</span>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
-                                <tr v-for="order in orders" :key="order?.id">
-                                    <td class="whitespace-nowrap py-4 pl-4 pr-3  text-sm text-gray-500">{{ order?.id }}</td>
-                                    <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6 lg:pl-8">{{ order?.name }}</td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ order?.description }}</td>
-                                    <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 lg:pr-8">
-                                        <Dropdown>
-                                            <MenuItem v-slot="{ active }">
-                                                <a href="#" disabled :class="[active ? 'bg-gray-100 text-gray-900 outline-none' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
-                                                    <PhNotePencil :class="[active ? 'text-gray-500' : '', 'mr-3 size-5 text-gray-400']" aria-hidden="true" />
-                                                    Edit
-                                                </a>
-                                            </MenuItem>
-                                            <MenuItem v-slot="{ active }">
-                                                <a href="#" @click.prevent="toggleDeleteModal(order)" :class="[active ? 'bg-gray-100 text-gray-900 outline-none' : 'text-gray-700', 'group flex items-center px-4 py-2 text-sm']">
-                                                    <PhTrash :class="[active ? 'text-gray-500' : '', 'mr-3 size-5 text-gray-400']" aria-hidden="true" />
-                                                    Delete
-                                                </a>
-                                            </MenuItem>
-                                        </Dropdown>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <!-- <Pagination :currentPage="meta?.current_page" :perPage="meta?.per_page" :totalItems="meta?.total_count" :totalPages="meta?.total_pages" /> -->
-                </div>
-                <div v-else class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">
-                    <h3 class="text-3xl font-extrabold text-gray-500 sm:text-4xl">Ничего не найдено</h3>
-                </div>
-            </div>
+  <Loader v-if="isLoading"/>
+  <div v-else class="">
+    <div class="flex items-center pb-4 justify-between">
+<!--      <router-link to="/products/create">-->
+<!--        <Button>Добавить товар</Button>-->
+<!--      </router-link>-->
+    </div>
+    <div >
+      <div class="">
+        <AgGridTable
+            :key="renderTable"
+            :cols-ag="colDefs"
+            :data-ag="data"
+            title="Заказы"
+        />
+      </div>
+      <div class="flex items-center justify-end space-x-2 py-4">
+        <div class="space-x-2">
+          <PaginationTable
+              :total="totalItems"
+              :default-page="currentPage"
+              :items-per-page="itemsPerPage"
+              :sibling-count="1"
+              :show-edges="true"
+              @current-page="currentPage = $event; fetchData($event)"
+          />
         </div>
-    </section>
+      </div>
+    </div>
+<!--    <div v-else class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">-->
+<!--      <h3 class="text-3xl font-extrabold text-gray-500 sm:text-4xl">Ничего не найдено</h3>-->
+<!--    </div>-->
+  </div>
+
 </template>
 
-<script setup>
-import { ref, computed, onMounted } from 'vue';
-import { useStore } from 'vuex';
+<script setup lang="ts">
+import {ref, onMounted} from 'vue';
+import PaginationTable from "@/components/PaginationTable.vue";
+import axios from "axios";
+import Loader from "@/components/common/Loader.vue";
+import Button from "@/components/ui/button/Button.vue";
+import AgGridTable from "@/components/AgGridTable.vue";
+import {toast} from 'vue-sonner'
+import {useRouter} from "vue-router";
+import product from "@/models/Product";
 
-import { MenuItem } from '@headlessui/vue'
-import { PhNotePencil, PhTrash } from '@phosphor-icons/vue'
+const back_url = ref(process.env.VUE_APP_BASE_URL)
+const router = useRouter()
 
-import Delete from '../modals/Delete.vue'
-import Loader from '@/components/common/Loader.vue'
-import PageHeading from '@/components/common/PageHeading.vue'
-import Dropdown from '@/components/common/Dropdown.vue'
-import Pagination from '@/components/common/Pagination.vue'
+const data = ref([]);
+const totalItems = ref(0);
+const currentPage = ref(1);
+const itemsPerPage = ref(10);
+const isLoading = ref(true)
+const renderTable = ref(0)
 
-const store = useStore()
 
-const pageTitle = 'Заказы';
-const createLink = {
-    title: 'Добавить Заказ',
-    url: '/orders/create'
-}
+const colDefs = ref([
+  {headerName: "No", field: "number", maxWidth: 100},
+  {headerName: "Создан ", field: "date"},
+  {headerName: "Доставить", field: ""},
+  {headerName: "Сумма", field: "summa"},
+  {headerName: "ФИО получателя", field: "name"},
+  {headerName: "Статус", field: "status"},
+  {headerName: "Оплата", field: "status"},
+  {headerName: "Доставка", field: "delevary"},
+  {headerName: "Ответственный", field: "delevary"},
+  {
+    headerName: "Действия",
+    field: "actions",
+    maxWidth: 120,
+    cellRenderer: (params) => {
+      const button = document.createElement("button");
+      button.innerText = "Удалить";
+      button.style.color = "red";
+      button.style.cursor = "pointer";
+      button.onclick = () => {
+        if (confirm("Вы уверены, что хотите удалить этот товар?")) {
+          deleteProduct(params.data.id)
+        }
+      };
+      return button;
+    },
+  },
+]);
 
-const getOrders = () => store.dispatch('orders/getOrders')
 
-const orders = computed(() => store.getters['orders/orders'])
-const meta = computed(() => store.getters['orders/meta'])
-const hasError = computed(() => store.getters['orders/hasError'])
-const isLoading = computed(() => store.getters['orders/isLoading'])
 
 onMounted(() => {
-    getOrders();
-});
+  fetchData(currentPage.value)
+})
 
-const selectedOrderId = ref(null);
-const isDeleteModalOpen = ref(false);
+async function deleteProduct(id) {
+  await axios.delete(`products/${id}`)
+      .then(res => {
+        toast("Удалено!", {
+          description: "Товар был успешно удалён.",
+          action: {
+            label: "Ок",
+          },
+        });
+        fetchData(currentPage.value)
+      })
+      .catch(err => {
+        toast("Ошибка!", {
+          description: `Не удалось удалить товар: ${err.message}`,
+          action: {
+            label: "Ок",
+          },
+        });
+      });
+}
 
-const toggleDeleteModal = (order) => {
-    selectedOrderId.value = order?.id;
-    isDeleteModalOpen.value = !isDeleteModalOpen.value;
-};
+
+async function fetchData(curPage: any) {
+  isLoading.value = true
+  await axios.get('orders', {
+    params: {
+    }
+  })
+      .then(res => {
+        data.value = res.data?.data
+        totalItems.value = res.data?.total ?? 0
+        renderTable.value++
+      })
+      .finally(() => {
+        isLoading.value = false
+      })
+}
+
 </script>

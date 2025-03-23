@@ -12,6 +12,7 @@
             :key="renderTable"
             :cols-ag="colDefs"
             :data-ag="data"
+            :treeData="true"
             :auto-group-column-def="autoGroupColumnDef"
             tree-data-children-field="variants"
             title="Все товары"
@@ -65,7 +66,7 @@ const colDefs = ref([
     field: "images",
     maxWidth: 100,
     cellRenderer: (params) => {
-      return `<img src="${back_url.value}/products/${params.data.product_id ?? params.data.id}/main-image?date=${new Date().getTime()}" class="border border-green-400 rounded-lg" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;"  alt=""/>`;
+      return `<img src="${back_url.value}/products/${params.data.product_id ?? params.data.id}/main-image?date=${new Date().getTime()}" class="border border-green-400 rounded-lg" style="width: 50px; height: 38px; object-fit: cover; border-radius: 5px;"  alt=""/>`;
     },
   },
 
@@ -152,8 +153,5 @@ async function fetchData(curPage: any) {
         isLoading.value = false
       })
 }
-
-
-console.log(new Date().getTime());
 
 </script>
