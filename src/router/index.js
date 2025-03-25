@@ -172,27 +172,27 @@ const routes = [
                 children: [
                     {
                         path: '/integrations/payments',
-                        name: 'clients-payments',
+                        name: 'integrations-payments',
                         component: () => import('../components/integrations/payments/index.vue'),
                     },
                     {
                         path: '/integrations/cashboxes',
-                        name: 'clients-payments',
-                        component: () => import('../components/integrations/payments/index.vue'),
+                        name: 'integrations-cashboxes',
+                        component: () => import('../components/integrations/cashboxes/index.vue'),
                     },
                     {
                         path: '/integrations/delivery',
-                        name: 'clients-delivery',
+                        name: 'integrations-delivery',
                         component: () => import('../components/integrations/delivery/index.vue'),
                     },
                     {
                         path: '/integrations/messengers',
-                        name: 'clients-messengers',
+                        name: 'integrations-messengers',
                         component: () => import('../components/integrations/messengers/index.vue'),
                     },
                     {
                         path: '/integrations/email',
-                        name: 'clients-email',
+                        name: 'integrations-email',
                         component: () => import('../components/integrations/email/index.vue'),
                     },
                 ]
