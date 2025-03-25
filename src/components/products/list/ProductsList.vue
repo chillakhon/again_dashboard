@@ -66,7 +66,7 @@ const colDefs = ref([
     field: "images",
     maxWidth: 100,
     cellRenderer: (params) => {
-      return `<img src="${back_url.value}/products/${params.data.product_id ?? params.data.id}/main-image?date=${new Date().getTime()}" class="border border-green-400 rounded-lg" style="width: 50px; height: 38px; object-fit: cover; border-radius: 5px;"  alt=""/>`;
+      return `<img src="${back_url.value}/products/${params.data.product_id ?? params.data.id}/image?path=${params.data.image_path}" class="border border-green-400 rounded-lg" style="width: 50px; height: 38px; object-fit: cover; border-radius: 5px;"  alt=""/>`;
     },
   },
 
@@ -78,11 +78,25 @@ const colDefs = ref([
       router.push(`/product/update/${params.data.product_id ?? params.data.id}`);
     }
   },
-  {headerName: "Параметры", field: "model"},
+
   {headerName: "Остаток", field: "stock_quantity"},
   {headerName: "Цена", field: "cost_price"},
-  {headerName: "Старая", field: "price"},
+  {headerName: "Цена до скидки", field: "price"},
+  {headerName: "Штрих-код", field: "barcode"},
   {headerName: "Себестоимость", field: "Себестоимость"},
+  {headerName: "Артикул", field: "sku"},
+  {
+    headerName: "Габариты",
+    field: "dimensions",
+    valueGetter: (params) => {
+      const {length, width, height} = params.data;
+      return [length, width, height].filter(Boolean).join(" x ") || "";
+    }
+  },
+  {headerName: "Вес", field: "weight"},
+  {headerName: "Опции", field: "options_"},
+  // {headerName: "Характеристики", field: "description"},
+  {headerName: "Описание", field: "description"},
   {
     headerName: "Действия",
     field: "actions",

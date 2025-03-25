@@ -23,6 +23,7 @@
       </div>
       <div v-for="(img, i) in product.images" :key="i" class="relative border border-gray-300 rounded-lg">
         <img :src="`${back_url}/products/${product.id}/image?path=${img.path}`" alt="image"
+
              class="rounded-lg w-24 h-24 object-cover"/>
         <button type="button" @click="removeImageToBack(i, img)"
                 class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center">

@@ -1,12 +1,10 @@
-<template>
-  <div>
-панель упр
-  </div>
-</template>
-
 <script setup lang="ts">
 
 </script>
+
+<template>
+  tech_operations
+</template>
 
 <style scoped>
 

@@ -1,3 +1,3 @@
 <template>
-    Dialogs View
+  <router-view></router-view>
 </template>

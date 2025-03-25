@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {createRouter, createWebHistory} from 'vue-router'
 import store from '@/store'
 
 const routes = [
@@ -9,7 +9,7 @@ const routes = [
         beforeEnter: (to, from, next) => {
             if (store.getters['auth/authenticated']) {
                 const redirectTo = to.query.redirect || '/dashboard';
-                return next({ path: redirectTo });
+                return next({path: redirectTo});
             }
             next()
         },
@@ -67,6 +67,11 @@ const routes = [
                         name: 'production-create',
                         component: () => import('../components/warehouses/production/create/ProductionCreate.vue'),
                     },
+                    {
+                        path: '/warehouses/tech_operations',
+                        name: 'tech_operations',
+                        component: () => import('../components/warehouses/tech_operations/index.vue'),
+                    },
                 ]
             },
             {
@@ -85,6 +90,11 @@ const routes = [
                         name: 'orders-create',
                         component: () => import('../components/orders/create/OrderCreate.vue'),
                     },
+                    {
+                        path: '/orders/tasks',
+                        name: 'orders-tasks',
+                        component: () => import('../components/orders/tasks'),
+                    },
                 ]
             },
             {
@@ -92,7 +102,7 @@ const routes = [
                 name: 'products',
                 component: () => import('../views/products/ProductsView.vue'),
                 redirect: '/products/list',
-                children:[
+                children: [
                     {
                         path: '/products/list',
                         name: 'products-list',
@@ -108,6 +118,21 @@ const routes = [
                         name: 'products-update',
                         component: () => import('../components/products/update/ProductUpdate.vue'),
                     },
+                    {
+                        path: '/products/import',
+                        name: 'products-import',
+                        component: () => import('../components/products/import/index.vue'),
+                    },
+                    {
+                        path: '/products/prices_stock',
+                        name: 'products-prices_stock',
+                        component: () => import('../components/products/prices_stock/index.vue'),
+                    },
+                    {
+                        path: '/products/reviews',
+                        name: 'products-reviews',
+                        component: () => import('../components/products/reviews/index.vue'),
+                    },
                 ]
             },
             {
@@ -120,7 +145,7 @@ const routes = [
                 name: 'clients',
                 redirect: '/clients/list',
                 component: () => import('../views/clients/ClientsView.vue'),
-                children:[
+                children: [
                     {
                         path: '/clients/list',
                         name: 'clients-list',
@@ -131,23 +156,79 @@ const routes = [
                         name: 'clients-create',
                         component: () => import('../components/clients/create/ClientCreate.vue'),
                     },
+                    {
+                        path: '/clients/discounts',
+                        name: 'clients-discounts',
+                        component: () => import('../components/clients/discounts/index.vue'),
+                    },
                 ]
 
             },
             {
                 path: '/integrations',
                 name: 'integrations',
+                redirect: '/integrations/payments',
                 component: () => import('../views/integrations/IntegrationsView.vue'),
+                children: [
+                    {
+                        path: '/integrations/payments',
+                        name: 'clients-payments',
+                        component: () => import('../components/integrations/payments/index.vue'),
+                    },
+                    {
+                        path: '/integrations/cashboxes',
+                        name: 'clients-payments',
+                        component: () => import('../components/integrations/payments/index.vue'),
+                    },
+                    {
+                        path: '/integrations/delivery',
+                        name: 'clients-delivery',
+                        component: () => import('../components/integrations/delivery/index.vue'),
+                    },
+                    {
+                        path: '/integrations/messengers',
+                        name: 'clients-messengers',
+                        component: () => import('../components/integrations/messengers/index.vue'),
+                    },
+                    {
+                        path: '/integrations/email',
+                        name: 'clients-email',
+                        component: () => import('../components/integrations/email/index.vue'),
+                    },
+                ]
             },
             {
                 path: '/analytics',
                 name: 'Analytics',
+                redirect: '/analytics/summary',
                 component: () => import('../views/analytics/AnalyticsView.vue'),
+                children: [
+                    {
+                        path: '/analytics/summary',
+                        name: 'analytics-summary',
+                        component: () => import('../components/analytics/summary/index.vue'),
+
+                    }
+                ]
             },
             {
                 path: '/dialogs',
                 name: 'dialogs',
+                redirect: '/dialogs/whatsapp',
                 component: () => import('../views/dialogs/DialogsView.vue'),
+                children: [
+                    {
+                        path: '/dialogs/whatsapp',
+                        name: 'dialogs-whatsapp',
+                        component: () => import('../components/dialogs/whatsapp/index.vue'),
+                    },
+                    {
+                        path: '/dialogs/telegram',
+                        name: 'dialogs-telegram',
+                        component: () => import('../components/dialogs/telegram/index.vue'),
+
+                    }
+                ]
             },
             {
                 path: '/profile',
@@ -159,11 +240,11 @@ const routes = [
                 name: 'settings',
                 component: () => import('../views/settings/SettingsView.vue'),
             },
-            
+
         ],
 
         beforeEnter: (to, from, next) => {
-            if ( !store.getters['auth/authenticated'] ) {
+            if (!store.getters['auth/authenticated']) {
                 return next({
                     path: '/auth'
                 })
@@ -174,8 +255,8 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
-  routes
+    history: createWebHistory(process.env.BASE_URL),
+    routes
 })
 
 export default router

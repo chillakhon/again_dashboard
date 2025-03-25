@@ -6,9 +6,14 @@
          class="font-medium text-[30px]">
       {{ props.title }}
     </div>
-    <Button v-on:click="onBtExport()" class="bg-blue-500 hover:bg-blue-400 active:bg-blue-500">
-      Экспорт
-    </Button>
+    <div class="flex space-x-2">
+      <Button  class="bg-gray-300 hover:bg-gray-200 active:bg-gray-300 text-gray-800 ">
+        Импорт
+      </Button>
+      <Button v-on:click="onBtExport()" class="bg-blue-300 hover:bg-blue-200 active:bg-blue-300 text-gray-800">
+        Экспорт
+      </Button>
+    </div>
   </div>
 
   <ag-grid-vue
