@@ -3820,6 +3820,11 @@ ohash@^1.1.4:
   resolved "https://registry.npmjs.org/ohash/-/ohash-1.1.6.tgz"
   integrity sha512-TBu7PtV8YkAZn0tSxobKY2n2aAQva936lhRrj6957aDaCf9IEtqsKbgMzXE/F/sjqYOwmrukeORHNLe5glk7Cg==
 
+ohash@^2.0.11:
+  version "2.0.11"
+  resolved "https://registry.yarnpkg.com/ohash/-/ohash-2.0.11.tgz#60b11e8cff62ca9dee88d13747a5baa145f5900b"
+  integrity sha512-RdR9FQrFwNBNXAr4GixM8YaRZRJ5PUWbKYbE5eOsrwAjJW0q2REGcf79oYPsLyskQCZG1PLN+S/K1V00joZAoQ==
+
 on-finished@2.4.1:
   version "2.4.1"
   resolved "https://registry.npmjs.org/on-finished/-/on-finished-2.4.1.tgz"
@@ -4520,7 +4525,7 @@ register-service-worker@^1.7.2:
   resolved "https://registry.npmjs.org/register-service-worker/-/register-service-worker-1.7.2.tgz"
   integrity sha512-CiD3ZSanZqcMPRhtfct5K9f7i3OLCcBBWsJjLh1gW9RO/nS94sVzY59iS+fgYBOBqaBpf4EzfqUF3j9IG+xo8A==
 
-reka-ui@^2.0.0, reka-ui@^2.1.0:
+reka-ui@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.1.0.tgz#ad298840b582f388d281cf0e1a46ad8775915d82"
   integrity sha512-w4kEDEyXhIqv4QeFJeiuBc4mQP37hH/UTRpEb9dMbPdR49JG5TcV/s0+ntNRONUUW4LDLX7E1ZPcwBw5hnu0yw==
@@ -4535,6 +4540,22 @@ reka-ui@^2.0.0, reka-ui@^2.1.0:
     aria-hidden "^1.2.4"
     defu "^6.1.4"
     ohash "^1.1.4"
+
+reka-ui@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/reka-ui/-/reka-ui-2.1.1.tgz#7534e1831dc74a0570a0c1223dfb7dced9fa339b"
+  integrity sha512-awvpQ041LPXAvf2uRVFwedsyz9SwsuoWlRql1fg4XimUCxEI2GOfHo6FIdL44dSPb/eG/gWbdGhoGHLlbX5gPA==
+  dependencies:
+    "@floating-ui/dom" "^1.6.13"
+    "@floating-ui/vue" "^1.1.6"
+    "@internationalized/date" "^3.5.0"
+    "@internationalized/number" "^3.5.0"
+    "@tanstack/vue-virtual" "^3.12.0"
+    "@vueuse/core" "^12.5.0"
+    "@vueuse/shared" "^12.5.0"
+    aria-hidden "^1.2.4"
+    defu "^6.1.4"
+    ohash "^2.0.11"
 
 relateurl@^0.2.7:
   version "0.2.7"

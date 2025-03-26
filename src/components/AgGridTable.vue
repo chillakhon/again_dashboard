@@ -7,11 +7,30 @@
       {{ props.title }}
     </div>
     <div class="flex space-x-2">
-      <Button  class="bg-gray-300 hover:bg-gray-200 active:bg-gray-300 text-gray-800 ">
-        Импорт
+      <Button
+          class="relative overflow-hidden group flex items-center justify-center px-6 py-3 font-medium tracking-wide text-gray-800 transition-all duration-300 rounded-lg bg-gradient-to-r from-gray-300 to-gray-200 hover:from-gray-200 hover:to-gray-100 shadow-md hover:shadow-gray-400/20 active:scale-95"
+      >
+  <span class="relative z-10 flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+    </svg>
+    Импорт
+  </span>
+        <span class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
       </Button>
-      <Button v-on:click="onBtExport()" class="bg-blue-300 hover:bg-blue-200 active:bg-blue-300 text-gray-800">
-        Экспорт
+      <Button
+          @click="onBtExport()"
+          class="relative overflow-hidden group flex items-center justify-center px-6 py-3 font-medium tracking-wide text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg hover:shadow-red-500/30 active:scale-95"
+      >
+  <span class="relative z-10 flex items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+    </svg>
+    Экспорт
+  </span>
+        <span class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
       </Button>
     </div>
   </div>
@@ -88,7 +107,7 @@ const props = defineProps({
   },
   autoGroupColumnDef: {
     type: Object,
-    default:  {}
+    default: {}
   },
 
   treeDataChildrenField: {
@@ -111,7 +130,6 @@ function onBtExport() {
 function onGridReady(params) {
   gridApi.value = params.api;
 }
-
 
 
 const enterpriseErrors = [

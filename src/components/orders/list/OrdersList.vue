@@ -2,16 +2,16 @@
   <Loader v-if="isLoading"/>
   <div v-else class="">
     <div class="flex items-center pb-4 justify-between">
-<!--      <router-link to="/products/create">-->
-<!--        <Button>Добавить товар</Button>-->
-<!--      </router-link>-->
+      <!--      <router-link to="/products/create">-->
+      <!--        <Button>Добавить товар</Button>-->
+      <!--      </router-link>-->
     </div>
-    <div >
+    <div>
       <div class="">
         <AgGridTable
             :key="renderTable"
             :cols-ag="colDefs"
-            :data-ag="data"
+            :data-ag="orders"
             title="Заказы"
         />
       </div>
@@ -28,9 +28,9 @@
         </div>
       </div>
     </div>
-<!--    <div v-else class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">-->
-<!--      <h3 class="text-3xl font-extrabold text-gray-500 sm:text-4xl">Ничего не найдено</h3>-->
-<!--    </div>-->
+    <!--    <div v-else class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">-->
+    <!--      <h3 class="text-3xl font-extrabold text-gray-500 sm:text-4xl">Ничего не найдено</h3>-->
+    <!--    </div>-->
   </div>
 
 </template>
@@ -44,52 +44,76 @@ import Button from "@/components/ui/button/Button.vue";
 import AgGridTable from "@/components/AgGridTable.vue";
 import {toast} from 'vue-sonner'
 import {useRouter} from "vue-router";
-import product from "@/models/Product";
+import Order from "@/models/Order"
 
-const back_url = ref(process.env.VUE_APP_BASE_URL)
 const router = useRouter()
 
-const data = ref([]);
+const isLoading = ref(true)
+const renderTable = ref(0)
+const orders = ref<Order[]>([])
+
 const totalItems = ref(0);
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
-const isLoading = ref(true)
-const renderTable = ref(0)
 
 
 const colDefs = ref([
-  {headerName: "No", field: "number", maxWidth: 100},
-  {headerName: "Создан ", field: "date"},
-  {headerName: "Доставить", field: ""},
-  {headerName: "Сумма", field: "summa"},
-  {headerName: "ФИО получателя", field: "name"},
-  {headerName: "Статус", field: "status"},
-  {headerName: "Оплата", field: "status"},
-  {headerName: "Доставка", field: "delevary"},
-  {headerName: "Ответственный", field: "delevary"},
+  {headerName: "No", field: "id", maxWidth: 100},
+  {headerName: "Создан ", field: "created_at"},
+  {headerName: "Доставить", field: "delivery_date"},
+  {headerName: "Сумма", field: "total_amount"},
+  {headerName: "ФИО получателя", field: "client.full_name"},
   {
-    headerName: "Действия",
-    field: "actions",
-    maxWidth: 120,
-    cellRenderer: (params) => {
-      const button = document.createElement("button");
-      button.innerText = "Удалить";
-      button.style.color = "red";
-      button.style.cursor = "pointer";
-      button.onclick = () => {
-        if (confirm("Вы уверены, что хотите удалить этот товар?")) {
-          deleteProduct(params.data.id)
-        }
-      };
-      return button;
-    },
+    headerName: "Статус", field: "status", cellRenderer: params => {
+      const ord = new Order(params.data)
+      const {label, color} = ord.getStatusInfo();
+
+      return `
+      <span style="
+        background: ${color};
+        color: white;
+        padding: 6px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: bold;
+        min-width: 80px;
+      ">
+        ${label}
+      </span>
+    `;
+    }
   },
+  {
+    headerName: "Оплата", field: "payment_status",
+    cellRenderer: params => {
+      const ord = new Order(params.data)
+      return ord.getPaymentStatusLabel()
+    }
+  },
+  {headerName: "Доставка", field: "delivery_target"},
+  {headerName: "Ответственный", field: ""},
+  // {
+  //   headerName: "Действия",
+  //   field: "actions",
+  //   maxWidth: 120,
+  //   cellRenderer: (params) => {
+  //     const button = document.createElement("button");
+  //     button.innerText = "Удалить";
+  //     button.style.color = "red";
+  //     button.style.cursor = "pointer";
+  //     button.onclick = () => {
+  //       if (confirm("Вы уверены, что хотите удалить этот товар?")) {
+  //         deleteProduct(params.data.id)
+  //       }
+  //     };
+  //     return button;
+  //   },
+  // },
 ]);
 
 
-
-onMounted(() => {
-  fetchData(currentPage.value)
+onMounted(async () => {
+  await fetchData(currentPage.value)
 })
 
 async function deleteProduct(id) {
@@ -115,14 +139,12 @@ async function deleteProduct(id) {
 
 
 async function fetchData(curPage: any) {
-  isLoading.value = true
-  await axios.get('orders', {
-    params: {
-    }
-  })
+  // isLoading.value = true;
+  await axios.get(`orders?page=${curPage}&per_page=${itemsPerPage.value}`)
       .then(res => {
-        data.value = res.data?.data
-        totalItems.value = res.data?.total ?? 0
+        const responseOrders = res.data.orders;
+        orders.value = responseOrders.data.map((order: any) => Object.assign(new Order({}), order));
+        totalItems.value = responseOrders?.total ?? 0
         renderTable.value++
       })
       .finally(() => {
