@@ -1,15 +1,16 @@
 <template>
   <!-- The AG Grid component -->
-  <div class="flex space-x-2 items-center mb-1 justify-between">
+  <div class="flex space-x-2 items-end mb-1 justify-between">
 
     <div v-if="props.title"
          class="font-medium text-[30px]">
       {{ props.title }}
     </div>
-    <div class="flex space-x-2">
-      <Button
-          class="relative overflow-hidden group flex items-center justify-center px-6 py-3 font-medium tracking-wide text-gray-800 transition-all duration-300 rounded-lg bg-gradient-to-r from-gray-300 to-gray-200 hover:from-gray-200 hover:to-gray-100 shadow-md hover:shadow-gray-400/20 active:scale-95"
-      >
+    <div class="flex space-x-2 mb-1">
+      <div>
+        <Button
+            class="relative overflow-hidden group flex items-center justify-center p-3 font-medium tracking-wide text-gray-800 transition-all duration-300 rounded-lg bg-gradient-to-r from-gray-300 to-gray-200 hover:from-gray-200 hover:to-gray-100 shadow-md hover:shadow-gray-400/20 active:scale-95"
+        >
   <span class="relative z-10 flex items-center">
     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -17,12 +18,16 @@
     </svg>
     Импорт
   </span>
-        <span class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
-      </Button>
-      <Button
-          @click="onBtExport()"
-          class="relative overflow-hidden group flex items-center justify-center px-6 py-3 font-medium tracking-wide text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg hover:shadow-red-500/30 active:scale-95"
-      >
+
+          <span
+              class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
+        </Button>
+      </div>
+      <div>
+        <Button
+            @click="onBtExport()"
+            class="relative overflow-hidden group flex items-center justify-center p-3 font-medium tracking-wide text-white transition-all duration-300 rounded-lg bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 shadow-lg hover:shadow-red-500/30 active:scale-95"
+        >
   <span class="relative z-10 flex items-center">
     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -30,8 +35,10 @@
     </svg>
     Экспорт
   </span>
-        <span class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
-      </Button>
+          <span
+              class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></span>
+        </Button>
+      </div>
     </div>
   </div>
 
