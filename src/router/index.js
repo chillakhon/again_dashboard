@@ -218,6 +218,11 @@ const routes = [
                 component: () => import('../views/dialogs/DialogsView.vue'),
                 children: [
                     {
+                        path: '/dialogs/chats',
+                        name: 'dialogs-chats',
+                        component: () => import('../components/dialogs/chats/index.vue'),
+                    },
+                    {
                         path: '/dialogs/whatsapp',
                         name: 'dialogs-whatsapp',
                         component: () => import('../components/dialogs/whatsapp/index.vue'),

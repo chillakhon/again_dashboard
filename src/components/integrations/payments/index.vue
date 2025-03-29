@@ -36,9 +36,9 @@
         </div>
         <div class="space-y-2">
           <Label for="robokassa-coupon">Промокод</Label>
-          <div class="flex gap-2">
+          <div class="flex gap-2 max-md:flex-wrap">
             <Input id="robokassa-coupon" v-model="payments.robokassa.coupon" placeholder="Coupon+ITb" :disabled="!paymentsEnabled.robokassa"/>
-            <Button @click="applyCoupon('robokassa')" :disabled="!paymentsEnabled.robokassa">Сохранить</Button>
+            <Button class="max-md:w-full" @click="applyCoupon('robokassa')" :disabled="!paymentsEnabled.robokassa">Сохранить</Button>
           </div>
         </div>
       </CardContent>
@@ -73,9 +73,9 @@
         </div>
         <div class="space-y-2">
           <Label for="cloudpayments-coupon">Промокод</Label>
-          <div class="flex gap-2">
+          <div class="flex gap-2 max-md:flex-wrap">
             <Input id="cloudpayments-coupon" v-model="payments.cloudpayments.coupon" placeholder="Coupon+ITb" :disabled="!paymentsEnabled.cloudpayments"/>
-            <Button @click="applyCoupon('cloudpayments')" :disabled="!paymentsEnabled.cloudpayments">Сохранить</Button>
+            <Button class="max-md:w-full" @click="applyCoupon('cloudpayments')" :disabled="!paymentsEnabled.cloudpayments">Сохранить</Button>
           </div>
         </div>
       </CardContent>
@@ -110,9 +110,9 @@
         </div>
         <div class="space-y-2">
           <Label for="yandex-coupon">Промокод</Label>
-          <div class="flex gap-2">
+          <div class="flex gap-2 max-md:flex-wrap">
             <Input id="yandex-coupon" v-model="payments.yandex.coupon" placeholder="Coupon+ITb" :disabled="!paymentsEnabled.yandex"/>
-            <Button @click="applyCoupon('yandex')" :disabled="!paymentsEnabled.yandex">Сохранить</Button>
+            <Button @click="applyCoupon('yandex')" :disabled="!paymentsEnabled.yandex" class="max-md:w-full">Сохранить</Button>
           </div>
         </div>
       </CardContent>
@@ -151,9 +151,9 @@
         </div>
         <div class="space-y-2">
           <Label for="freedompay-coupon">Промокод</Label>
-          <div class="flex gap-2">
+          <div class="flex gap-2 max-md:flex-wrap">
             <Input id="freedompay-coupon" v-model="payments.freedompay.coupon" placeholder="Coupon+ITb" :disabled="!paymentsEnabled.freedompay"/>
-            <Button @click="applyCoupon('freedompay')" :disabled="!paymentsEnabled.freedompay">Сохранить</Button>
+            <Button @click="applyCoupon('freedompay')" :disabled="!paymentsEnabled.freedompay" class="max-md:w-full">Сохранить</Button>
           </div>
         </div>
       </CardContent>

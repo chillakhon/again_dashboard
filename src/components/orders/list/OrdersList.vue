@@ -40,7 +40,6 @@ import {ref, onMounted} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import axios from "axios";
 import Loader from "@/components/common/Loader.vue";
-import Button from "@/components/ui/button/Button.vue";
 import AgGridTable from "@/components/AgGridTable.vue";
 import {toast} from 'vue-sonner'
 import {useRouter} from "vue-router";
@@ -118,7 +117,7 @@ onMounted(async () => {
 
 async function deleteProduct(id) {
   await axios.delete(`products/${id}`)
-      .then(res => {
+      .then(() => {
         toast("Удалено!", {
           description: "Товар был успешно удалён.",
           action: {
@@ -139,12 +138,10 @@ async function deleteProduct(id) {
 
 
 async function fetchData(curPage: any) {
-  // isLoading.value = true;
   await axios.get(`orders?page=${curPage}&per_page=${itemsPerPage.value}`)
       .then(res => {
-        const responseOrders = res.data.orders;
-        orders.value = responseOrders.data.map((order: any) => Object.assign(new Order({}), order));
-        totalItems.value = responseOrders?.total ?? 0
+        orders.value = res.data.orders?.map((order: any) => Object.assign(new Order({}), order));
+        totalItems.value = res.data?.total ?? 0
         renderTable.value++
       })
       .finally(() => {

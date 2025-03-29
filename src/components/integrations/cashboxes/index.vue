@@ -51,10 +51,7 @@
           <Input id="ofd-server" v-model="ofdData.serverUrl" placeholder="https://api.ofd.ru" :disabled="!ofdEnabled" />
         </div>
         <div class="flex justify-end pt-2">
-          <Button @click="saveOfdSettings" :disabled="!ofdEnabled">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
+          <Button @click="saveOfdSettings" :disabled="!ofdEnabled" class="max-md:w-full">
             Сохранить
           </Button>
         </div>
@@ -86,10 +83,7 @@
           />
         </div>
         <div class="flex justify-end pt-2">
-          <Button @click="saveReceiptSettings">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-            </svg>
+          <Button @click="saveReceiptSettings" class="max-md:w-full">
             Сохранить
           </Button>
         </div>

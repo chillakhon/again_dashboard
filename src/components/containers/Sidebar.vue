@@ -439,6 +439,7 @@ const navigation = [
   {
     name: 'Диалоги', href: '/dialogs', icon: PhChatTeardropDots,
     children: [
+      {name: 'Сообщения', href: '/dialogs/chats', icon: PhChatTeardropDots},
       {name: 'Whatsapp', href: '/dialogs/whatsapp', icon: PhChatTeardropDots},
       {name: 'Telegram', href: '/dialogs/telegram', icon: PhChatTeardropDots},
     ]
