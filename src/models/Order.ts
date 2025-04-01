@@ -23,6 +23,30 @@ interface OrderItem {
 }
 
 class Order {
+    // Статические константы статусов
+    static STATUSES = {
+        new: { value: 'new', label: 'Новый', color: 'red' },
+        processing: { value: 'processing', label: 'В обработке', color: 'orange' },
+        ready_to_ship: { value: 'ready_to_ship', label: 'Готов к отправке', color: 'blue' },
+        assembling: { value: 'assembling', label: 'На сборке', color: '#FFD700' },
+        shipped: { value: 'shipped', label: 'Отправка', color: '#4169E1' },
+        in_transit: { value: 'in_transit', label: 'В пути', color: '#4debf1' },
+        delivered: { value: 'delivered', label: 'Доставлен', color: '#32CD32' },
+        received: { value: 'received', label: 'Получен', color: '#228B22' },
+        cancelled: { value: 'cancelled', label: 'Отменён', color: '#B22222' },
+        return_in_progress: { value: 'return_in_progress', label: 'В процессе возврата', color: '#FF69B4' },
+        returned: { value: 'returned', label: 'Возвращён', color: '#A9A9A9' }
+    };
+
+    static PAYMENT_STATUSES = {
+        pending: { value: 'pending', label: 'Ожидание' },
+        paid: { value: 'paid', label: 'Оплачено' },
+        refunded: { value: 'refunded', label: 'Возврат' },
+        failed: { value: 'failed', label: 'Ошибка' },
+        canceled: { value: 'canceled', label: 'Отменён' }
+    };
+
+    // Поля экземпляра
     id: number;
     order_number: string;
     client: Client;
@@ -57,34 +81,37 @@ class Order {
         this.total_amount = orderData.total_amount || "0.00 руб";
     }
 
+    // Методы экземпляра
     getStatusInfo() {
-        const statuses: Record<string, { label: string; color: string }> = {
-            new: {label: "Новый", color: "blue"},
-            processing: {label: "В обработке", color: "orange"},
-            shipped: {label: "Отправлен", color: "green"},
-            delivered: {label: "Доставлен", color: "darkgreen"},
-            cancelled: {label: "Отменён", color: "red"},
-            returned: {label: "Возвращён", color: "purple"},
-            refunded: {label: "Возвращены деньги", color: "gray"}
-        };
-
-        return statuses[this.status] || {label: "Неизвестно", color: "#666"};
+        return Order.STATUSES[this.status as keyof typeof Order.STATUSES] ||
+            { value: this.status, label: "Неизвестно", color: "#666" };
     }
-
 
     getPaymentStatusLabel(): string {
-        const statuses: Record<string, string> = {
-            pending: "Ожидание", // Платёж ожидается
-            paid: "Оплачено", // Платёж прошёл
-            refunded: "Возврат", // Деньги возвращены
-            failed: "Ошибка", // Ошибка платежа
-            canceled: "Отменён" // Платёж отменён
-        };
-
-        return statuses[this.payment_status] || "Неизвестно";
+        return Order.PAYMENT_STATUSES[this.payment_status as keyof typeof Order.PAYMENT_STATUSES]?.label ||
+            "Неизвестно";
     }
 
-}
+    // Статические методы
+    static getAllStatuses() {
+        return Object.values(Order.STATUSES);
+    }
 
+    static getAllPaymentStatuses() {
+        return Object.values(Order.PAYMENT_STATUSES);
+    }
+
+    static isValidStatus(status: string): boolean {
+        return status in Order.STATUSES;
+    }
+
+    static isValidPaymentStatus(status: string): boolean {
+        return status in Order.PAYMENT_STATUSES;
+    }
+
+    static getStatusColor(status: string): string {
+        return Order.STATUSES[status as keyof typeof Order.STATUSES]?.color || '#666';
+    }
+}
 
 export default Order;

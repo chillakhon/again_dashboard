@@ -42,10 +42,11 @@ import axios from "axios";
 import Loader from "@/components/common/Loader.vue";
 import AgGridTable from "@/components/AgGridTable.vue";
 import {toast} from 'vue-sonner'
-import {useRouter} from "vue-router";
+import {useRouter, useRoute} from "vue-router";
 import Order from "@/models/Order"
 
 const router = useRouter()
+const route = useRoute()
 
 const isLoading = ref(true)
 const renderTable = ref(0)
@@ -57,7 +58,16 @@ const itemsPerPage = ref(10);
 
 
 const colDefs = ref([
-  {headerName: "No", field: "id", maxWidth: 100},
+  {
+    headerName: "No",
+    field: "id",
+    maxWidth: 100,
+    cellStyle: {color: "blue", cursor: "pointer"},
+    onCellClicked: (params) => {
+      console.log(params.data.id);
+      router.push(`/order/update/${params.data.id}`);
+    }
+  },
   {headerName: "Создан ", field: "created_at"},
   {headerName: "Доставить", field: "delivery_date"},
   {headerName: "Сумма", field: "total_amount"},
@@ -138,7 +148,9 @@ async function deleteProduct(id) {
 
 
 async function fetchData(curPage: any) {
-  await axios.get(`orders?page=${curPage}&per_page=${itemsPerPage.value}`)
+  const status = route.query?.status ? `status=${route.query?.status}&` : ''
+
+  await axios.get(`orders?${status}page=${curPage}&per_page=${itemsPerPage.value}`)
       .then(res => {
         orders.value = res.data.orders?.map((order: any) => Object.assign(new Order({}), order));
         totalItems.value = res.data?.total ?? 0
