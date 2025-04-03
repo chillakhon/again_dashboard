@@ -7,10 +7,10 @@
       <span>от {{ order.created_at }}</span>
     </div>
     <form @submit.prevent="handleCreate" class="">
-      <div class="flex space-x-3 my-5 ">
+      <div class="grid md:grid-cols-3 md:space-x-3 max-md:space-y-3 grid-cols-1 my-5 ">
         <!-- Статус заказа -->
-        <div class="flex items-center ">
-<!--          <Label>Статус заказа:</Label>-->
+        <div class="flex items-center">
+          <!--          <Label>Статус заказа:</Label>-->
           <DynamicSelect
               v-model="order.status"
               :options="statusOptions"
@@ -19,8 +19,8 @@
         </div>
 
         <!-- Статус платежа -->
-        <div class="flex items-center ">
-<!--          <Label>Статус платежа:</Label>-->
+        <div class="flex items-center">
+          <!--          <Label>Статус платежа:</Label>-->
           <DynamicSelect
               v-model="order.payment_status"
               :options="paymentStatusOptions"
@@ -28,7 +28,7 @@
           />
         </div>
 
-        <div class="flex items-center ">
+        <div class="flex items-center">
           <DatePicker
               v-model="selectedDate"
               placeholder="Выберите дату"
@@ -37,9 +37,13 @@
         </div>
       </div>
 
+      <ProductsTable
+          :order="order"
+      />
+
       <Button
           type="submit"
-          class="bg-blue-400 hover:bg-blue-500 active:bg-blue-400 mt-2">
+          class="mt-2">
         Сохранить
       </Button>
     </form>
@@ -49,7 +53,6 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import BackButton from "@/components/BackButton.vue";
-import {Label} from '@/components/ui/label'
 import Order from "@/models/Order";
 import Button from "@/components/ui/button/Button.vue";
 import {toast} from 'vue-sonner'
@@ -58,10 +61,11 @@ import {useRoute} from "vue-router";
 import Loader from "@/components/common/Loader.vue";
 import DynamicSelect from "@/components/common/DynamicSelect.vue";
 import DatePicker from "@/components/common/DatePicker.vue";
+import ProductsTable from "@/components/orders/update/partials/ProductsTable.vue";
 
 const isLoading = ref<boolean>(true);
 const route = useRoute();
-const order = ref<Order>(new Order({}));
+const order = ref<Order>();
 const selectedDate = ref();
 
 
@@ -87,7 +91,8 @@ const handleCreate = async () => {
   try {
     await axios.put(`orders/${order.value.id}`, {
       status: order.value.status,
-      payment_status: order.value.payment_status
+      payment_status: order.value.payment_status,
+      notes: 'order.value.notes'
     });
 
     toast.success('Успешно!', {

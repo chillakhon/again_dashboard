@@ -30,7 +30,7 @@ const emit = defineEmits(['update:modelValue'])
       :modelValue="modelValue"
       @update:modelValue="(value) => emit('update:modelValue', value)"
   >
-    <SelectTrigger class="w-[180px]">
+    <SelectTrigger class="">
       <SelectValue :placeholder="placeholder || 'Выберите...'" />
     </SelectTrigger>
     <SelectContent>
