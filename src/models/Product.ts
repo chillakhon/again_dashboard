@@ -27,6 +27,18 @@ class Product {
     variants: any[] | null = null
     imageFiles: File[] | null = []
 
+    get discountPercentage(): number {
+        if (!this.discount_price || this.discount_price <= 0 || !this.price || this.price <= 0) {
+            return 0;
+        }
+        const discount = ((this.price - this.discount_price) / this.price) * 100;
+        return Math.round(discount); // округлим до целого числа
+    }
+
+    set changeDiscount(value: number  ) {
+        this.discount_price = value
+    }
+
     constructor(init?: Partial<Product>) {
         Object.assign(this, init);
     }

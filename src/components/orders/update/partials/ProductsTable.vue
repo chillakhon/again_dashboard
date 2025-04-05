@@ -129,7 +129,7 @@ import CardContent from '@/components/ui/card/CardContent.vue'
 import CardHeader from '@/components/ui/card/CardHeader.vue'
 import CardTitle from '@/components/ui/card/CardTitle.vue'
 
-// Table components
+// ReviewsTable components
 import Table from '@/components/ui/table/Table.vue'
 import TableBody from '@/components/ui/table/TableBody.vue'
 import TableCell from '@/components/ui/table/TableCell.vue'

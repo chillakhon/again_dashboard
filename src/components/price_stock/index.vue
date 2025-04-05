@@ -1,6 +1,6 @@
 <template>
-  <div class="grid gap-2">
-    <h2 class="text-lg font-semibold text-gray-800">Цены и остатки</h2>
+  <div class="">
+    <h2 class="text-lg font-semibold text-gray-800 mb-3">Цены и остатки</h2>
     <div class="flex-1">
       <Tabs v-model="currentTabValue" class="w-full">
         <TabsList class="grid w-full grid-cols-3 bg-gray-100 rounded-md p-0.5 gap-0.5">
@@ -34,20 +34,20 @@
         </TabsList>
 
         <TabsContent value="all" class="mt-2">
-          <div class="w-full border border-gray-200 rounded-md p-2 space-y-2 bg-white">
-            <List/>
+          <div class="border border-gray-200 rounded-md p-2 space-y-2 bg-white">
+            <List :tab="currentTabValue"/>
           </div>
         </TabsContent>
 
         <TabsContent value="price" class="mt-2">
-          <div class="w-full border border-gray-200 rounded-md p-2 space-y-2 bg-white">
-            <List/>
+          <div class="border border-gray-200 rounded-md p-2 space-y-2 bg-white">
+            <List :tab="currentTabValue"/>
           </div>
         </TabsContent>
 
         <TabsContent value="stock" class="mt-2">
-          <div class="w-full border border-gray-200 rounded-md p-2 space-y-2 bg-white">
-            <List/>
+          <div class="border border-gray-200 rounded-md p-2 space-y-2 bg-white">
+            <List :tab="currentTabValue"/>
           </div>
         </TabsContent>
       </Tabs>

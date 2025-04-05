@@ -95,21 +95,21 @@ const columns = [
       });
     },
   },
-  {
-    accessorKey: 'stock_quantity',
-    header: 'Остаток',
-    cell: ({row}) => {
-      return h(Input, {
-        modelValue: row.original.stock_quantity,
-        'onUpdate:modelValue': (value) => {
-          row.original.stock_quantity = Number(value)
-        },
-        class: 'w-20 text-center border-gray-300 text-sm h-8 px-2',
-        type: 'number',
-        min: 0,
-      });
-    },
-  },
+  // {
+  //   accessorKey: 'stock_quantity',
+  //   header: 'Остаток',
+  //   cell: ({row}) => {
+  //     return h(Input, {
+  //       modelValue: row.original.stock_quantity,
+  //       'onUpdate:modelValue': (value) => {
+  //         row.original.stock_quantity = Number(value)
+  //       },
+  //       class: 'w-20 text-center border-gray-300 text-sm h-8 px-2',
+  //       type: 'number',
+  //       min: 0,
+  //     });
+  //   },
+  // },
 
   {
     accessorKey: 'discount_price',

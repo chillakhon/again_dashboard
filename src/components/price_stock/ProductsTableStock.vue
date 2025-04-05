@@ -80,21 +80,21 @@ const columns = [
     header: 'Название',
     cell: ({row}) => h('div', {class: 'truncate max-w-[120px]'}, row.original.name)
   },
-  {
-    accessorKey: 'cost_price',
-    header: 'Себестоимость',
-    cell: ({row}) => {
-      return h(Input, {
-        modelValue: row.original.cost_price,
-        'onUpdate:modelValue': (value) => {
-          row.original.cost_price = Number(value)
-        },
-        class: 'w-24 text-center border-gray-300 text-sm h-8 px-2',
-        type: 'number',
-        min: 0,
-      });
-    },
-  },
+  // {
+  //   accessorKey: 'cost_price',
+  //   header: 'Себестоимость',
+  //   cell: ({row}) => {
+  //     return h(Input, {
+  //       modelValue: row.original.cost_price,
+  //       'onUpdate:modelValue': (value) => {
+  //         row.original.cost_price = Number(value)
+  //       },
+  //       class: 'w-24 text-center border-gray-300 text-sm h-8 px-2',
+  //       type: 'number',
+  //       min: 0,
+  //     });
+  //   },
+  // },
   {
     accessorKey: 'stock_quantity',
     header: 'Остаток',
@@ -111,48 +111,48 @@ const columns = [
     },
   },
 
-  {
-    accessorKey: 'discount_price',
-    header: 'Цена продаж',
-    cell: ({row}) => {
-      if (row.original.discount_price && row.original.discount_price <= 0) {
-        row.original.changeDiscount = Number(row.original.price);
-      }
-      return h(Input, {
-        modelValue: row.original.discount_price,
-        'onUpdate:modelValue': (value) => {
-          row.original.discount_price = Number(value)
-        },
-        class: 'w-24 text-center border-gray-300 text-sm h-8 px-2',
-        type: 'number',
-        min: 0,
-      });
-    },
-  },
+  // {
+  //   accessorKey: 'discount_price',
+  //   header: 'Цена продаж',
+  //   cell: ({row}) => {
+  //     if (row.original.discount_price && row.original.discount_price <= 0) {
+  //       row.original.changeDiscount = Number(row.original.price);
+  //     }
+  //     return h(Input, {
+  //       modelValue: row.original.discount_price,
+  //       'onUpdate:modelValue': (value) => {
+  //         row.original.discount_price = Number(value)
+  //       },
+  //       class: 'w-24 text-center border-gray-300 text-sm h-8 px-2',
+  //       type: 'number',
+  //       min: 0,
+  //     });
+  //   },
+  // },
 
 
-  {
-    accessorKey: 'discountPercentage',
-    header: 'Скидка',
-    cell: ({row}) => h('span', {class: 'text-gray-600 text-xs whitespace-nowrap'}, row.original.discountPercentage + '%')
-  },
-
-  {
-    accessorKey: 'price',
-    header: 'Цена до скидки',
-    cell: ({row}) => {
-      row.original.discountPercentage
-      return h(Input, {
-        modelValue: row.original.price,
-        'onUpdate:modelValue': (value) => {
-          row.original.price = Number(value)
-        },
-        class: 'w-24 text-center border-gray-300 text-sm h-8 px-2',
-        type: 'number',
-        min: 0,
-      });
-    },
-  },
+  // {
+  //   accessorKey: 'discountPercentage',
+  //   header: 'Скидка',
+  //   cell: ({row}) => h('span', {class: 'text-gray-600 text-xs whitespace-nowrap'}, row.original.discountPercentage + '%')
+  // },
+  //
+  // {
+  //   accessorKey: 'price',
+  //   header: 'Цена до скидки',
+  //   cell: ({row}) => {
+  //     row.original.discountPercentage
+  //     return h(Input, {
+  //       modelValue: row.original.price,
+  //       'onUpdate:modelValue': (value) => {
+  //         row.original.price = Number(value)
+  //       },
+  //       class: 'w-24 text-center border-gray-300 text-sm h-8 px-2',
+  //       type: 'number',
+  //       min: 0,
+  //     });
+  //   },
+  // },
 
   {
     accessorKey: 'barcode',

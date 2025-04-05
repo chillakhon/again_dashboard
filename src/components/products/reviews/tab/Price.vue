@@ -1,9 +1,9 @@
 <template>
-<loader v-if="isLoading"/>
+  <loader v-if="isLoading"/>
 
   <div v-else>
     <div class="w-full">
-      <products-table
+      <products-table-price
           :products="products"
       />
     </div>
@@ -29,11 +29,10 @@ import {h, onMounted, ref} from "vue";
 import PaginationTable from "@/components/PaginationTable.vue";
 import axios from "axios";
 import Product from "@/models/Product";
-import ProductsTable from "@/components/price_stock/ProductsTable.vue";
 import {Button} from "@/components/ui/button/index";
 import {toast} from 'vue-sonner'
-import {Input} from "@/components/ui/input";
 import Loader from "@/components/common/Loader.vue";
+import ProductsTablePrice from "@/components/price_stock/ProductsTablePrice.vue";
 
 
 const isLoading = ref(true)
