@@ -30,7 +30,7 @@ export function useDateFormat() {
         })
 
         if (!withTime) {
-            formatted = formatted.replace(/(\d{4})/, '$1 г.')
+            formatted = formatted.replace(/(\d{4})/, '$1 ')
         }
 
         return formatted

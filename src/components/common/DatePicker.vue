@@ -16,6 +16,10 @@ const df = new DateFormatter('en-US', {
   dateStyle: 'long',
 })
 
+const props = defineProps({
+  placeholder: String
+})
+
 const value = ref<DateValue>()
 </script>
 
@@ -30,7 +34,7 @@ const value = ref<DateValue>()
         )"
       >
         <CalendarIcon class="mr-2 h-4 w-4" />
-        {{ value ? df.format(value.toDate(getLocalTimeZone())) : "Pick a date" }}
+        {{ value ? df.format(value.toDate(getLocalTimeZone())) : placeholder }}
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0">

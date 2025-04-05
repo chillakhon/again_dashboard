@@ -5,22 +5,33 @@
       "@/*": ["./src/*"]
     },
     "strict": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,  // Changed from false to true for better type safety
+    "strictNullChecks": true,
     "allowJs": true,
-    "types": ["vite/client"],
     "module": "esnext",
-    "target": "es2017",
-    "moduleResolution": "Node",
+    "target": "esnext",  // Updated from es2017
+    "moduleResolution": "node",
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,  // Important for Vite
+    "lib": ["esnext", "dom", "dom.iterable"],
+    "noEmit": true,  // Recommended for Vite projects
   },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
-  "exclude": ["node_modules"],
-  "references": [
-    { "path": "./jsconfig.app.json" },
-    { "path": "./jsconfig.node.json" }
-  ]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.vue",
+    "types/**/*.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist"
+  ],
+  "vueCompilerOptions": {
+    "target": 3  // Explicitly set Vue 3 mode
+  }
 }

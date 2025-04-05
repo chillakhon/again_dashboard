@@ -10,7 +10,7 @@ import Cookies from 'js-cookie'
 import './assets/css/tailwind.css'
 import './assets/css/main.css'
 
-require('./store/modules/auth/subscriber.js');
+import './store/modules/auth/subscriber.js';
 
 const access_token = Cookies.get('access_token');
 

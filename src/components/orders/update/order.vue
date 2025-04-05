@@ -2,7 +2,7 @@
   <Toaster/>
   <Loader v-if="isLoading"/>
   <div v-else>
-    <div class="flex items-end space-x-2">
+    <div class="flex items-center space-x-2">
       <BackButton :title="order.name ?? `Заказ ${order.id}`" class=""/>
       <span>от {{ order.created_at }}</span>
     </div>

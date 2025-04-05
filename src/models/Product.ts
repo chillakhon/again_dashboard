@@ -23,8 +23,8 @@ class Product {
     height: string | null = '0';
     images: any[] | null = [];
     categories: number[] | null = [1];
-    options: any[] | null
-    variants: any[] | null
+    options: any[] | null = null
+    variants: any[] | null = null
     imageFiles: File[] | null = []
 
     constructor(init?: Partial<Product>) {

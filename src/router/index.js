@@ -102,6 +102,8 @@ const routes = [
                     },
                 ]
             },
+
+
             {
                 path: '/products',
                 name: 'products',
@@ -129,9 +131,9 @@ const routes = [
                         component: () => import('../components/products/import/index.vue'),
                     },
                     {
-                        path: '/products/prices_stock',
-                        name: 'products-prices_stock',
-                        component: () => import('../components/products/prices_stock/index.vue'),
+                        path: '/prices_stock',
+                        name: 'prices_stock',
+                        component: () => import('../components/price_stock/index.vue'),
                     },
                     {
                         path: '/products/reviews',

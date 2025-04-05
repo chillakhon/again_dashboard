@@ -49,7 +49,6 @@ import {toast} from 'vue-sonner'
 import {useRouter} from "vue-router";
 import product from "@/models/Product";
 
-const back_url = ref(process.env.VUE_APP_BASE_URL)
 const router = useRouter()
 
 const data = ref([]);
@@ -59,6 +58,7 @@ const itemsPerPage = ref(10);
 const isLoading = ref(true)
 const renderTable = ref(0)
 
+const back_url = process.env.VUE_APP_BASE_URL
 
 const colDefs = ref([
   {
@@ -66,7 +66,7 @@ const colDefs = ref([
     field: "images",
     maxWidth: 100,
     cellRenderer: (params) => {
-      return `<img src="${back_url.value}/products/${params.data.product_id ?? params.data.id}/image?path=${params.data.image_path}" class="border border-green-400 rounded-lg" style="width: 50px; height: 38px; object-fit: cover; border-radius: 5px;"  alt=""/>`;
+      return `<img src="${back_url}/products/${params.data.product_id ?? params.data.id}/image?path=${params.data.image_path}" class="border border-green-400 rounded-lg" style="width: 50px; height: 38px; object-fit: cover; border-radius: 5px;"  alt=""/>`;
     },
   },
 

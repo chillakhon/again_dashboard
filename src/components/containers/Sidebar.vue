@@ -409,7 +409,7 @@ const navigation = [
     children: [
       {name: 'Каталог товаров', href: '/products/list', icon: PhList},
       // {name: 'Импорт/Экспорт', href: '/products/import', icon: PhComputerTower},
-      {name: 'Цены и остатки', href: '/products/prices_stock', icon: PhWarehouse},
+      {name: 'Цены и остатки', href: '/prices_stock', icon: PhWarehouse},
       {name: 'Отзывы', href: '/products/reviews', icon: PhChatTeardropDots},
     ],
   },
