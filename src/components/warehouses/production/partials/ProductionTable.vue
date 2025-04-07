@@ -24,11 +24,10 @@ const productions = ref<Production[]>([])
 const isLoading = ref(true)
 const error = ref<string | null>(null)
 
-// Загрузка данных
 const fetchProductions = async () => {
   try {
     const { data } = await axios.get('/production')
-    productions.value = data.data.map((item: any) => {
+    const serverData = data.data.map((item: any) => {
       const production = Production.fromAPI(item)
       return {
         ...production,
@@ -44,13 +43,126 @@ const fetchProductions = async () => {
         comment: production.recipe.productVariant.product
       }
     })
+
+    const testData = [
+      {
+        id: 1,
+        time: '10:00',
+        organization: 'Цех A',
+        startTime: '2025-04-08 10:00',
+        endTime: '2025-04-08 11:00',
+        planned: 100,
+        produced: 80,
+        shipped: 70,
+        printed: 60,
+        status: 'active',
+        comment: 'Тестовый продукт 1'
+      },
+      {
+        id: 2,
+        time: '11:00',
+        organization: 'Цех B',
+        startTime: '2025-04-08 11:00',
+        endTime: '2025-04-08 12:00',
+        planned: 120,
+        produced: 110,
+        shipped: 100,
+        printed: 90,
+        status: 'completed',
+        comment: 'Тестовый продукт 2'
+      },
+      {
+        id: 3,
+        time: '12:00',
+        organization: 'Цех C',
+        startTime: '2025-04-08 12:00',
+        endTime: '2025-04-08 13:00',
+        planned: 90,
+        produced: 60,
+        shipped: 50,
+        printed: 40,
+        status: 'pending',
+        comment: 'Тестовый продукт 3'
+      },
+      {
+        id: 4,
+        time: '13:00',
+        organization: 'Цех D',
+        startTime: '2025-04-08 13:00',
+        endTime: '2025-04-08 14:00',
+        planned: 150,
+        produced: 140,
+        shipped: 130,
+        printed: 120,
+        status: 'active',
+        comment: 'Тестовый продукт 4'
+      }
+    ]
+
+    productions.value = serverData.length ? serverData : testData
   } catch (err) {
     error.value = 'Ошибка загрузки данных'
     console.error(err)
+    // Если ошибка — тоже добавим тестовые данные
+    productions.value = [
+      {
+        id: 1,
+        time: '10:00',
+        organization: 'Цех A',
+        startTime: '2025-04-08 10:00',
+        endTime: '2025-04-08 11:00',
+        planned: 100,
+        produced: 80,
+        shipped: 70,
+        printed: 60,
+        status: 'active',
+        comment: 'Тестовый продукт 1'
+      },
+      {
+        id: 2,
+        time: '11:00',
+        organization: 'Цех B',
+        startTime: '2025-04-08 11:00',
+        endTime: '2025-04-08 12:00',
+        planned: 120,
+        produced: 110,
+        shipped: 100,
+        printed: 90,
+        status: 'completed',
+        comment: 'Тестовый продукт 2'
+      },
+      {
+        id: 3,
+        time: '12:00',
+        organization: 'Цех C',
+        startTime: '2025-04-08 12:00',
+        endTime: '2025-04-08 13:00',
+        planned: 90,
+        produced: 60,
+        shipped: 50,
+        printed: 40,
+        status: 'pending',
+        comment: 'Тестовый продукт 3'
+      },
+      {
+        id: 4,
+        time: '13:00',
+        organization: 'Цех D',
+        startTime: '2025-04-08 13:00',
+        endTime: '2025-04-08 14:00',
+        planned: 150,
+        produced: 140,
+        shipped: 130,
+        printed: 120,
+        status: 'active',
+        comment: 'Тестовый продукт 4'
+      }
+    ]
   } finally {
     isLoading.value = false
   }
 }
+
 
 onMounted(() => {
   fetchProductions()
