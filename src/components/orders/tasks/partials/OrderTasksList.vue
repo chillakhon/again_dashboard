@@ -2,8 +2,8 @@
   <Loader v-if="isLoading"/>
   <div v-else class="">
     <div class="flex items-center pb-1 justify-between">
-      <router-link to="#">
-        <Button>Задача</Button>
+      <router-link to="/orders/tasks/create">
+        <Button>Добавить задач</Button>
       </router-link>
     </div>
     <div>
