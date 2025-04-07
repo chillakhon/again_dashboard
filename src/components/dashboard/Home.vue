@@ -63,6 +63,10 @@
         </Card>
       </RouterLink>
     </div>
+
+
+    <HomeChart/>
+
   </div>
 </template>
 
@@ -78,6 +82,7 @@ import {
 } from '@/components/ui/card'
 import {onMounted, ref} from "vue";
 import Loader from "@/components/common/Loader.vue";
+import HomeChart from "@/components/dashboard/charts/HomeChart.vue";
 
 const isLoading = ref<Boolean>(true)
 const data = ref()
