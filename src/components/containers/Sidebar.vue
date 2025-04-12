@@ -48,7 +48,8 @@
               </TransitionChild>
 
               <!-- Sidebar content -->
-              <div class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 py-4 shadow-xl">
+              <div
+                  class="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6 py-4 shadow-xl">
                 <div class="flex h-16 shrink-0 items-center">
                   <img class="h-8 w-auto" :src='logo' alt="Company Logo"/>
                 </div>
@@ -80,7 +81,8 @@
                                 aria-hidden="true"
                             />
                             {{ item.name }}
-                            <span v-if="item.notification" class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                            <span v-if="item.notification"
+                                  class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                               {{ item.notification }}
                             </span>
                           </router-link>
@@ -110,9 +112,9 @@
                                     @click="closeSidebar"
                                     :class="[
                                     subItem.current
-                                      ? 'bg-gray-50 text-red-600'
-                                      : 'text-gray-500 hover:bg-gray-50 hover:text-red-600',
-                                    'group flex gap-x-3 rounded-md p-2 text-xs font-semibold transition-colors'
+                                    ? 'bg-gradient-to-r from-red-50 to-white text-red-600 border-l-4 border-red-500'
+                                    : 'text-gray-700 hover:bg-gray-50 hover:text-red-600',
+                                    'group flex gap-x-3 rounded-md p-2 text-sm font-semibold transition-colors'
                                   ]"
                                 >
                                   <component
@@ -188,7 +190,8 @@
                         aria-hidden="true"
                     />
                     {{ item.name }}
-                    <span v-if="item.notification" class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                    <span v-if="item.notification"
+                          class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                       {{ item.notification }}
                     </span>
                   </router-link>
@@ -217,9 +220,9 @@
                             :to="subItem.href"
                             :class="[
                             subItem.current
-                              ? 'bg-gray-50 text-red-600'
-                              : 'text-gray-500 hover:bg-gray-50 hover:text-red-600',
-                            'group flex gap-x-3 rounded-md p-2 text-xs font-medium transition-colors'
+                              ? 'bg-gradient-to-r from-red-50 to-white text-red-600 border-l-4 border-red-500'
+                        : 'text-gray-700 hover:bg-gray-50 hover:text-red-600',
+                      'group flex gap-x-3 rounded-md p-2 text-sm font-medium transition-colors'
                           ]"
                         >
                           <component
@@ -293,12 +296,13 @@
                 <MenuButton class="-m-1.5 flex items-center p-1.5">
                   <span class="sr-only">Open user menu</span>
                   <span class="flex items-center">
-                    <span class="inline-flex items-center justify-center size-8 rounded-full bg-gradient-to-r from-red-500 to-red-300">
+                    <span
+                        class="inline-flex items-center justify-center size-8 rounded-full bg-gradient-to-r from-red-500 to-red-300">
                       <span class="text-sm font-medium leading-none text-white">JD</span>
                     </span>
                     <span class="ml-2 hidden lg:flex lg:items-center">
                       <span class="text-sm font-medium text-gray-700">John Doe</span>
-<!--                      <PhCaretRight class="ml-1 size-4 text-gray-500"/>-->
+                      <!--                      <PhCaretRight class="ml-1 size-4 text-gray-500"/>-->
                     </span>
                   </span>
                 </MenuButton>
