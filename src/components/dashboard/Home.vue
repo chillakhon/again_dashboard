@@ -65,7 +65,8 @@
     </div>
 
 
-    <HomeChart/>
+    <HomeChart  :chartData="data.chartData"/>
+
 
   </div>
 </template>
@@ -93,7 +94,10 @@ onMounted(() => {
 
 async function fetchData() {
   await axios.get('/orders/stats')
-      .then(res => data.value = res.data)
+      .then(res => {
+        data.value = res.data
+        console.log(data.value.chartData)
+      })
       .catch(err => console.log(err))
       .finally(() => isLoading.value = false)
 }

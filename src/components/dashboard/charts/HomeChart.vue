@@ -1,10 +1,23 @@
 <template>
-  <div class="relative h-[400px] w-full bg-white rounded-lg p-4 shadow-sm border">
+  <div class="relative  w-full bg-white rounded-xl p-5 shadow-md border border-gray-100">
+    <!-- Заголовок и пояснение -->
+    <div class="mb-4">
+      <h3 class="text-lg font-semibold text-gray-800">Динамика заказов за последние 6 месяцев</h3>
+      <p class="text-sm text-gray-500 mt-1">
+        Визуализация показывает изменение количества заказов по статусам
+      </p>
+    </div>
+
+    <!-- График -->
     <LineChart
         :chartData="chartData"
         :options="options"
+        class="mt-2"
     />
-    <div class="absolute bottom-4 right-4 text-xs text-gray-400">
+
+    <!-- Подпись и дата -->
+    <div class="absolute bottom-4 right-4 text-xs text-gray-400 flex items-center mb-10">
+      <Clock class="h-3 w-3 mr-1 text-gray-400" />
       Обновлено: {{ new Date().toLocaleDateString() }}
     </div>
   </div>
@@ -13,59 +26,74 @@
 <script setup lang="ts">
 import { LineChart } from 'vue-chart-3';
 import { Chart, registerables } from 'chart.js';
-import { ref } from 'vue';
+import {  ref, watch } from 'vue';
+import { Clock } from 'lucide-vue-next';
+
 
 Chart.register(...registerables);
 
-// Данные за последние 7 дней
+const props = defineProps({
+  chartData: {
+    type: Object,
+    required: true,
+    default: () => ({
+      labels: [],
+      new: [],
+      processing: [],
+      approved: []
+    })
+  }
+});
+
 const chartData = ref({
-  labels: ['12 апр', '13 апр', '14 апр', '15 апр', '16 апр', '17 апр', '18 апр'],
+  labels: props.chartData?.labels,
   datasets: [
     {
       label: 'Новые заказы',
-      data: [24, 18, 30, 27, 15, 22, 19],
+      data: props.chartData?.new ?? [],
       borderColor: '#EF4444',
       backgroundColor: 'rgba(239, 68, 68, 0.05)',
       borderWidth: 3,
-      tension: 0.4,
+      tension: 0.3,
       fill: true,
       pointBackgroundColor: '#EF4444',
-      pointBorderColor: '#fff',
+      pointBorderColor: '#ffffff',
       pointBorderWidth: 2,
-      pointRadius: 5,
-      pointHoverRadius: 7
+      pointRadius: 4,
+      pointHoverRadius: 6
     },
     {
       label: 'В обработке',
-      data: [15, 12, 18, 14, 10, 16, 12],
+      data: props.chartData?.processing ?? [],
       borderColor: '#F59E0B',
       backgroundColor: 'rgba(245, 158, 11, 0.05)',
       borderWidth: 3,
-      tension: 0.4,
+      tension: 0.3,
       fill: true,
       pointBackgroundColor: '#F59E0B',
-      pointBorderColor: '#fff',
+      pointBorderColor: '#ffffff',
       pointBorderWidth: 2,
-      pointRadius: 5,
-      pointHoverRadius: 7
+      pointRadius: 4,
+      pointHoverRadius: 6
     },
     {
       label: 'Готовы к отправке',
-      data: [8, 6, 12, 9, 5, 10, 7],
+      data: props.chartData?.approved ?? [],
       borderColor: '#3B82F6',
       backgroundColor: 'rgba(59, 130, 246, 0.05)',
       borderWidth: 3,
-      tension: 0.4,
+      tension: 0.3,
       fill: true,
       pointBackgroundColor: '#3B82F6',
-      pointBorderColor: '#fff',
+      pointBorderColor: '#ffffff',
       pointBorderWidth: 2,
-      pointRadius: 5,
-      pointHoverRadius: 7
+      pointRadius: 4,
+      pointHoverRadius: 6
     }
   ]
 });
 
+// Красивые настройки графика
 const options = ref({
   responsive: true,
   maintainAspectRatio: false,
@@ -73,13 +101,16 @@ const options = ref({
     legend: {
       position: 'top',
       labels: {
-        boxWidth: 12,
-        padding: 20,
-        usePointStyle: true,
+        color: '#4B5563',
         font: {
           family: 'Inter, sans-serif',
-          size: 13
-        }
+          size: 13,
+          weight: '500'
+        },
+        padding: 20,
+        usePointStyle: true,
+        pointStyle: 'circle',
+        boxWidth: 8
       }
     },
     tooltip: {
@@ -92,26 +123,14 @@ const options = ref({
       usePointStyle: true,
       callbacks: {
         label: (context) => {
-          return ` ${context.dataset.label}: ${context.parsed.y} заказов`;
+          return ` ${context.dataset?.label}: ${context.parsed.y} заказов`;
         },
         labelColor: (context) => {
           return {
-            borderColor: context.dataset.borderColor,
-            backgroundColor: context.dataset.borderColor,
+            borderColor: context?.dataset.borderColor,
+            backgroundColor: context?.dataset.borderColor,
             borderRadius: 2
           };
-        }
-      }
-    },
-    annotation: {
-      annotations: {
-        line1: {
-          type: 'line',
-          yMin: 15,
-          yMax: 15,
-          borderColor: '#E5E7EB',
-          borderWidth: 1,
-          borderDash: [5, 5]
         }
       }
     }
@@ -123,22 +142,28 @@ const options = ref({
         drawBorder: false
       },
       ticks: {
-        color: '#6B7280'
+        color: '#6B7280',
+        font: {
+          family: 'Inter, sans-serif'
+        }
       }
     },
     y: {
       grid: {
         color: '#F3F4F6',
-        drawBorder: false
+        drawBorder: false,
+        tickLength: 8
       },
       ticks: {
         color: '#6B7280',
-        callback: (value) => {
-          if (value % 5 === 0) return value;
-        }
+        font: {
+          family: 'Inter, sans-serif'
+        },
+        stepSize: 50,
+        callback: (value) => value % 100 === 0 ? value : null
       },
-      min: 0,
-      max: 35
+      beginAtZero: true,
+      min: 0
     }
   },
   elements: {
@@ -147,8 +172,21 @@ const options = ref({
     }
   }
 });
-</script>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
-</style>
+// Обновляем данные при изменении пропсов
+watch(() => props.chartData, (newVal) => {
+  chartData.value = {
+    ...chartData.value,
+    labels: newVal.labels,
+    datasets: [
+      { ...chartData.value.datasets[0], data: newVal.new },
+      { ...chartData.value.datasets[1], data: newVal.processing },
+      { ...chartData.value.datasets[2], data: newVal.approved }
+    ]
+  };
+}, { deep: true });
+
+// onMounted(() => {
+//   console.log('Данные графика:', props.chartData);
+// });
+</script>
