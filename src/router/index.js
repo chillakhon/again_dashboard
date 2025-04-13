@@ -248,6 +248,12 @@ const routes = [
                 ]
             },
             {
+                path: '/users',
+                name: 'users',
+                component: () => import('../views/users/index.vue'),
+
+            },
+            {
                 path: '/profile',
                 name: 'profile',
                 component: () => import('../views/profile/ProfileView.vue'),
@@ -257,6 +263,7 @@ const routes = [
                 name: 'settings',
                 component: () => import('../views/settings/SettingsView.vue'),
             },
+
 
         ],
 
