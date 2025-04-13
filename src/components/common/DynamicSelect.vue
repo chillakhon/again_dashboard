@@ -20,6 +20,7 @@ const props = defineProps<{
   modelValue: string
   placeholder?: string
   label?: string
+  optionLabel?: string
 }>()
 
 const emit = defineEmits(['update:modelValue'])
@@ -42,7 +43,7 @@ const emit = defineEmits(['update:modelValue'])
             :value="option.value"
             :disabled="option.disabled"
         >
-          {{ option.label }}
+          {{ option[optionLabel || 'label'] }}
         </SelectItem>
       </SelectGroup>
     </SelectContent>

@@ -395,7 +395,10 @@ import {
   PhUserList,
   PhWarehouse,
   PhX,
+  PhUsers
 } from '@phosphor-icons/vue';
+
+
 
 const logo = '/logo.svg'
 
@@ -457,6 +460,7 @@ const navigation = [
     ],
   },
   {name: 'Доставка', href: '/deliveries', icon: PhTruck},
+  {name: 'Пользователи', href: '/users', icon: PhUsers},
 ]
 
 const userNavigation = [
