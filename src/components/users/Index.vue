@@ -65,7 +65,7 @@ async function fetchData() {
           console.log(res.data)
         }
 
-        // users.totalItems = res.data.meta.count;
+        totalItems.value = res.data.users.total;
       })
       .catch(() => {
         users.value = [];
