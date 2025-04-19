@@ -3,7 +3,7 @@
   <div class="flex space-x-2 items-end mb-1 justify-between">
 
     <div v-if="props.title"
-         class="font-medium text-[30px]">
+         class="font-medium text-lg">
       {{ props.title }}
     </div>
     <div class="flex space-x-2 mb-1">
@@ -179,6 +179,7 @@ onBeforeMount(() => {
 
 .ag-header-cell-label {
   white-space: nowrap !important;
+  color: gray;
 }
 
 .ag-input-wrapper:before {

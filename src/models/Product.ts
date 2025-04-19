@@ -23,24 +23,35 @@ class Product {
     height: string | null = '0';
     images: any[] | null = [];
     categories: number[] | null = [1];
-    options: any[] | null = null
-    variants: any[] | null = null
-    imageFiles: File[] | null = []
+    options: any[] | null = null;
+    variants: any[] | null = null;
+    imageFiles: File[] | null = [];
 
     get discountPercentage(): number {
         if (!this.discount_price || this.discount_price <= 0 || !this.price || this.price <= 0) {
             return 0;
         }
         const discount = ((this.price - this.discount_price) / this.price) * 100;
-        return Math.round(discount); // округлим до целого числа
+        return Math.round(discount);
     }
 
-    set changeDiscount(value: number  ) {
-        this.discount_price = value
+    set changeDiscount(value: number) {
+        this.discount_price = value;
     }
 
     constructor(init?: Partial<Product>) {
         Object.assign(this, init);
+    }
+
+    static fromJSON(json: any): Product {
+        return new Product({
+            ...json,
+            images: json.images ?? [],
+            categories: json.categories ?? [1],
+            options: json.options ?? null,
+            variants: json.variants ?? null,
+            imageFiles: json.imageFiles ?? []
+        });
     }
 }
 
