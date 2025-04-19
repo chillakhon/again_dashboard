@@ -1,13 +1,40 @@
 <template>
-<loader v-if="isLoading"/>
+  <div class="flex items-center mb-4">
+    <div class="flex justify-between space-x-2 w-full">
+      <div class="flex space-x-2 w-full">
+        <Input
+            class="max-w-sm"
+            placeholder="Поиск по содержимому отзыва..."
+            v-model="searchQuery"
+            @keyup.enter="handleSearch"
+        />
+        <Button @click="handleSearch">Найти</Button>
+        <Button
+            variant="outline"
+            @click="clearSearch"
+            :disabled="!searchQuery"
+        >
+          Сбросить
+        </Button>
+      </div>
 
+      <div class="flex space-x-2">
+        <Button variant="outline" @click="handleExport">
+          Экспорт
+        </Button>
+        <Button variant="outline" @click="handleImport">
+          Импорт
+        </Button>
+      </div>
+    </div>
+  </div>
+
+  <Loader v-if="isLoading" />
   <div v-else>
     <div class="w-full">
-      <ReviewsTable :reviews="reviewsData" />
+      <ReviewsTable :reviews="reviewsData"/>
     </div>
     <div class="flex items-center justify-end space-x-2 py-4">
-<!--      <Button @click="saveProduct">Сохранить</Button>-->
-
       <div class="space-x-2">
         <PaginationTable
             :total="totalItems"
@@ -15,7 +42,7 @@
             :items-per-page="itemsPerPage"
             :sibling-count="1"
             :show-edges="true"
-            @current-page="currentPage = $event;"
+            @current-page="handlePageChange"
         />
       </div>
     </div>
@@ -23,96 +50,83 @@
 </template>
 
 <script setup lang="ts">
-import {h, nextTick, onMounted, ref} from "vue";
-import PaginationTable from "@/components/PaginationTable.vue";
+import { ref, onMounted } from "vue";
 import axios from "axios";
-import Product from "@/models/Product";
-import {Button} from "@/components/ui/button/index";
-import {toast} from 'vue-sonner'
+import { toast } from "vue-sonner";
+
 import Loader from "@/components/common/Loader.vue";
 import ReviewsTable from "@/components/products/reviews/ReviewsTable.vue";
+import PaginationTable from "@/components/PaginationTable.vue";
+import {Button} from "@/components/ui/button";
+import {Input} from "@/components/ui/input";
 
-
-const reviewsData = [
-  {
-    id: '1',
-    product: 'Save AGAIN',
-    status: 'published',
-    author: {
-      name: 'Маргарита',
-      email: 'me.kotova22@gmail.com'
-    },
-    rating: 5,
-    comment: 'Удобство, особенно когда постоянно не дома - в общественных туалетах менять тампоны то ещё удовольствие. Ну и трусики 6 капель - ночью не переживаю что тампон/прокладка протекут.',
-    createdAt: '2025-03-31T05:45:00',
-    publishedAt: '2025-04-01T10:30:00'
-  },
-  {
-    id: '2',
-    product: 'Body AGAIN',
-    status: 'imported',
-    author: {
-      name: 'Юлия',
-      email: 'Chance-85@mail.ru'
-    },
-    rating: 4,
-    comment: 'Очи очень удобны, практически как обычное белье, особенно ночью не протекают',
-    createdAt: '2025-03-30T15:20:00',
-    publishedAt: '2025-04-02T09:15:00'
-  },
-
-  {
-    id: '2',
-    product: 'Body AGAIN testing',
-    status: 'pending',
-    author: {
-      name: 'Петров',
-      email: 'prtrov-85@mail.ru'
-    },
-    rating: 4,
-    comment: 'Очи очень удобны, практически как обычное белье, особенно ночью не протекают',
-    createdAt: '2025-03-30T15:20:00',
-    publishedAt: '2025-04-02T09:15:00'
-  }
-]
-
-
-
-const isLoading = ref(true)
-
-const products = ref<Product[]>()
+const searchQuery = ref('');
+const reviewsData = ref([]);
+const isLoading = ref(true);
 
 const totalItems = ref(0);
 const currentPage = ref(1);
 const itemsPerPage = ref(10);
 
-
+// Fetch on mount
 onMounted(async () => {
-  // await fetchData()
-  await nextTick()
-  isLoading.value = false
-})
-//
-//
-// async function fetchData() {
-//   isLoading.value = true
-//   await axios.get(`products?page=${currentPage.value}`)
-//       .then(res => {
-//         products.value = res.data?.data.map(item => new Product(item))
-//         totalItems.value = res.data?.total ?? 0
-//       })
-//       .finally(() => {
-//         isLoading.value = false
-//       })
-// }
+  await fetchData();
+});
 
-async function saveProduct() {
-  toast.info('Сервер еще в разработке. Скоро будет доступно!')
+// Fetch reviews with pagination and search
+async function fetchData() {
+  isLoading.value = true;
+  try {
+    const params = {
+      page: currentPage.value,
+      per_page: itemsPerPage.value,
+      search: searchQuery.value || undefined // Only include search if there's a query
+    };
+
+    const res = await axios.get('/reviews', { params });
+    reviewsData.value = res.data.data || [];
+    totalItems.value = res.data.total || 0;
+  } catch (e: unknown) {
+    if (axios.isAxiosError(e) && e.response) {
+      toast.error(e.response.data?.message || "Ошибка при получении отзывов");
+    } else {
+      toast.error("Неизвестная ошибка");
+    }
+  } finally {
+    isLoading.value = false;
+  }
 }
 
+// Page change handler
+const handlePageChange = async (page: number) => {
+  currentPage.value = page;
+  await fetchData();
+};
 
+// Search handler
+const handleSearch = async () => {
+  currentPage.value = 1; // Reset to first page when searching
+  await fetchData();
+};
+
+// Clear search
+const clearSearch = async () => {
+  searchQuery.value = '';
+  currentPage.value = 1;
+  await fetchData();
+};
+
+const handleExport = () => {
+  // Логика экспорта данных
+  console.log('Экспорт данных')
+}
+
+const handleImport = () => {
+  // Логика импорта данных
+  console.log('Импорт данных')
+}
 </script>
 
 <style scoped>
-
+/* Добавь стили при необходимости */
 </style>

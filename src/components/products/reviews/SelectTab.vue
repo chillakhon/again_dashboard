@@ -12,11 +12,9 @@
 
       <div class="flex space-x-2">
         <Button variant="outline" @click="handleExport">
-<!--          <DownloadIcon class="h-4 w-4 mr-2" />-->
           Экспорт
         </Button>
         <Button variant="outline" @click="handleImport">
-<!--          <UploadIcon class="h-4 w-4 mr-2" />-->
           Импорт
         </Button>
       </div>
@@ -27,13 +25,14 @@
 </template>
 
 <script setup lang="ts">
-import { DownloadIcon, UploadIcon } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import AllReviews from "@/components/products/reviews/tab/AllReviews.vue";
 
 const searchProduct = ref('')
+const isLoading = ref(true)
+
 
 const handleSearch = () => {
   // Логика поиска
@@ -49,4 +48,5 @@ const handleImport = () => {
   // Логика импорта данных
   console.log('Импорт данных')
 }
+
 </script>

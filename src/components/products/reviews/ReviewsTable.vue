@@ -23,7 +23,10 @@
           </TableHead>
           <TableHead class="px-3 py-2 font-medium text-gray-600 text-xs whitespace-nowrap">
             Дата публикации<br>
-            <span class="text-xs font-normal">(только для импортированных)</span>
+            <span class="text-xs font-normal">(только для опубликованных)</span>
+          </TableHead>
+          <TableHead class="px-3 py-2 font-medium text-gray-600 text-xs whitespace-nowrap">
+            Действия
           </TableHead>
         </TableRow>
       </TableHeader>
@@ -36,7 +39,7 @@
           >
             <!-- Товар -->
             <TableCell class="px-3 py-3 whitespace-nowrap text-sm font-medium">
-              {{ review.product }}
+              {{ review.reviewable?.name || 'Не указан' }}
             </TableCell>
 
             <!-- Статус -->
@@ -48,8 +51,8 @@
 
             <!-- Автор -->
             <TableCell class="px-3 py-3 whitespace-nowrap text-sm">
-              <div class="font-medium">{{ review.author.name }}</div>
-              <div class="text-gray-500 text-xs">{{ review.author.email }}</div>
+              <div class="font-medium">{{ review.client_name || 'Аноним' }}</div>
+              <div class="text-gray-500 text-xs">{{ review.client_email || 'Нет email' }}</div>
             </TableCell>
 
             <!-- Рейтинг -->
@@ -58,28 +61,82 @@
                 <StarIcon class="h-4 w-4 text-yellow-400 fill-yellow-400"/>
                 <span class="ml-1 text-sm">{{ review.rating }}/5</span>
               </div>
+              <!-- Display attribute ratings if they exist -->
+              <div v-if="review.attributes.length" class="text-xs text-gray-500 mt-1">
+                <div v-for="attr in review.attributes" :key="attr.id">
+                  {{ attr.name }}: {{ attr.rating }}/5
+                </div>
+              </div>
             </TableCell>
 
             <!-- Отзыв -->
             <TableCell class="px-3 py-3 text-sm">
-              <div class="min-w-[200px]">{{ review.comment }}</div>
+              <div class="min-w-[200px]">{{ review.content }}</div>
+              <!-- Display images if they exist -->
+              <div v-if="review.images.length" class="mt-2 flex gap-2">
+                <img
+                    v-for="(image, index) in review.images"
+                    :key="index"
+                    :src="image"
+                    class="h-10 w-10 object-cover rounded"
+                    @click="openImage(image)"
+                >
+              </div>
             </TableCell>
 
             <!-- Дата создания -->
             <TableCell class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
-              {{ formatDate(review.createdAt) }}
+              {{ formatDate(review.created_at) }}
             </TableCell>
 
             <!-- Дата публикации -->
             <TableCell class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
-              {{ review.publishedAt ? formatDate(review.publishedAt) : '-' }}
+              {{ review.published_at ? formatDate(review.published_at) : '-' }}
+            </TableCell>
+
+            <!-- Actions -->
+            <TableCell class="px-3 py-3 whitespace-nowrap text-sm">
+              <div class="flex items-center gap-2">
+                <!-- Publish/Unpublish -->
+                <Button
+                    v-if="!review.is_published"
+                    variant="ghost"
+                    size="sm"
+                    class="h-8 w-8 p-0 text-green-600 hover:text-green-700"
+                    @click="publishReview(review.id)"
+                    title="Опубликовать"
+                >
+                  <CheckIcon class="h-4 w-4" />
+                </Button>
+                <Button
+                    v-else
+                    variant="ghost"
+                    size="sm"
+                    class="h-8 w-8 p-0 text-yellow-600 hover:text-yellow-700"
+                    @click="unpublishReview(review.id)"
+                    title="Снять с публикации"
+                >
+                  <XIcon class="h-4 w-4" />
+                </Button>
+
+                <!-- Delete -->
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    class="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                    @click="confirmDelete(review.id)"
+                    title="Удалить"
+                >
+                  <Trash2Icon class="h-4 w-4" />
+                </Button>
+              </div>
             </TableCell>
           </TableRow>
         </template>
 
         <TableRow v-else>
           <TableCell
-              :colspan="7"
+              :colspan="8"
               class="h-20 text-center text-gray-500 py-3"
           >
             Нет отзывов
@@ -91,29 +148,21 @@
 </template>
 
 <script setup lang="ts">
-import {StarIcon} from 'lucide-vue-next'
+import {StarIcon, CheckIcon, XIcon, Trash2Icon} from 'lucide-vue-next'
 import {Badge} from '@/components/ui/badge'
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from '@/components/ui/table'
+import {Button} from '@/components/ui/button'
+import {Review} from "@/models/Review";
+import axios from "axios";
+import {toast} from "vue-sonner";
 
-interface Author {
-  name: string
-  email: string
-}
-
-interface Review {
-  id: string
-  product: string
-  status: 'published' | 'pending' | 'draft' | 'imported'
-  author: Author
-  rating: number
-  comment: string
-  createdAt: string
-  publishedAt?: string
-}
+type ReviewStatus = 'new' | 'published' | 'pending' | 'draft' | 'imported' | 'rejected'
 
 const props = defineProps<{
   reviews: Review[]
 }>()
+
+const emit = defineEmits(['refresh'])
 
 const formatDate = (dateString: string) => {
   if (!dateString) return '-'
@@ -130,15 +179,17 @@ const formatDate = (dateString: string) => {
 
 const getStatusText = (status: ReviewStatus): string => {
   const statusMap: Record<ReviewStatus, string> = {
+    'new': 'Новый',
     'published': 'Опубликован',
     'pending': 'На рассмотрении',
     'draft': 'Черновик',
-    'imported': 'Импортирован'
+    'imported': 'Импортирован',
+    'rejected': 'Отклонён'
   }
-  return statusMap[status]
+  return statusMap[status] || status
 }
 
-const getStatusVariant = (status: string) => {
+const getStatusVariant = (status: ReviewStatus) => {
   switch (status) {
     case 'published':
       return 'default'
@@ -148,8 +199,58 @@ const getStatusVariant = (status: string) => {
       return 'outline'
     case 'imported':
       return 'success'
-    default:
-      return 'outline'
+    case 'rejected':
+      return 'destructive'
+    default: // 'new'
+      return 'info'
+  }
+}
+
+const openImage = (imageUrl: string) => {
+  window.open(imageUrl, '_blank')
+}
+
+const publishReview = async (reviewId: number) => {
+  try {
+    await axios.post(`/reviews/${reviewId}/publish`)
+    toast.success('Отзыв опубликован')
+    emit('refresh')
+  } catch (error) {
+    handleError(error, 'Ошибка при публикации отзыва')
+  }
+}
+
+const unpublishReview = async (reviewId: number) => {
+  try {
+    await axios.post(`/reviews/${reviewId}/unpublish`)
+    toast.success('Отзыв снят с публикации')
+    emit('refresh')
+  } catch (error) {
+    handleError(error, 'Ошибка при снятии с публикации')
+  }
+}
+
+const confirmDelete = (reviewId: number) => {
+  if (confirm('Вы уверены, что хотите удалить этот отзыв?')) {
+    deleteReview(reviewId)
+  }
+}
+
+const deleteReview = async (reviewId: number) => {
+  try {
+    await axios.delete(`/reviews/${reviewId}`)
+    toast.success('Отзыв удалён')
+    emit('refresh')
+  } catch (error) {
+    handleError(error, 'Ошибка при удалении отзыва')
+  }
+}
+
+const handleError = (error: unknown, defaultMessage: string) => {
+  if (axios.isAxiosError(error) && error.response) {
+    toast.error(error.response.data?.message || defaultMessage)
+  } else {
+    toast.error(defaultMessage)
   }
 }
 </script>

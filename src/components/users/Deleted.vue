@@ -2,7 +2,6 @@
   <Loader v-if="isLoading"/>
   <div v-else>
 
-
     <div
         v-if="users.length === 0"
         class="flex flex-col items-center justify-center p-8 rounded-lg border border-dashed bg-background text-center space-y-3"
