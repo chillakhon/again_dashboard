@@ -3,10 +3,10 @@
   <div class="">
     <h2 class="text-lg font-semibold text-gray-800 my-2">Отзывы</h2>
 
-    <div class="flex items-center space-x-2 py-5">
-      <Switch id="reviews-toggle" v-model="reviewsEnabled"/>
-      <Label for="reviews-toggle">Включить отзывы</Label>
-    </div>
+<!--    <div class="flex items-center space-x-2 py-5">-->
+<!--      <Switch id="reviews-toggle" v-model="reviewsEnabled"/>-->
+<!--      <Label for="reviews-toggle">Включить отзывы</Label>-->
+<!--    </div>-->
 
     <div class="flex-1">
       <Tabs v-model="currentTabValue" class="w-full">

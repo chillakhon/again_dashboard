@@ -70,7 +70,7 @@ onMounted(async () => {
 <template>
   <div>
     <Loader v-if="isLoading"/>
-    <ReviewsTable v-else :reviews="reviewsData"/>
+    <ReviewsTable v-else :reviews="reviewsData" @refresh="fetchData()"/>
     <div class="flex items-center justify-end space-x-2 py-4">
       <div class="space-x-2">
         <PaginationTable

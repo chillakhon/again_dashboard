@@ -9,5 +9,5 @@ defineProps<{
 </script>
 
 <template>
-  <ReviewsList :tab="tab" :search-query="searchQuery"/>
+  <ReviewsList :tab="tab" :search-query="searchQuery" />
 </template>

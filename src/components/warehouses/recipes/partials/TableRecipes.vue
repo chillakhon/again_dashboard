@@ -105,7 +105,8 @@ const fetchRecipes = async () => {
   isLoading.value = true
   try {
     const response = await axios.get('/recipes')
-    recipes.value = response.data.map((item: any) => Recipe.fromAPI(item))
+    recipes.value = response.data.recipes.map((item: any) => Recipe.fromAPI(item))
+    console.log()
   } catch (error) {
     toast.error('Ошибка при получении рецептов')
     console.error('Ошибка загрузки рецептов:', error)

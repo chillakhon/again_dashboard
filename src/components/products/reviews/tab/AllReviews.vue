@@ -1,6 +1,6 @@
 <template>
   <div class="flex items-center mb-4">
-    <div class="flex justify-between space-x-2 w-full">
+    <div class="flex justify-between  w-full max-md:flex-wrap">
       <div class="flex space-x-2 w-full">
         <Input
             class="max-w-sm"
@@ -18,7 +18,7 @@
         </Button>
       </div>
 
-      <div class="flex space-x-2">
+      <div class="flex max-md:mt-2 space-x-2">
         <Button variant="outline" @click="handleExport">
           Экспорт
         </Button>
@@ -32,7 +32,7 @@
   <Loader v-if="isLoading" />
   <div v-else>
     <div class="w-full">
-      <ReviewsTable :reviews="reviewsData"/>
+      <ReviewsTable :reviews="reviewsData" @refresh="fetchData()"/>
     </div>
     <div class="flex items-center justify-end space-x-2 py-4">
       <div class="space-x-2">

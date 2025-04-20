@@ -8,7 +8,7 @@
       :show-edges="showEdges"
   >
     <PaginationList v-slot="{ items }" class="flex items-center gap-1">
-      <PaginationFirst @click="$emit('currentPage', 1)"/>
+<!--      <PaginationFirst @click="$emit('currentPage', 1)"/>-->
       <PaginationPrev @click="$emit('currentPage', page - 1)"/>
 
       <template v-for="(item, index) in items">
@@ -22,7 +22,7 @@
       </template>
 
       <PaginationNext @click="$emit('currentPage', page + 1)"/>
-      <PaginationLast @click="$emit('currentPage', Math.ceil(total / itemsPerPage))"/>
+<!--      <PaginationLast @click="$emit('currentPage', Math.ceil(total / itemsPerPage))"/>-->
     </PaginationList>
   </Pagination>
 </template>

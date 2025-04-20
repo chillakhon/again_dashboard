@@ -27,6 +27,7 @@ class Product {
     variants: any[] | null = null;
     imageFiles: File[] | null = [];
 
+
     get discountPercentage(): number {
         if (!this.discount_price || this.discount_price <= 0 || !this.price || this.price <= 0) {
             return 0;
