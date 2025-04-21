@@ -28,40 +28,161 @@
       <div
           v-for="(item, index) in model.items"
           :key="item?.id ?? index"
-          class=""
+          class="grid grid-cols-1 gap-2 border p-2 rounded-lg bg-background hover:bg-accent/50 transition-colors"
       >
-        <RecipeComponentItem
-            :model="model.items[index]"
-            @update:model="updateComponent(index, $event)"
-            :index="index"
-            :units="units"
-            :materials="materials"
-            :products="products"
-            :is-units-loading="isUnitsLoading"
-            @remove="removeComponent(index)"
-            class="compact-item"
-        />
+        <div class="grid md:grid-cols-12 grid-cols-1 gap-2 items-end">
+          <!-- Component Type -->
+          <div class="md:col-span-3">
+            <Label class="text-xs">Тип</Label>
+            <Select v-model="item.component_type">
+              <SelectTrigger class="h-8 text-xs">
+                <SelectValue placeholder="Выберите тип" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Material" class="text-xs">Материал</SelectItem>
+                <SelectItem value="Product" class="text-xs">Продукт</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <!-- Component Selection -->
+          <div class="md:col-span-4">
+            <Label class="text-xs">{{ item.component_type === 'Material' ? 'Материал' : 'Продукт' }}</Label>
+            <Select v-model="item.component_id" @update:modelValue="loadVariants(item)">
+              <SelectTrigger class="h-8 text-xs">
+                <SelectValue>
+                  {{ getComponentName(item) }}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <template v-if="item.component_type === 'Material'">
+                  <SelectItem
+                      v-for="material in materials"
+                      :key="material.id"
+                      :value="material.id"
+                      class="text-xs"
+                  >
+                    {{ material.name }}
+                  </SelectItem>
+                </template>
+                <template v-else>
+                  <SelectItem
+                      v-for="product in products"
+                      :key="product.id"
+                      :value="product.id"
+                      class="text-xs"
+                  >
+                    {{ product.name }}
+                  </SelectItem>
+                </template>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <!-- Variant (only for products) -->
+          <div class="md:col-span-3" v-if="item.component_type === 'Product'">
+            <Label class="text-xs">Вариант</Label>
+            <Select
+                v-model="item.variant_id"
+                :disabled="!item.component_id || !hasVariants(item.component_id)"
+            >
+              <SelectTrigger class="h-8 text-xs">
+                <SelectValue>
+                  {{ getVariantName(item.component_id, item.variant_id) }}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                    v-for="variant in getProductVariants(item.component_id)"
+                    :key="variant.id"
+                    :value="variant.id"
+                    class="text-xs"
+                >
+                  {{ variant.name }} ({{ formatCurrency(variant.price) }})
+                </SelectItem>
+                <SelectItem :value="null" class="text-xs">
+                  Без вариантов
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <!-- Quantity -->
+          <div class="md:col-span-1">
+            <Label class="text-xs">Кол-во</Label>
+            <Input
+                v-model.number="item.quantity"
+                type="number"
+                min="0"
+                step="0.01"
+                class="h-8 text-xs"
+            />
+          </div>
+
+          <!-- Unit -->
+          <div class="md:col-span-1">
+            <Label class="text-xs">Ед.</Label>
+            <Select v-model="item.unit_id" :disabled="isUnitsLoading">
+              <SelectTrigger class="h-8 text-xs">
+                <SelectValue>
+                  {{ getUnitName(item.unit_id) }}
+                </SelectValue>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                    v-for="unit in units"
+                    :key="unit.id"
+                    :value="unit.id"
+                    class="text-xs"
+                >
+                  {{ unit.name }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <!-- Remove button -->
+          <div class="flex justify-end">
+            <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                class="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+                @click="removeComponent(index)"
+            >
+              <Trash2Icon class="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import RecipeComponentItem from '@/components/warehouses/recipes/items/RecipeComponentItem.vue'
 import { computed } from 'vue'
-import { PlusIcon, PackageOpenIcon } from 'lucide-vue-next'
+import { PlusIcon, PackageOpenIcon, Trash2Icon } from 'lucide-vue-next'
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
 
 const props = defineProps({
   model: { type: Object, required: true },
   units: { type: Array, required: true },
   materials: { type: Array, required: true },
   products: { type: Array, required: true },
-  isUnitsLoading: { type: Boolean, default: false }
+  isUnitsLoading: { type: Boolean, default: false },
+  errors: { type: Object, default: () => ({}) }
 })
 
-const emit = defineEmits(['update:model'])
+const emit = defineEmits(['update:model', 'load-variants'])
 
 const isAddingDisabled = computed(() => {
   return props.isUnitsLoading || props.units?.length === 0
@@ -76,6 +197,7 @@ const addComponent = () => {
         id: Date.now().toString(),
         component_type: 'Material',
         component_id: null,
+        variant_id: null,
         quantity: 0,
         unit_id: props.units[0]?.id || null,
         waste_percentage: 0
@@ -93,6 +215,49 @@ const updateComponent = (index: number, updatedItem: any) => {
   const newItems = [...props.model.items]
   newItems[index] = updatedItem
   emit('update:model', { ...props.model, items: newItems })
+}
+
+const loadVariants = (item) => {
+  if (item.component_type === 'Product' && item.component_id) {
+    emit('load-variants', item.component_id)
+  }
+}
+
+const hasVariants = (productId) => {
+  const product = props.products.find(p => p.id === productId)
+  return product?.has_variants && product.variants?.length > 0
+}
+
+const getProductVariants = (productId) => {
+  return props.products.find(p => p.id === productId)?.variants || []
+}
+
+const getComponentName = (item) => {
+  if (!item.component_id) return 'Выберите'
+  if (item.component_type === 'Material') {
+    return props.materials.find(m => m.id === item.component_id)?.name || 'Материал'
+  } else {
+    return props.products.find(p => p.id === item.component_id)?.name || 'Продукт'
+  }
+}
+
+const getVariantName = (productId, variantId) => {
+  if (!productId) return 'Выберите'
+  if (variantId === null) return 'Без вариантов'
+  const variant = getProductVariants(productId).find(v => v.id === variantId)
+  return variant?.name || 'Вариант'
+}
+
+const getUnitName = (unitId) => {
+  return props.units.find(u => u.id === unitId)?.name || 'Ед.'
+}
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('ru-RU', {
+    style: 'currency',
+    currency: 'RUB',
+    maximumFractionDigits: 0
+  }).format(value)
 }
 </script>
 

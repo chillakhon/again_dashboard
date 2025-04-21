@@ -54,6 +54,24 @@
                 {{ recipe.isActive ? 'Активен' : 'Неактивен' }}
               </Badge>
             </TableCell>
+
+            <TableCell class="px-3 py-3 whitespace-nowrap">
+
+              <div class="flex space-x-2">
+                <Edit
+                />
+                <AlertDialog
+                    title="Подтверждение удаления"
+                    description="Вы уверены что хотите удалить этот элемент?"
+                    button-name="Удалить"
+                    button-style="bg-red-500 hover:bg-red-600"
+                    :icon="Trash2"
+                    @continue="console.log(recipe)"
+                />
+
+              </div>
+            </TableCell>
+
           </TableRow>
         </template>
 
@@ -64,17 +82,30 @@
         </TableRow>
 
         <TableRow v-else>
+
+
           <TableCell :colspan="6" class="h-20 text-center text-gray-500 py-3">
             <div class="flex justify-center">
-              <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                   viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                <path class="opacity-75" fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             </div>
           </TableCell>
         </TableRow>
       </TableBody>
     </Table>
+
+    <div class="mt-2 flex justify-end p-2">
+      <PaginationTable
+          :items-per-page="itemsPerPage"
+          :total="totalItems"
+          :default-page="currentPage"
+          @current-page="handlePageChange"
+      />
+    </div>
   </div>
 </template>
 
@@ -86,9 +117,16 @@ import {ref, onMounted} from 'vue'
 import {Recipe} from '@/models/Recipe'
 import axios from "axios";
 import {toast} from "vue-sonner";
+import PaginationTable from "@/components/PaginationTable.vue";
+import {ArchiveRestore, Trash2} from "lucide-vue-next";
+import Edit from "@/components/dynamics/DataTable/Edit.vue";
+import AlertDialog from "@/components/dynamics/AlertDialog.vue";
 
 const recipes = ref<Recipe[]>([])
 const isLoading = ref(true)
+const currentPage = ref(1)
+const itemsPerPage = ref(10)
+const totalItems = ref(0)
 
 const formatCurrency = (value: number) => {
   return value.toFixed(2).replace('.', ',')
@@ -101,12 +139,23 @@ const isNewRecipe = (createdAt: Date) => {
   return diffDays < 7 // Новые в течение 7 дней
 }
 
+const handlePageChange = (page: number) => {
+  currentPage.value = page
+  fetchRecipes()
+}
+
 const fetchRecipes = async () => {
   isLoading.value = true
   try {
-    const response = await axios.get('/recipes')
-    recipes.value = response.data.recipes.map((item: any) => Recipe.fromAPI(item))
-    console.log()
+    const response = await axios.get('/recipes', {
+      params: {
+        page: currentPage.value,
+        per_page: itemsPerPage.value
+      }
+    })
+
+    recipes.value = response.data.recipes.data.map((item: any) => Recipe.fromAPI(item))
+    totalItems.value = response.data.recipes.total
   } catch (error) {
     toast.error('Ошибка при получении рецептов')
     console.error('Ошибка загрузки рецептов:', error)

@@ -2,7 +2,7 @@
   <Card>
     <CardHeader>
       <BackButton title="Создание новой техкарты" @click="handleBack"/>
-<!--      <CardDescription>Заполните все необходимые поля</CardDescription>-->
+      <!--      <CardDescription>Заполните все необходимые поля</CardDescription>-->
     </CardHeader>
     <CardContent>
       <form @submit.prevent="handleSubmit" class="space-y-6">
@@ -33,12 +33,12 @@
             @load-variants="loadProductVariants"
         />
 
-<!--        <RecipeCostRatesSection-->
-<!--            :model="recipeData"-->
-<!--            @update:model="recipeData = $event"-->
-<!--            :cost-categories="costCategories"-->
-<!--            :errors="errors"-->
-<!--        />-->
+        <!--        <RecipeCostRatesSection-->
+        <!--            :model="recipeData"-->
+        <!--            @update:model="recipeData = $event"-->
+        <!--            :cost-categories="costCategories"-->
+        <!--            :errors="errors"-->
+        <!--        />-->
 
         <div class="flex justify-end gap-2 pt-4">
           <Button
@@ -118,7 +118,6 @@ const loadInitialData = async () => {
       await axios.get('/units'),
       await axios.get('/products/?material=material&paginate=false'),
       await axios.get('/products?material=simple&paginate=false'),
-      // await axios.get('/cost-categories?active=true')
     ]
 
     const [unitsRes, materialsRes, productsRes, categoriesRes] = await Promise.all(requests)
@@ -199,7 +198,6 @@ const handleSubmit = async () => {
     console.log(recipeData.value)
 
     // const payload = recipeData.value.toJSON()
-
 
 
     const response = await axios.post('/recipes', recipeData.value)
