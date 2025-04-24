@@ -18,7 +18,6 @@
 
 <script setup lang="ts">
 import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
 import TableRecipes from "@/components/warehouses/recipes/partials/TableRecipes.vue"
 import { PlusIcon } from "lucide-vue-next"
 </script>

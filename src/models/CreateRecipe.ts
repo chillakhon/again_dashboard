@@ -20,7 +20,9 @@ export class CreateRecipe {
         this.production_time = data.production_time;
         this.is_active = data.is_active;
         this.items = data.items?.map((i: any) => new CreateRecipeComponent(i)) || [];
-        this.products = data.products?.map((p: any) => new CreateRecipeProduct(p)) || [];
+        this.products = (data.products || []).map(
+            (p: any) => new CreateRecipeProduct(p)
+        );
         this.cost_rates = data.cost_rates?.map((c: any) => new CreateRecipeCostRate(c)) || [];
     }
 

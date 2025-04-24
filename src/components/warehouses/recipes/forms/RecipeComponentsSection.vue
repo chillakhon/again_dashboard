@@ -30,7 +30,7 @@
           :key="item?.id ?? index"
           class="grid grid-cols-1 gap-2 border p-2 rounded-lg bg-background hover:bg-accent/50 transition-colors"
       >
-        <div class="grid md:grid-cols-12 grid-cols-1 gap-2 items-end">
+        <div class="grid md:grid-cols-10 grid-cols-1 gap-2 items-end">
           <!-- Component Type -->
           <div class="md:col-span-3">
             <Label class="text-xs">Тип</Label>
@@ -122,37 +122,22 @@
           <!-- Unit -->
           <div class="md:col-span-1">
             <Label class="text-xs">Ед.</Label>
-            <Select v-model="item.unit_id" :disabled="isUnitsLoading">
-              <SelectTrigger class="h-8 text-xs">
-                <SelectValue>
-                  {{ getUnitName(item.unit_id) }}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                    v-for="unit in units"
-                    :key="unit.id"
-                    :value="unit.id"
-                    class="text-xs"
-                >
-                  {{ unit.name }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
+            <div class="h-8 flex items-center px-2 border rounded-md text-xs bg-muted text-muted-foreground">
+              {{ getUnitName(item.unit_id) }}
+            </div>
           </div>
 
           <!-- Remove button -->
-          <div class="flex justify-end">
-            <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                class="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
-                @click="removeComponent(index)"
-            >
-              <Trash2Icon class="h-3.5 w-3.5" />
-            </Button>
-          </div>
+          <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              class="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
+              @click="removeComponent(index)"
+          >
+            <Trash2Icon class="h-4 w-4 mx-auto" />
+          </Button>
+
         </div>
       </div>
     </div>

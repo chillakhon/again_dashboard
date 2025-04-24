@@ -58,6 +58,11 @@ const routes = [
                         component: () => import('../components/warehouses/recipes/create/RecipeCreate.vue'),
                     },
                     {
+                        path: '/warehouses/recipes/edit/:id',
+                        name: 'recipes-edit',
+                        component: () => import('../components/warehouses/recipes/edit/RecipeEdit.vue'),
+                    },
+                    {
                         path: '/warehouses/production/list',
                         name: 'production-list',
                         component: () => import('../components/warehouses/production/list/ProductionList.vue'),

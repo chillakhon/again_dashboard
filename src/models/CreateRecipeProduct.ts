@@ -5,10 +5,10 @@ class CreateRecipeProduct {
     is_default: boolean;
 
     constructor(data: any) {
-        this.product_id = data.product_id;
+        this.product_id = data?.product_id || data.component_id;
         this.variant_id = data.variant_id;
         this.qty = data.qty;
-        this.is_default = data.is_default;
+        this.is_default = !!data.is_default;
     }
 
     static fromJSON(json: string): CreateRecipeProduct {

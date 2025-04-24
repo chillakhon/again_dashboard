@@ -20,9 +20,6 @@
 import {Button} from "@/components/ui/button"
 import {Plus} from 'lucide-vue-next'
 
-import {Card} from "@/components/ui/card"
-import TableRecipes from "@/components/warehouses/recipes/partials/TableRecipes.vue"
-import {PlusIcon} from "lucide-vue-next"
 import ProductionTable from "@/components/warehouses/production/partials/ProductionTable.vue";
 </script>
 
