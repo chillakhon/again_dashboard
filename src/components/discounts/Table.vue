@@ -1,9 +1,8 @@
 <template>
+<!--  {{discounts}}-->
   <DynamicsDataTable
-      v-if="discounts?.length"
       :data="discounts"
       :columns="columns"
-      :edit="edit"
       :loading="loading"
       @save_changes="handlingUpdate($event)"
       @deleted="

@@ -9,6 +9,7 @@
       />
     </div>
     <DiscountsTable
+
         :discounts="discounts"
         @deleted="deleteDiscount($event)"
         @updated="fetchData"
@@ -44,7 +45,7 @@ const discounts = ref<Discount[]>([]);
 const isLoading = ref(true);
 const currentPage = ref(1);
 const totalItems = ref(0);
-const itemsPerPage = ref(1);
+const itemsPerPage = ref(10);
 
 const deleteDiscount = (discount: Discount) => {
   discounts.value = discounts.value.filter(
@@ -60,9 +61,9 @@ async function fetchData() {
         `/discounts?page=${currentPage.value}&per_page=${itemsPerPage.value}`
     );
 
-    if (response.data?.discounts) {
-      discounts.value = response.data.discounts.data.map((item: any) => Discount.fromJSON(item));
-      totalItems.value = response.data.discounts.total;
+    if (response.data) {
+      discounts.value = response.data.data.map((item: any) => Discount.fromJSON(item));
+      totalItems.value = response.data.meta.total;
       console.log(discounts.value)
     }
   } catch (error) {

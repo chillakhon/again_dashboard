@@ -154,6 +154,6 @@ export class Discount {
         if (this.type === 'percentage') {
             return `${this.value}%`;
         }
-        return `$${this.value.toFixed(2)}`;
+        return `${this.value.toFixed(2)}`;
     }
 }
