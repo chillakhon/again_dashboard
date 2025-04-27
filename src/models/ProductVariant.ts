@@ -41,4 +41,25 @@ export class ProductVariant {
         const data = JSON.parse(json);
         return new ProductVariant(data);
     }
+
+
+    toJSON(): Record<string, any> {
+        return {
+            id: this.id,
+            product_id: this.product_id,
+            name: this.name,
+            sku: this.sku,
+            price: this.price,
+            stock: this.stock,
+            additional_cost: this.additional_cost,
+            type: this.type,
+            unit_id: this.unit_id,
+            is_active: this.is_active,
+            created_at: this.created_at,
+            updated_at: this.updated_at,
+            deleted_at: this.deleted_at,
+            ...(this.pivot ? { pivot: this.pivot } : {})
+        };
+    }
+
 }

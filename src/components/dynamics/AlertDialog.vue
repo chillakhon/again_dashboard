@@ -1,7 +1,7 @@
 <template>
   <AlertDialog>
     <!--    <AlertDialogTrigger>-->
-    <Button v-if="!icon" :disabled="disabledButton" :class="buttonStyle">
+    <Button variant="outline" v-if="!icon" :disabled="disabledButton" :class="buttonStyle">
       <AlertDialogTrigger>{{ buttonName }}</AlertDialogTrigger>
     </Button>
     <AlertDialogTrigger v-else>
@@ -43,6 +43,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Button } from '@/components/ui/button'
+
 
 const emit = defineEmits(["continue"]);
 

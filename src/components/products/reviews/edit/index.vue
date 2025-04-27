@@ -69,7 +69,7 @@ async function getCustomerById(id: any) {
   if (!id) return
   await axios.get(`${config.public.apiUrl}/api/customer/id/${id}`)
       .then(res => {
-        cart.updateCustomer(Customer.fromJson(res.data.data))
+        cart.updateCustomer(Customer.fromJSON(res.data.data))
       })
 }
 
@@ -77,7 +77,7 @@ async function getApplicantById(id: any) {
   if (!id) return
   await axios.get(`${config.public.apiUrl}/api/user/id/${id}`)
       .then(res => {
-        cart.updateApplicant(User.fromJson(res.data.data))
+        cart.updateApplicant(User.fromJSON(res.data.data))
       })
 }
 

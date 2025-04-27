@@ -62,7 +62,7 @@
                   </template>
                   <template v-else>
                     <Edit
-                        :item="row.original"
+                        :item="JSON.parse(JSON.stringify(row.original))"
                         :edit="edit"
                         @save_changes="emits('save_changes', $event)"
                     />
@@ -148,4 +148,6 @@ const table = useVueTable({
     },
   },
 });
+
+
 </script>

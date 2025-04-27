@@ -20,6 +20,40 @@ export function useUserFunctions() {
             });
     };
 
+
+    const updateUser = async (user) => {
+        if (!user) return
+        try {
+            const userData = {
+                first_name: user.profile?.first_name || '',
+                last_name: user.profile?.last_name || '',
+                phone: user.profile?.phone?.trim() || null,
+                address: user.profile?.address || null,
+                email: user.email,
+                roles: user.roles?.map(role => role.id) || [],
+                permissions: user.permissions?.map(perm => perm.id) || [],
+            };
+
+            const res = await axios.put(`/users/${user.id}`, userData);
+
+            if (res.data.user) {
+                toast.success(res.data.message || "Пользователь успешно обновлён");
+                return res.data.user
+            } else {
+                toast.error(res.data.message || "Не удалось обновить пользователя");
+            }
+        } catch (e) {
+            if (e.response) {
+                toast.error(e.response.data.error || e.response.data.message || "Произошла ошибка при обновлении");
+            } else {
+                toast.error("Ошибка сети");
+            }
+            console.error("Error updating user:", e);
+        }
+    };
+
+
+
     const changeUser = async (user, loader) => {
         try {
             loader = true;
@@ -107,6 +141,7 @@ export function useUserFunctions() {
         changeUser,
         deleteUser,
         restoreUser,
-        forceDestroy
+        forceDestroy,
+        updateUser
     };
 }

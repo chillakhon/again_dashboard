@@ -464,7 +464,7 @@ const navigation = [
 ]
 
 const userNavigation = [
-  {name: 'Ваш профиль', href: '#', icon: PhUser},
+  {name: 'Ваш профиль', href: '/profile', icon: PhUser},
   {name: 'Настройки', href: '/settings', icon: PhGear},
   {name: 'Выйти', href: '/auth/logout', icon: PhSignOut},
 ];

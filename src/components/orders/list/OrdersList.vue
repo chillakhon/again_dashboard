@@ -71,7 +71,7 @@ const colDefs = ref([
   {headerName: "Создан ", field: "created_at"},
   {headerName: "Доставить", field: "delivery_date"},
   {headerName: "Сумма", field: "total_amount"},
-  {headerName: "ФИО получателя", field: "client.full_name"},
+  {headerName: "ФИО получателя", field: "clients.full_name"},
   {
     headerName: "Статус", field: "status", cellRenderer: params => {
       const ord = new Order(params.data)

@@ -40,7 +40,7 @@ const getOptionValue = (option: any) => {
 // Проверяем, выбрана ли опция
 const isSelected = (option: any) => {
   const value = getOptionValue(option)
-  return props.modelValue.includes(value)
+  return props.modelValue?.includes(value)
 }
 </script>
 
@@ -53,7 +53,7 @@ const isSelected = (option: any) => {
   >
     <SelectTrigger class="w-full">
       <SelectValue :placeholder="placeholder || 'Выберите...'">
-        {{ modelValue.length > 0 ? `Выбрано: ${modelValue.length}` : placeholder }}
+        {{ modelValue?.length > 0 ? `Выбрано: ${modelValue.length}` : placeholder }}
       </SelectValue>
     </SelectTrigger>
     <SelectContent>

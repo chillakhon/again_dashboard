@@ -8,8 +8,8 @@ export class CreateRecipe {
     instructions: string;
     production_time: number;
     is_active: boolean;
-    items: CreateRecipeComponent[];
-    products: CreateRecipeProduct[];
+    material_items: CreateRecipeComponent[];
+    output_products: CreateRecipeProduct[];
     cost_rates: CreateRecipeCostRate[];
 
     constructor(data: any) {
@@ -19,8 +19,8 @@ export class CreateRecipe {
         this.instructions = data.instructions;
         this.production_time = data.production_time;
         this.is_active = data.is_active;
-        this.items = data.items?.map((i: any) => new CreateRecipeComponent(i)) || [];
-        this.products = (data.products || []).map(
+        this.material_items = data.items?.map((i: any) => new CreateRecipeComponent(i)) || [];
+        this.output_products = (data.output_products || []).map(
             (p: any) => new CreateRecipeProduct(p)
         );
         this.cost_rates = data.cost_rates?.map((c: any) => new CreateRecipeCostRate(c)) || [];
@@ -40,10 +40,10 @@ export class CreateRecipe {
             instructions: this.instructions,
             production_time: this.production_time,
             is_active: this.is_active,
-            items: this.items.map(item =>
+            material_items: this.material_items.map(item =>
                 typeof item.toJSON === 'function' ? item.toJSON() : { ...item }
             ),
-            products: this.products.map(product =>
+            output_products: this.output_products.map(product =>
                 typeof product.toJSON === 'function' ? product.toJSON() : { ...product }
             ),
             cost_rates: this.cost_rates.map(rate =>

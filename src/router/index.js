@@ -166,17 +166,17 @@ const routes = [
                     {
                         path: '/clients/list',
                         name: 'clients-list',
-                        component: () => import('../components/clients/list/ClientsList.vue'),
+                        component: () => import('../components/clients/Index.vue'),
                     },
-                    {
-                        path: '/clients/create',
-                        name: 'clients-create',
-                        component: () => import('../components/clients/create/ClientCreate.vue'),
-                    },
+                    // {
+                    //     path: '/clients/create',
+                    //     name: 'clients-create',
+                    //     component: () => import('../components/clients/create/ClientCreate.vue'),
+                    // },
                     {
                         path: '/clients/discounts',
                         name: 'clients-discounts',
-                        component: () => import('../components/clients/discounts/index.vue'),
+                        component: () => import('../components/discounts/Index.vue'),
                     },
                 ]
 
@@ -256,13 +256,24 @@ const routes = [
                 path: '/users',
                 name: 'users',
                 component: () => import('../views/users/index.vue'),
-
             },
             {
                 path: '/profile',
                 name: 'profile',
+                redirect: '/user-profile',
                 component: () => import('../views/profile/ProfileView.vue'),
+                children: [
+                    {
+                        path: '/user-profile',
+                        name: 'user-profile',
+                        component: () => import('../components/profile/Index.vue'),
+                    },
+
+                ]
             },
+
+
+
             {
                 path: '/settings',
                 name: 'settings',

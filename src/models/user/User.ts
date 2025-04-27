@@ -1,6 +1,6 @@
-import { UserProfile} from "@/models/user/Profile";
-import {UserRole} from "@/models/user/Role";
-import {UserPermission} from "@/models/user/Permission";
+import { UserProfile } from "@/models/user/Profile";
+import { UserRole } from "@/models/user/Role";
+import { UserPermission } from "@/models/user/Permission";
 
 export class User {
   public id: number | null;
@@ -20,9 +20,21 @@ export class User {
     this.created_at = data.created_at ?? null;
     this.updated_at = data.updated_at ?? null;
     this.deleted_at = data.deleted_at ?? null;
-    this.profile = data.profile ? new UserProfile(data.profile) : null;
-    this.roles = Array.isArray(data.roles) ? data.roles.map(role => new UserRole(role)) : [];
-    this.permissions = Array.isArray(data.permissions) ? data.permissions.map(perm => new UserPermission(perm)) : [];
+
+    // Инициализация profile с созданием экземпляра UserProfile, если данные переданы
+    this.profile = data.profile
+        ? new UserProfile(data.profile)
+        : null;
+
+    // Инициализация roles с созданием экземпляров UserRole
+    this.roles = data.roles
+        ? data.roles.map(role => UserRole.fromJSON(role))
+        : [];
+
+    // Инициализация permissions с созданием экземпляров UserPermission
+    this.permissions = data.permissions
+        ? data.permissions.map(perm => perm)
+        : [];
   }
 
   get fullName(): string | null {
@@ -33,7 +45,7 @@ export class User {
   }
 
   get isSuperAdmin(): boolean {
-    return this.roles.some(role => role.id === 1);
+    return this.roles.some(role => role.id === 3);
   }
 
   get isVerified(): boolean {
@@ -45,19 +57,16 @@ export class User {
   }
 
   get getPhone(): string | null {
-    return this.profile?.phone ??  null;
+    return this.profile?.phone ?? null;
   }
-
 
   get getRoleNames(): string | null {
-    if (this.roles.length > 0) {
-      return this.roles.map(role => role.name).join(", ");
-    }
-    return null;
+    return this.roles.length > 0
+        ? this.roles.map(role => role.name).join(", ")
+        : null;
   }
 
-
-  public static fromJson(json: any): User {
+  public static fromJSON(json: any): User {
     return new User({
       id: json.id ?? null,
       email: json.email ?? null,
@@ -65,13 +74,13 @@ export class User {
       created_at: json.created_at ?? null,
       updated_at: json.updated_at ?? null,
       deleted_at: json.deleted_at ?? null,
-      profile: json.profile ? new UserProfile(json.profile) : new UserProfile({}),
-      roles: Array.isArray(json.roles) ? json.roles.map((role: any) => new UserRole(role)) : [],
-      permissions: Array.isArray(json.permissions) ? json.permissions.map((perm: any) => new UserPermission(perm)) : []
+      profile: json.profile ? json.profile : [],
+      roles: json.roles ?? [],
+      permissions: json.permissions ?? []
     });
   }
 
-  public toJson(): any {
+  public toJSON(): any {
     return {
       id: this.id,
       email: this.email,
@@ -79,7 +88,7 @@ export class User {
       created_at: this.created_at,
       updated_at: this.updated_at,
       deleted_at: this.deleted_at,
-      profile: this.profile ? {
+      profile: this.profile ? this.profile.toJSON() ?? {
         id: this.profile.id,
         user_id: this.profile.user_id,
         first_name: this.profile.first_name,
@@ -87,18 +96,18 @@ export class User {
         phone: this.profile.phone,
         address: this.profile.address
       } : null,
-      roles: this.roles.map(role => ({
+      roles: this.roles.map(role => role.toJSON() ?? {
         id: role.id,
         name: role.name,
         slug: role.slug,
         description: role.description
-      })),
-      permissions: this.permissions.map(perm => ({
+      }),
+      permissions: this.permissions.map(perm => perm.toJSON() ?? {
         id: perm.id,
         name: perm.name,
         slug: perm.slug,
         description: perm.description
-      }))
+      })
     };
   }
 }

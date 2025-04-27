@@ -118,7 +118,7 @@ async function fetchData(curPage: any) {
   const resData = result.data.value
 
   customers.value = resData.data.map((item: any) => {
-    return Customer.fromJson(item);
+    return Customer.fromJSON(item);
   })
   totalItems.value = resData.meta.count
 }
@@ -138,7 +138,7 @@ async function fetchDataByName(searchQuery: string) {
   await axios.get(`${config.public.apiUrl}/api/customer/name/${searchQuery}`)
       .then(res => {
         customers.value = res.data.data.map((item: any) => {
-          return Customer.fromJson(item);
+          return Customer.fromJSON(item);
         })
         totalItems.value = res.data.meta.count
         if (!totalItems.value) {

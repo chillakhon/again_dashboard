@@ -1,5 +1,6 @@
 <template>
   <Pagination
+      v-if="total > 10"
       v-slot="{ page }"
       :items-per-page="itemsPerPage"
       :total="total"

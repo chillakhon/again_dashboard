@@ -80,7 +80,7 @@ async function getCustomers(curPage = 1) {
   await axios.get(`${config.public.apiUrl}/api/customer?page=${curPage}&per_page=${100}`)
       .then(res => {
         if (res.data?.data.length) {
-          customers.value = res.data.data.map((item: any) => Customer.fromJson(item) as Customer);
+          customers.value = res.data.data.map((item: any) => Customer.fromJSON(item) as Customer);
         }
       })
 }
@@ -89,7 +89,7 @@ async function getApplicants() {
   await axios.get(`${config.public.apiUrl}/api/user/applicants`)
       .then(res => {
         if (res.data?.data.length) {
-          applicants.value = res.data.data.map((item: any) => User.fromJson(item) as User);
+          applicants.value = res.data.data.map((item: any) => User.fromJSON(item) as User);
         }
       })
 }
@@ -98,7 +98,7 @@ async function getDeliverers() {
   await axios.get(`${config.public.apiUrl}/api/user/deliverers`)
       .then(res => {
         if (res.data?.data.length) {
-          deliverers.value = res.data.data.map((item: any) => User.fromJson(item) as User);
+          deliverers.value = res.data.data.map((item: any) => User.fromJSON(item) as User);
         }
       })
 }

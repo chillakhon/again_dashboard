@@ -172,9 +172,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {Calendar} from '@/components/ui/calendar'
-import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
-import {Checkbox} from '@/components/ui/checkbox'
+
 import DatePicker from "@/components/common/DatePicker.vue";
 import BackButton from "@/components/BackButton.vue";
 import axios from "axios";

@@ -37,5 +37,5 @@ import { useStore } from "vuex";
 
 const currentTab = ref("activated");
 const store = useStore();
-const user = computed(() => User.fromJson(store.getters['auth/user']));
+const user = computed(() => User.fromJSON(store.getters['auth/user']));
 </script>

@@ -1,3 +1,4 @@
 <template>
-    Profile View
+  <router-view></router-view>
 </template>
+

@@ -60,7 +60,7 @@ async function fetchData() {
       )
       .then((res) => {
         if (res.data.users.data) {
-          users.value = res.data.users.data.map(item => User.fromJson(item))
+          users.value = res.data.users.data.map(item => User.fromJSON(item))
           data.value = res.data
           console.log(res.data)
         }
