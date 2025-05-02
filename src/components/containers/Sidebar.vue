@@ -261,7 +261,7 @@
 
     <!-- Main content area -->
     <div class="lg:pl-72">
-      <div class="sticky top-0 z-20 lg:mx-auto lg:max-w-7xl lg:px-8">
+      <div class="sticky top-0 z-20 lg:mx-auto lg:px-8">
         <div
             class="flex h-16 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-0 lg:shadow-none"
         >
@@ -399,7 +399,6 @@ import {
 } from '@phosphor-icons/vue';
 
 
-
 const logo = '/logo.svg'
 
 const navigation = [
@@ -465,7 +464,7 @@ const navigation = [
 
 const userNavigation = [
   {name: 'Ваш профиль', href: '/profile', icon: PhUser},
-  {name: 'Настройки', href: '/settings', icon: PhGear},
+  // {name: 'Настройки', href: '/settings', icon: PhGear},
   {name: 'Выйти', href: '/auth/logout', icon: PhSignOut},
 ];
 

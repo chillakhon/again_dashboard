@@ -271,14 +271,28 @@ const routes = [
 
                 ]
             },
-
-
-
             {
                 path: '/settings',
                 name: 'settings',
+                redirect: '/settings',
                 component: () => import('../views/settings/SettingsView.vue'),
+                children: [
+                    {
+                        path: '/settings',
+                        name: 'settings',
+                        component: () => import('../components/settings/SettingsLayout.vue'),
+                    },
+
+                ]
             },
+
+
+
+            // {
+            //     path: '/settings',
+            //     name: 'settings',
+            //     component: () => import('../views/settings/SettingsView.vue'),
+            // },
 
 
         ],
