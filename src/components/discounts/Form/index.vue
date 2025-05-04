@@ -11,7 +11,6 @@
     <DiscountConditionFields
         v-model="form"
         :products="products"
-        :categories="categories"
         :product-variants="productVariants"
         :errors="errors"
     />
@@ -34,20 +33,6 @@ import DiscountBasicFields from '@/components/discounts/Form/BasicFields.vue'
 import DiscountConditionFields from '@/components/discounts/Form/ConditionFields.vue'
 import {Discount} from "@/models/Discount";
 
-interface DiscountForm {
-  name: string
-  type: string // 'percentage' | 'fixed'
-  value: number
-  discount_type: string // 'all' | 'specific' | 'category'
-  is_active: boolean
-  starts_at: string
-  ends_at: string | null
-  priority: number
-  conditions: Record<string, any>
-  products: number[]
-  product_variants: number[]
-  categories: number[]
-}
 
 const emit = defineEmits(['submit'])
 
@@ -62,7 +47,6 @@ const discountTypes = ref([
 
 const products = ref<any[]>([])
 const productVariants = ref<any[]>([])
-const categories = ref<any[]>([])
 
 // Загрузка данных для выпадающих списков
 onMounted(async () => {
@@ -70,7 +54,6 @@ onMounted(async () => {
     const [productsRes, variantsRes, categoriesRes] = await Promise.all([
       axios.get('/products?type=simple&paginate=false'),
       // axios.get('/product-variants'),
-      // axios.get('/categories')
     ])
 
     products.value = productsRes.data

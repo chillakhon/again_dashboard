@@ -26,8 +26,8 @@ export class Discount {
         this.type = this.validateString(data.type, 'type') ?? '';
         this.value = this.validateNumber(data.value, 'value') ?? 0;
         this.is_active = data.is_active ?? false;
-        this.starts_at = this.validateString(data.starts_at, 'starts_at') ?? '';
-        this.ends_at = this.validateNullableString(data.ends_at, 'ends_at');
+        this.starts_at = this.validateString(data.starts_at, 'starts_at') ?? new Date().toISOString();
+        this.ends_at = this.validateNullableString(data.ends_at, 'ends_at') ?? new Date().toISOString();
         this.priority = this.validateNumber(data.priority, 'priority') ?? 0;
         this.conditions = this.validateConditions(data.conditions);
         this.discount_type = this.validateString(data.discount_type, 'discount_type') ?? '';

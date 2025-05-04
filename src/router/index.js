@@ -279,13 +279,36 @@ const routes = [
                 children: [
                     {
                         path: '/settings',
-                        name: 'settings',
-                        component: () => import('../components/settings/SettingsLayout.vue'),
+                        name: 'settings-layout',
+                        component: () => import('../components/settings/index.vue'),
                     },
-
+                    {
+                        path: '/settings/product-params',
+                        name: 'settings-product-params',
+                        component: () => import('../components/settings/product_params/'),
+                    },
+                    {
+                        path: '/settings/variant-props',
+                        name: 'settings-variant-props',
+                        component: () => import('../components/settings/variant_props/index.vue'),
+                    },
+                    {
+                        path: '/settings/delivery-methods',
+                        name: 'settings-delivery-methods',
+                        component: () => import('../components/settings/delivery_method/index.vue'),
+                    },
+                    {
+                        path: '/settings/custom-statuses',
+                        name: 'settings-custom-statuses',
+                        component: () => import('../components/settings/custom_status/index.vue'),
+                    },
+                    {
+                        path: '/settings/one-click-order',
+                        name: 'settings-one-click-order',
+                        component: () => import('../components/settings/one_click_order/index.vue')
+                    }
                 ]
-            },
-
+            }
 
 
             // {

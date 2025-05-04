@@ -3,6 +3,7 @@
   <DynamicsDataTable
       :data="discounts"
       :columns="columns"
+      :edit="edit"
       :loading="loading"
       @save_changes="handlingUpdate($event)"
       @deleted="
@@ -31,6 +32,7 @@ const props = defineProps({
 const emits = defineEmits(["deleted", "updated"]);
 
 async function handlingUpdate(data: Discount) {
+
   await useDiscountFunctions().updateDiscount(data)
   emits('updated')
 }
@@ -97,6 +99,8 @@ const columns = [
     header: "Активна",
     cell: (row) => {
       const discount = row.row.original as Discount;
+      console.log(discount)
+
       return discount.isCurrentlyActive
           ? h(Check, {class: "h-4 w-4 text-green-500"})
           : h(X, {class: "h-4 w-4 text-red-500"});

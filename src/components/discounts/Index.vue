@@ -9,7 +9,6 @@
       />
     </div>
     <DiscountsTable
-
         :discounts="discounts"
         @deleted="deleteDiscount($event)"
         @updated="fetchData"

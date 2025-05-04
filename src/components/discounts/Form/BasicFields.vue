@@ -29,19 +29,24 @@
       <div class="space-y-2">
         <Label for="starts_at">Дата начала</Label>
 <!--        {{modelValue.starts_at}}-->
-        <date-picker v-model="modelValue.starts_at"/>
+        <date-picker
+            v-model="modelValue.starts_at"
+        />
 <!--        <Input id="starts_at" type="date" v-model="modelValue.starts_at"/>-->
       </div>
 
       <div class="space-y-2">
         <Label for="ends_at">Дата окончания</Label>
-<!--        {{modelValue.ends_at}}-->
-        <date-picker v-model="modelValue.ends_at"/>
+        <date-picker
+            v-model="modelValue.ends_at"
+        />
+
 <!--        <Input id="ends_at" type="date" v-model="modelValue.ends_at"/>-->
       </div>
     </div>
 
     <div class="flex items-center space-x-2">
+<!--      {{modelValue.is_active}}-->
       <Checkbox id="is_active" v-model="modelValue.is_active"/>
       <Label for="is_active">Активна</Label>
     </div>

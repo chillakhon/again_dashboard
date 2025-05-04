@@ -1,17 +1,17 @@
 <template>
-  <ClientsEditForm
-      :client-id="item.id"
-      :client-data="item"
+  <DiscountsEditForm
+      :discount="item"
   />
+
 </template>
 
 <script setup lang="ts">
-import ClientsEditForm from "@/components/clients/Edit/Form.vue";
-import {Client} from "@/models/Client";
+import DiscountsEditForm from "@/components/discounts/Edit/Form.vue";
+import {Discount} from "@/models/Discount";
 
 const props = defineProps({
   item: {
-    type: Object as () => Client,
+    type: Object as () => Discount,
     required: true
   }
 })
