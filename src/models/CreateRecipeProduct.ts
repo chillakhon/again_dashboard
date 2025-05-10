@@ -1,14 +1,18 @@
-class CreateRecipeProduct {
-    product_id: number;
-    variant_id: number | null;
+export class CreateRecipeProduct {
+    component_type: 'ProductVariant' | 'Product' | 'Material';
+    component_id: number;
+    quantity: number;
+    unit_id: number;
+    variant_id: number;
     qty: number;
-    is_default: boolean;
 
     constructor(data: any) {
-        this.product_id = data?.product_id || data.component_id;
-        this.variant_id = data.variant_id;
-        this.qty = data.qty;
-        this.is_default = !!data.is_default;
+        this.component_type = data.component_type;
+        this.component_id = data.component_id;
+        this.quantity = data.quantity;
+        this.unit_id = data.unit_id;
+        this.variant_id = data.variant_id ?? null;
+        this.qty = data.qty ?? null;
     }
 
     static fromJSON(json: string): CreateRecipeProduct {
@@ -18,10 +22,10 @@ class CreateRecipeProduct {
 
     toJSON(): Record<string, any> {
         return {
-            product_id: this.product_id,
-            variant_id: this.variant_id,
-            qty: this.qty,
-            is_default: this.is_default,
+            component_type: this.component_type,
+            component_id: this.component_id,
+            quantity: this.quantity,
+            unit_id: this.unit_id,
         };
     }
 

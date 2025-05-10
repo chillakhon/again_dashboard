@@ -24,24 +24,22 @@
         />
 
         <RecipeProductsSection
-            :model="recipeData"
-            @update:model="recipeData = $event"
+            v-model="recipeData"
             :available-products="availableProducts"
             :is-loading="isLoading"
             :errors="errors"
-            @load-variants="loadProductVariants"
         />
 
 
         <div class="flex justify-end gap-2 pt-4">
-          <Button
-              type="button"
-              variant="outline"
-              @click="resetForm"
-              :disabled="isSubmitting"
-          >
-            Сбросить форму
-          </Button>
+<!--          <Button-->
+<!--              type="button"-->
+<!--              variant="outline"-->
+<!--              @click="resetForm"-->
+<!--              :disabled="isSubmitting"-->
+<!--          >-->
+<!--            Сбросить форму-->
+<!--          </Button>-->
           <Button
               type="submit"
               :disabled="isSubmitting || isLoading"
@@ -63,7 +61,6 @@ import axios from 'axios'
 import {CreateRecipe} from '@/models/CreateRecipe'
 import {useFormErrors} from '@/composables/useFormErrors'
 
-// Components
 import RecipeBasicInfo from '@/components/warehouses/recipes/forms/RecipeBasicInfo.vue'
 import RecipeComponentsSection from '@/components/warehouses/recipes/forms/RecipeComponentsSection.vue'
 import RecipeProductsSection from '@/components/warehouses/recipes/forms/RecipeProductsSection.vue'
@@ -73,10 +70,10 @@ import {Button} from '@/components/ui/button'
 import {Card, CardContent, CardDescription, CardHeader} from "@/components/ui/card";
 import {Material} from "@/models/Material";
 import Product from "@/models/Product";
-import {CostCategory} from "@/models/CostCategory";
 import {Unit} from "@/models/Unit";
 
 const router = useRouter()
+
 const {errors, setErrors, resetErrors} = useFormErrors()
 
 // State
@@ -87,47 +84,18 @@ const recipeData = ref<CreateRecipe>(new CreateRecipe({
   instructions: '',
   production_time: 0,
   is_active: true,
-  items: [],
-  products: [],
-  cost_rates: []
+  material_items: [],
+  output_products: [],
 }))
 
 const units = ref<Unit[]>([])
 const materials = ref<Material[]>([])
 const availableProducts = ref<Product[]>([])
-const costCategories = ref<CostCategory[]>([])
 
 const isLoading = ref(false)
 const isSubmitting = ref(false)
 
-const toPayload = () => {
-  return {
-    ...recipeData.value,
-    items: recipeData.value.items.map(item => {
-      return {
-        component_type: item.variant_id ? 'ProductVariant'
-            : item.product_id ? 'Product'
-                : 'Material',
-        component_id: item.variant_id || item.product_id || item.material_id,
-        quantity: item.quantity,
-        unit_id: item.unit_id,
-      }
-    }),
-    products: recipeData.value.products.map(product => {
-      return {
-        component_type: product.variant_id ? 'ProductVariant' : 'Product',
-        component_id: product.variant_id || product.product_id,
-        qty: product.qty,
-        is_default: product.is_default,
-      }
-    })
-  }
-}
 
-
-
-
-// Methods
 const loadInitialData = async () => {
   try {
     isLoading.value = true
@@ -135,8 +103,8 @@ const loadInitialData = async () => {
 
     const requests = [
       await axios.get('/units'),
-      await axios.get('/products/?material=material&paginate=false'),
-      await axios.get('/products?material=simple&paginate=false'),
+      await axios.get('/products/?type=material&paginate=false'),
+      await axios.get('/products?type=simple&paginate=false'),
     ]
 
     const [unitsRes, materialsRes, productsRes] = await Promise.all(requests)
@@ -157,99 +125,49 @@ const loadInitialData = async () => {
   }
 }
 
-const loadProductVariants = async (productId: number) => {
-  try {
-    const product = availableProducts.value.find(p => p.id === productId)
-    if (!product || product.variants) return
-
-    const response = await axios.get(`/products/${productId}/variants`)
-    product.variants = response.data.data
-  } catch (error) {
-    console.error(`Failed to load variants for product ${productId}:`, error)
-    toast.error('Не удалось загрузить варианты продукта')
-  }
-}
-
-const validateForm = (): boolean => {
-  if (!recipeData.value.name.trim()) {
-    toast.error('Укажите название техкарты')
-    return false
-  }
-
-  if (!recipeData.value.output_unit_id) {
-    toast.error('Выберите единицу измерения')
-    return false
-  }
-
-  if (recipeData.value.production_time <= 0) {
-    toast.error('Укажите корректное время производства')
-    return false
-  }
-
-  if (recipeData.value.items.length === 0) {
-    toast.error('Добавьте хотя бы один компонент')
-    return false
-  }
-
-  // Validate components
-  for (const [index, item] of recipeData.value.items.entries()) {
-    if (!item.component_id) {
-      toast.error(`Выберите компонент для элемента ${index + 1}`)
-      return false
-    }
-    if (item.quantity <= 0) {
-      toast.error(`Укажите количество для компонента ${index + 1}`)
-      return false
-    }
-  }
-
-  return true
-}
 
 const handleSubmit = async () => {
-  if (!validateForm()) return
-
   try {
-    isSubmitting.value = true
-    resetErrors()
+    isSubmitting.value = true;
+    resetErrors();
 
+    // Подготовка данных перед отправкой
+    const formData = {
+      ...recipeData.value,
+      output_products: recipeData.value.output_products.map(product => {
+        // Если выбран вариант, используем его ID и меняем тип
+        if (product.variant_id) {
+          return {
+            ...product,
+            component_id: product.variant_id,
+            component_type: 'ProductVariant'
+          };
+        }
+        // Иначе оставляем как есть (базовый продукт)
+        return product;
+      })
+    };
 
-    const payload = toPayload()
+    console.log('Отправляемые данные:', formData);
+// return
+    const response = await axios.post('/recipes', formData);
 
-    console.log(payload)
-    const response = await axios.post('/recipes', payload)
-
-
-    toast.success('Техкарта успешно создана!')
-    await router.push({name: 'recipes-list'})
+    toast.success('Техкарта успешно создана!');
+    await router.push({ name: 'recipes-list' });
   } catch (error: any) {
-    console.error('Recipe creation failed:', error)
+    console.error('Ошибка при создании техкарты:', error);
 
     if (error.response?.status === 422) {
-      setErrors(error.response.data.errors)
-      toast.error('Пожалуйста, исправьте ошибки в форме')
+      setErrors(error.response.data.errors);
+      toast.error(error.response.data.message || 'Пожалуйста, исправьте ошибки в форме');
     } else {
-      toast.error(error.response?.data?.message || 'Ошибка при создании техкарты')
+      toast.error(error.response?.data?.message || 'Ошибка при создании техкарты');
     }
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
   }
-}
+};
 
-const resetForm = () => {
-  recipeData.value = new CreateRecipe({
-    name: '',
-    description: '',
-    output_unit_id: units.value[0]?.id || null,
-    instructions: '',
-    production_time: 0,
-    is_active: true,
-    items: [],
-    products: [],
-    cost_rates: []
-  })
-  resetErrors()
-}
 
 const handleBack = () => {
   router.push({name: 'recipes-list'})

@@ -14,11 +14,10 @@
           class="h-8 text-xs"
       >
         <PlusIcon class="h-3 w-3 mr-1" />
-        Добавить
       </Button>
     </div>
 
-    <div v-if="model && model.items?.length === 0" class="rounded-lg border border-dashed p-4 text-center">
+    <div v-if="model && model.material_items?.length === 0" class="rounded-lg border border-dashed p-4 text-center">
       <PackageOpenIcon class="mx-auto h-5 w-5 text-muted-foreground" />
       <h3 class="mt-1 text-xs font-medium">Нет компонентов</h3>
       <p class="mt-1 text-xs text-muted-foreground">Добавьте материалы или продукты</p>
@@ -26,7 +25,7 @@
 
     <div v-else class="space-y-2">
       <div
-          v-for="(item, index) in model.items"
+          v-for="(item, index) in model.material_items"
           :key="item?.id ?? index"
           class="grid grid-cols-1 gap-2 border p-2 rounded-lg bg-background hover:bg-accent/50 transition-colors"
       >
@@ -40,7 +39,7 @@
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Material" class="text-xs">Материал</SelectItem>
-                <SelectItem value="Product" class="text-xs">Продукт</SelectItem>
+<!--                <SelectItem value="Product" class="text-xs">Продукт</SelectItem>-->
               </SelectContent>
             </Select>
           </div>
@@ -48,7 +47,7 @@
           <!-- Component Selection -->
           <div class="md:col-span-4">
             <Label class="text-xs">{{ item.component_type === 'Material' ? 'Материал' : 'Продукт' }}</Label>
-            <Select v-model="item.component_id" @update:modelValue="loadVariants(item)">
+            <Select required v-model="item.component_id" @update:modelValue="loadVariants(item)">
               <SelectTrigger class="h-8 text-xs">
                 <SelectValue>
                   {{ getComponentName(item) }}
@@ -75,34 +74,6 @@
                     {{ product.name }}
                   </SelectItem>
                 </template>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <!-- Variant (only for products) -->
-          <div class="md:col-span-3" v-if="item.component_type === 'Product'">
-            <Label class="text-xs">Вариант</Label>
-            <Select
-                v-model="item.variant_id"
-                :disabled="!item.component_id || !hasVariants(item.component_id)"
-            >
-              <SelectTrigger class="h-8 text-xs">
-                <SelectValue>
-                  {{ getVariantName(item.component_id, item.variant_id) }}
-                </SelectValue>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem
-                    v-for="variant in getProductVariants(item.component_id)"
-                    :key="variant.id"
-                    :value="variant.id"
-                    class="text-xs"
-                >
-                  {{ variant.name }} ({{ formatCurrency(variant.price) }})
-                </SelectItem>
-                <SelectItem :value="null" class="text-xs">
-                  Без вариантов
-                </SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -176,24 +147,23 @@ const isAddingDisabled = computed(() => {
 const addComponent = () => {
   emit('update:model', {
     ...props.model,
-    items: [
-      ...props.model.items,
+    material_items: [
+      ...props.model?.material_items,
       {
         id: Date.now().toString(),
         component_type: 'Material',
         component_id: null,
         variant_id: null,
         quantity: 0,
-        unit_id: props.units[0]?.id || null,
-        waste_percentage: 0
+        unit_id: 1,
       }
     ]
   })
 }
 
 const removeComponent = (index: number) => {
-  const newItems = props.model.items.filter((_, i) => i !== index)
-  emit('update:model', { ...props.model, items: newItems })
+  const newItems = props.model.material_items.filter((_, i) => i !== index)
+  emit('update:model', { ...props.model, material_items: newItems })
 }
 
 const updateComponent = (index: number, updatedItem: any) => {
