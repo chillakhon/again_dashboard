@@ -1,7 +1,6 @@
 export class CreateRecipeProduct {
     component_type: 'ProductVariant' | 'Product' | 'Material';
     component_id: number;
-    quantity: number;
     unit_id: number;
     variant_id: number;
     is_default: number;
@@ -10,7 +9,6 @@ export class CreateRecipeProduct {
     constructor(data: any) {
         this.component_type = this.extractComponentType(data.component_type);
         this.component_id = data.component_id;
-        this.quantity = data.quantity;
         this.unit_id = data.unit_id;
         this.variant_id = data.variant_id ?? null;
         this.is_default = data.is_default ?? null;

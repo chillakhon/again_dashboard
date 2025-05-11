@@ -11,9 +11,13 @@ export class CreateRecipeComponent {
         this.unit_id = data.unit_id;
     }
 
-    static fromJSON(json: string): CreateRecipeComponent {
-        const data = JSON.parse(json);
-        return new CreateRecipeComponent(data);
+    static fromJSON(json: any): CreateRecipeComponent {
+        const data = new CreateRecipeComponent({});
+        data.component_id = json.component_id
+        data.component_type = json.component_type
+        data.quantity = json.quantity
+        data.unit_id = json.unit_id
+        return data
     }
 
     toJSON(): Record<string, any> {

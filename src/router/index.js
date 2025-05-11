@@ -67,11 +67,11 @@ const routes = [
                         name: 'production-list',
                         component: () => import('../components/warehouses/production/index.vue'),
                     },
-                    // {
-                    //     path: '/warehouses/production/create',
-                    //     name: 'production-create',
-                    //     component: () => import('../components/warehouses/production/create/ProductionCreate.vue'),
-                    // },
+                    {
+                        path: '/warehouses/production/create',
+                        name: 'production-create',
+                        component: () => import('../components/warehouses/production/Add/Form.vue'),
+                    },
                     // {
                     //     path: '/warehouses/tech_operations',
                     //     name: 'tech_operations',

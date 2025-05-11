@@ -6,7 +6,7 @@
 <!--        :size="17"-->
 <!--      />-->
     </DialogTrigger>
-    <DialogContent class="sm:max-w-[425px]">
+    <DialogContent class="w-100%">
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription v-if="description">

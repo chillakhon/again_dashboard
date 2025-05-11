@@ -7,9 +7,19 @@
       <!--          :filter="searchParams"-->
       <!--      />-->
     </div>
-    <WarehousesProductionAdd
-        @created="fetchData()"
-    />
+<!--    <WarehousesProductionAdd-->
+<!--        @created="fetchData()"-->
+<!--    />-->
+
+    <Button
+        variant="outline"
+        size="icon"
+        class="w-auto px-3"
+        @click="router.push('/warehouses/production/create')"
+    >
+      <CirclePlus class="w-3 h-3"/>
+    </Button>
+
   </div>
 
   <!--  <div>-->
@@ -42,8 +52,12 @@ import Loader from "@/components/common/Loader.vue";
 import WarehousesProductionAdd from "@/components/warehouses/production/Add/Index.vue";
 import PaginationTable from "@/components/PaginationTable.vue";
 import BackButton from "@/components/BackButton.vue";
+import {CirclePlus} from "lucide-vue-next";
+import {Button} from "@/components/ui/button";
+import {useRouter} from "vue-router";
 
 const data = ref()
+const router = useRouter()
 
 const isLoading = ref(true);
 const renderTable = ref(1);
