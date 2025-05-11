@@ -1,5 +1,4 @@
 import { CreateRecipeComponent } from "./CreateRecipeComponent";
-import {CreateRecipeCostRate} from "@/models/CreateRecipeCostRate";
 import {CreateRecipeProduct} from "@/models/CreateRecipeProduct";
 
 export class CreateRecipe {
@@ -11,7 +10,6 @@ export class CreateRecipe {
     is_active: boolean;
     material_items: CreateRecipeComponent[];
     output_products: CreateRecipeProduct[];
-    // cost_rates: CreateRecipeCostRate[];
 
     constructor(data: any) {
         this.name = data.name;
@@ -20,11 +18,10 @@ export class CreateRecipe {
         this.instructions = data.instructions;
         this.production_time = data.production_time;
         this.is_active = data.is_active;
-        this.material_items = data.items?.map((i: any) => new CreateRecipeComponent(i)) || [];
+        this.material_items = data.material_items?.map((i: any) => new CreateRecipeComponent(i)) || [];
         this.output_products = (data.output_products || []).map(
             (p: any) => new CreateRecipeProduct(p)
         );
-        // this.cost_rates = data.cost_rates?.map((c: any) => new CreateRecipeCostRate(c)) || [];
     }
 
     static fromJSON(json: string): CreateRecipe {
@@ -47,9 +44,6 @@ export class CreateRecipe {
             output_products: this.output_products.map(product =>
                 typeof product.toJSON === 'function' ? product.toJSON() : { ...product }
             ),
-            // cost_rates: this.cost_rates.map(rate =>
-            //     typeof rate.toJSON === 'function' ? rate.toJSON() : { ...rate }
-            // ),
         };
     }
 }

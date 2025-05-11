@@ -201,7 +201,7 @@ const getProductVariants = (productId) => {
 }
 
 const getProductName = (productId) => {
-  return props.availableProducts.find(p => p.id === productId)?.name || 'Выберите'
+  return props.availableProducts?.find(p => p.id === productId)?.name || 'Выберите'
 }
 
 const getVariantName = (productId, variantId) => {

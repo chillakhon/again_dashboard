@@ -32,14 +32,6 @@
 
 
         <div class="flex justify-end gap-2 pt-4">
-<!--          <Button-->
-<!--              type="button"-->
-<!--              variant="outline"-->
-<!--              @click="resetForm"-->
-<!--              :disabled="isSubmitting"-->
-<!--          >-->
-<!--            Сбросить форму-->
-<!--          </Button>-->
           <Button
               type="submit"
               :disabled="isSubmitting || isLoading"
@@ -147,9 +139,6 @@ const handleSubmit = async () => {
         return product;
       })
     };
-
-    console.log('Отправляемые данные:', formData);
-// return
     const response = await axios.post('/recipes', formData);
 
     toast.success('Техкарта успешно создана!');

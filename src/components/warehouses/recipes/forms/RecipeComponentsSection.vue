@@ -13,12 +13,12 @@
           :disabled="isAddingDisabled"
           class="h-8 text-xs"
       >
-        <PlusIcon class="h-3 w-3 mr-1" />
+        <PlusIcon class="h-3 w-3 mr-1"/>
       </Button>
     </div>
 
     <div v-if="model && model.material_items?.length === 0" class="rounded-lg border border-dashed p-4 text-center">
-      <PackageOpenIcon class="mx-auto h-5 w-5 text-muted-foreground" />
+      <PackageOpenIcon class="mx-auto h-5 w-5 text-muted-foreground"/>
       <h3 class="mt-1 text-xs font-medium">Нет компонентов</h3>
       <p class="mt-1 text-xs text-muted-foreground">Добавьте материалы или продукты</p>
     </div>
@@ -35,11 +35,11 @@
             <Label class="text-xs">Тип</Label>
             <Select v-model="item.component_type">
               <SelectTrigger class="h-8 text-xs">
-                <SelectValue placeholder="Выберите тип" />
+                <SelectValue placeholder="Выберите тип"/>
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="Material" class="text-xs">Материал</SelectItem>
-<!--                <SelectItem value="Product" class="text-xs">Продукт</SelectItem>-->
+                <!--                <SelectItem value="Product" class="text-xs">Продукт</SelectItem>-->
               </SelectContent>
             </Select>
           </div>
@@ -85,20 +85,12 @@
                 v-model.number="item.quantity"
                 type="number"
                 min="0"
-                step="0.01"
-                class="h-8 text-xs"
+                step="1"
+                class="h-8 text-xs min-w-8"
             />
           </div>
 
-          <!-- Unit -->
-          <div class="md:col-span-1">
-            <Label class="text-xs">Ед.</Label>
-            <div class="h-8 flex items-center px-2 border rounded-md text-xs bg-muted text-muted-foreground">
-              {{ getUnitName(item.unit_id) }}
-            </div>
-          </div>
 
-          <!-- Remove button -->
           <Button
               type="button"
               variant="ghost"
@@ -106,7 +98,7 @@
               class="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
               @click="removeComponent(index)"
           >
-            <Trash2Icon class="h-4 w-4 mx-auto" />
+            <Trash2Icon class="h-4 w-4 mx-auto"/>
           </Button>
 
         </div>
@@ -116,11 +108,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { PlusIcon, PackageOpenIcon, Trash2Icon } from 'lucide-vue-next'
-import { Label } from "@/components/ui/label"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import {computed, onMounted} from 'vue'
+import {PlusIcon, PackageOpenIcon, Trash2Icon} from 'lucide-vue-next'
+import {Label} from "@/components/ui/label"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
 import {
   Select,
   SelectContent,
@@ -130,12 +122,12 @@ import {
 } from '@/components/ui/select'
 
 const props = defineProps({
-  model: { type: Object, required: true },
-  units: { type: Array, required: true },
-  materials: { type: Array, required: true },
-  products: { type: Array, required: true },
-  isUnitsLoading: { type: Boolean, default: false },
-  errors: { type: Object, default: () => ({}) }
+  model: {type: Object, required: true},
+  units: {type: Array, required: true},
+  materials: {type: Array, required: true},
+  products: {type: Array, required: true},
+  isUnitsLoading: {type: Boolean, default: false},
+  errors: {type: Object, default: () => ({})}
 })
 
 const emit = defineEmits(['update:model', 'load-variants'])
@@ -162,14 +154,8 @@ const addComponent = () => {
 }
 
 const removeComponent = (index: number) => {
-  const newItems = props.model.material_items.filter((_, i) => i !== index)
-  emit('update:model', { ...props.model, material_items: newItems })
-}
-
-const updateComponent = (index: number, updatedItem: any) => {
-  const newItems = [...props.model.items]
-  newItems[index] = updatedItem
-  emit('update:model', { ...props.model, items: newItems })
+  const newItems = props.model?.material_items.filter((_, i) => i !== index)
+  emit('update:model', {...props.model, material_items: newItems})
 }
 
 const loadVariants = (item) => {
@@ -178,42 +164,15 @@ const loadVariants = (item) => {
   }
 }
 
-const hasVariants = (productId) => {
-  const product = props.products.find(p => p.id === productId)
-  return product?.has_variants && product.variants?.length > 0
-}
-
-const getProductVariants = (productId) => {
-  return props.products.find(p => p.id === productId)?.variants || []
-}
-
 const getComponentName = (item) => {
   if (!item.component_id) return 'Выберите'
   if (item.component_type === 'Material') {
-    return props.materials.find(m => m.id === item.component_id)?.name || 'Материал'
+    return props.materials?.find(m => m.id === item.component_id)?.name || 'Материал'
   } else {
-    return props.products.find(p => p.id === item.component_id)?.name || 'Продукт'
+    return props.products?.find(p => p.id === item.component_id)?.name || 'Продукт'
   }
 }
 
-const getVariantName = (productId, variantId) => {
-  if (!productId) return 'Выберите'
-  if (variantId === null) return 'Без вариантов'
-  const variant = getProductVariants(productId).find(v => v.id === variantId)
-  return variant?.name || 'Вариант'
-}
-
-const getUnitName = (unitId) => {
-  return props.units.find(u => u.id === unitId)?.name || 'Ед.'
-}
-
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-    maximumFractionDigits: 0
-  }).format(value)
-}
 </script>
 
 <style scoped>

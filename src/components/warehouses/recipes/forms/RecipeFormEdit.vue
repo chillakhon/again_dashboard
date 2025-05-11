@@ -1,9 +1,11 @@
 <template>
   <Card>
     <CardHeader>
-      <BackButton title="Редактирование техкарты" @click="handleBack" />
+      <BackButton title="Редактирование техкарты" @click="handleBack"/>
+      <!--      <CardDescription>Заполните все необходимые поля</CardDescription>-->
     </CardHeader>
-    <CardContent>
+    <Loader v-if="isLoading"/>
+    <CardContent v-else>
       <form @submit.prevent="handleSubmit" class="space-y-6">
         <RecipeBasicInfo
             v-model="recipeData"
@@ -17,27 +19,25 @@
             :units="units"
             :materials="materials"
             :products="availableProducts"
-            :is-units-loading="isLoading"
             :errors="errors"
             @update:model="recipeData = $event"
         />
 
         <RecipeProductsSection
-            :model="recipeData"
-            @update:model="recipeData = $event"
+            v-model="recipeData"
             :available-products="availableProducts"
             :is-loading="isLoading"
             :errors="errors"
-            @load-variants="loadProductVariants"
         />
 
+
         <div class="flex justify-end gap-2 pt-4">
-          <Button type="button" variant="outline" @click="resetForm" :disabled="isSubmitting">
-            Сбросить
-          </Button>
-          <Button type="submit" :disabled="isSubmitting || isLoading">
-            <Loader v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
-            {{ isSubmitting ? 'Сохранение...' : 'Сохранить изменения' }}
+          <Button
+              type="submit"
+              :disabled="isSubmitting || isLoading"
+          >
+            <Loader v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin"/>
+            {{ isSubmitting ? 'Создание...' : 'Сохранить изменения' }}
           </Button>
         </div>
       </form>
@@ -46,32 +46,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { toast } from 'vue-sonner'
+import {ref, onMounted} from 'vue'
+import {useRouter, useRoute} from 'vue-router'
+import {toast} from 'vue-sonner'
 import axios from 'axios'
-import { CreateRecipe } from '@/models/CreateRecipe'
-import { useFormErrors } from '@/composables/useFormErrors'
+import {CreateRecipe} from '@/models/CreateRecipe'
+import {useFormErrors} from '@/composables/useFormErrors'
 
-// Components
 import RecipeBasicInfo from '@/components/warehouses/recipes/forms/RecipeBasicInfo.vue'
 import RecipeComponentsSection from '@/components/warehouses/recipes/forms/RecipeComponentsSection.vue'
 import RecipeProductsSection from '@/components/warehouses/recipes/forms/RecipeProductsSection.vue'
 import BackButton from '@/components/BackButton.vue'
 import Loader from '@/components/common/Loader.vue'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Material } from "@/models/Material";
+import {Button} from '@/components/ui/button'
+import {Card, CardContent, CardHeader} from "@/components/ui/card";
+import {Material} from "@/models/Material";
 import Product from "@/models/Product";
-import { CostCategory } from "@/models/CostCategory";
-import { Unit } from "@/models/Unit";
+import {Unit} from "@/models/Unit";
 
-const route = useRoute()
 const router = useRouter()
-const { errors, setErrors, resetErrors } = useFormErrors()
+const route = useRoute()
 
-const recipeId = Number(route.params.id)
+const {errors, setErrors, resetErrors} = useFormErrors()
 
+// State
 const recipeData = ref<CreateRecipe>(new CreateRecipe({
   name: '',
   description: '',
@@ -79,151 +77,130 @@ const recipeData = ref<CreateRecipe>(new CreateRecipe({
   instructions: '',
   production_time: 0,
   is_active: true,
-  items: [],
-  products: [],
-  cost_rates: []
+  material_items: [],
+  output_products: [],
 }))
 
 const units = ref<Unit[]>([])
 const materials = ref<Material[]>([])
 const availableProducts = ref<Product[]>([])
 
-const isLoading = ref(false)
+const isLoading = ref(true)
 const isSubmitting = ref(false)
 
-const toPayload = () => {
-  return {
-    ...recipeData.value,
-    items: recipeData.value.items.map(item => ({
-      component_type: item.variant_id ? 'ProductVariant'
-          : item.product_id ? 'Product'
-              : 'Material',
-      component_id: item.variant_id || item.product_id || item.material_id,
-      quantity: item.quantity,
-      unit_id: item.unit_id,
-    })),
-    products: recipeData.value.products.map(product => ({
-      component_type: product.variant_id ? 'ProductVariant' : 'Product',
-      component_id: product.variant_id || product.product_id,
-      qty: product.qty,
-      is_default: product.is_default,
-    }))
-  }
-}
 
 const loadInitialData = async () => {
   try {
     isLoading.value = true
     resetErrors()
 
-    const [unitsRes, materialsRes, productsRes, recipeRes] = await Promise.all([
-      axios.get('/units'),
-      axios.get('/products/?material=material&paginate=false'),
-      axios.get('/products?material=simple&paginate=false'),
-      axios.get(`/recipes/?recipe_id=${recipeId}`)
-    ])
+    const requests = [
+      await axios.get('/products/?type=material&paginate=false'),
+      await axios.get('/products?type=simple&paginate=false'),
+    ]
 
+    const [materialsRes, productsRes] = await Promise.all(requests)
 
-    units.value = unitsRes.data
     materials.value = materialsRes.data
     availableProducts.value = productsRes.data
-    recipeData.value = new CreateRecipe(recipeRes.data?.recipes || {})
-
-    console.log(recipeData.value)
 
   } catch (error) {
-    console.error('Ошибка загрузки данных:', error)
-    toast.error('Не удалось загрузить данные для редактирования')
+    console.error('Failed to load initial data:', error)
+    toast.error('Не удалось загрузить необходимые данные')
   } finally {
     isLoading.value = false
   }
 }
 
-const loadProductVariants = async (productId: number) => {
-  try {
-    const product = availableProducts.value.find(p => p.id === productId)
-    if (!product || product.variants) return
-
-    const response = await axios.get(`/products/${productId}/variants`)
-    product.variants = response.data.data
-  } catch (error) {
-    console.error(`Ошибка загрузки вариантов:`, error)
-    toast.error('Не удалось загрузить варианты продукта')
-  }
-}
-
-const validateForm = (): boolean => {
-  if (!recipeData.value.name.trim()) {
-    toast.error('Укажите название техкарты')
-    return false
-  }
-
-  if (!recipeData.value.output_unit_id) {
-    toast.error('Выберите единицу измерения')
-    return false
-  }
-
-  if (recipeData.value.production_time <= 0) {
-    toast.error('Укажите корректное время производства')
-    return false
-  }
-
-  if (recipeData.value.items.length === 0) {
-    toast.error('Добавьте хотя бы один компонент')
-    return false
-  }
-
-  for (const [index, item] of recipeData.value.items.entries()) {
-    if (!item.component_id) {
-      toast.error(`Выберите компонент для элемента ${index + 1}`)
-      return false
-    }
-    if (item.quantity <= 0) {
-      toast.error(`Укажите количество для компонента ${index + 1}`)
-      return false
-    }
-  }
-
-  return true
-}
 
 const handleSubmit = async () => {
-  if (!validateForm()) return
-
   try {
-    isSubmitting.value = true
-    resetErrors()
+    isSubmitting.value = true;
+    resetErrors();
 
-    const payload = toPayload()
 
-    await axios.put(`/recipes/${recipeId}`, payload)
+    console.log(recipeData.value)
 
-    toast.success('Техкарта успешно обновлена!')
-    // await router.push({name: 'recipes-list'})
+    // Подготовка данных перед отправкой
+    const formData = {
+      ...recipeData.value,
+      output_products: recipeData.value.output_products.map(product => {
+        // Если выбран вариант, используем его ID и меняем тип
+        if (product.variant_id) {
+          return {
+            ...product,
+            component_id: product.variant_id,
+            component_type: 'ProductVariant',
+            qty: product.qty
+          };
+        }else {
+          return {
+            ...product,
+            component_id: product.component_id,
+            component_type: 'Product',
+            qty: product.qty,
+            is_default: product.is_default
+          }
+        }
+        // Иначе оставляем как есть (базовый продукт)
+        return product;
+      })
+    };
+
+    console.log(formData)
+    // return
+    const response = await axios.put(`/recipes/${route.params?.id}`, formData);
+
+    toast.success('Техкарта успешно создана!');
+    await router.push({ name: 'recipes-list' });
   } catch (error: any) {
-    console.error('Ошибка обновления:', error)
+    console.error('Ошибка при создании техкарты:', error);
 
     if (error.response?.status === 422) {
-      setErrors(error.response.data.errors)
-      toast.error('Пожалуйста, исправьте ошибки в форме')
+      setErrors(error.response.data.errors);
+      toast.error(error.response.data.message || 'Пожалуйста, исправьте ошибки в форме');
     } else {
-      toast.error(error.response?.data?.message || 'Ошибка при обновлении техкарты')
+      toast.error(error.response?.data?.message || 'Ошибка при создании техкарты');
     }
   } finally {
-    isSubmitting.value = false
+    isSubmitting.value = false;
+  }
+};
+
+
+const handleBack = () => {
+  router.push({name: 'recipes-list'})
+}
+
+
+const fetchRecipesById = async (id) => {
+  isLoading.value = true
+  try {
+    const res = await axios.get('/recipes', {
+      params: {
+        recipe_id: id,
+      }
+    })
+
+    if (res.data.recipes){
+      recipeData.value = new CreateRecipe(res.data.recipes)
+    }
+
+    console.log(recipeData.value)
+
+  } catch (err) {
+    console.error('Ошибка загрузки рецептов:', err)
+    toast.error('Ошибка при получении техкарт')
+  } finally {
+    isLoading.value = false
   }
 }
 
-const resetForm = () => {
-  loadInitialData()
-  resetErrors()
-}
-
-const handleBack = () => {
-  router.push({ name: 'recipes-list' })
-}
-
-onMounted(() => {
-  loadInitialData()
+// Lifecycle
+onMounted(async () => {
+  await fetchRecipesById(route.params?.id)
+  await loadInitialData()
 })
+
+
 </script>

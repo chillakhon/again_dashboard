@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
+import {computed, onMounted} from "vue";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 const props = defineProps<{
