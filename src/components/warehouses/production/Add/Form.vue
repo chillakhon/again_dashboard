@@ -41,47 +41,15 @@
         <Input type="number" v-model="form.quantity" min="1" placeholder="бъем производства"/>
       </div>
 
-
-
-
-    </div>
-
-    <div class="mb-8" v-if="selectedTechCart">
-      <h2 class="text-lg font-semibold mb-4">Продукция</h2>
-
-      <div class="border rounded-lg p-4 mb-4">
-        <h3 class="font-medium mb-2">Материалы</h3>
-        <div class="text-sm text-gray-500">Выбранные материалы по техкарте</div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full border-collapse">
-          <thead>
-          <tr class="bg-gray-50">
-            <th class="p-2 text-left border">Код</th>
-            <th class="p-2 text-left border">Наименование</th>
-            <th class="p-2 text-left border">Готовые продукции</th>
-            <th class="p-2 text-left border">Объем гр-ва</th>
-            <th class="p-2 text-left border">Норма</th>
-            <th class="p-2 text-left border">Запланировано</th>
-            <th class="p-2 text-left border">Произведено</th>
-          </tr>
-          </thead>
-          <tbody>
-          <tr v-if="selectedTechCart">
-            <td class="p-2 border">{{ selectedTechCart.code }}</td>
-            <td class="p-2 border">{{ selectedTechCart.name }}</td>
-            <td class="p-2 border">
-              <Input type="number" v-model="form.quantity" min="1"/>
-            </td>
-            <td class="p-2 border">-</td>
-            <td class="p-2 border">-</td>
-            <td class="p-2 border">-</td>
-            <td class="p-2 border">-</td>
-          </tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="mb-8" >
+      <WarehousesRecipesShowComponentsTable
+          v-if="selectedTechCart"
+          :key="selectedTechCart?.id"
+          :components="selectedTechCart?.output_products"
+      />
+
     </div>
 
     <div class="mb-8">
@@ -123,7 +91,7 @@
 
 
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue'
+import {ref, onMounted, computed, watch} from 'vue'
 import axios from 'axios'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
@@ -133,6 +101,7 @@ import {Calendar} from '@/components/ui/calendar'
 import {format} from 'date-fns'
 import DatePicker from "@/components/common/DatePicker.vue";
 import BackButton from "@/components/BackButton.vue";
+import WarehousesRecipesShowComponentsTable from "@/components/warehouses/recipes/show/ComponentsTable.vue";
 import DynamicSelect from "@/components/dynamics/Dropdown/Select.vue";
 
 // Состояния формы
@@ -182,26 +151,6 @@ const fetchTechCarts = async () => {
   }
 }
 
-// Загрузка данных техкарты при выборе
-const fetchTechCartDetails = async (id: string) => {
-  if (!id) return
-
-  try {
-    const {data} = await axios.get(`/production/create/${id}`)
-    selectedTechCart.value = data
-  } catch (err) {
-    error.value = 'Ошибка загрузки техкарты'
-    console.error(err)
-  }
-}
-
-// Обработчик изменения даты
-const handleDateSelect = (date: Date | undefined) => {
-  if (date) {
-    form.value.planned_start_date = format(date, 'yyyy-MM-dd')
-  }
-}
-
 // Отправка формы
 const onSubmit = async () => {
   try {
@@ -226,4 +175,13 @@ const onSubmit = async () => {
 onMounted(() => {
   fetchTechCarts()
 })
+
+
+watch(() => form.value.techCartId, (techCartId) => {
+  if (!techCartId) return
+  selectedTechCart.value = techCarts.value.find(i => (i.id == techCartId))
+  console.log(selectedTechCart.value, techCartId)
+})
+
+
 </script>
