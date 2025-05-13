@@ -68,7 +68,7 @@
 
     <!-- Quantity and Unit -->
     <div class="space-y-2 md:col-span-3">
-      <Label>Количество</Label>
+      <Label>Кол-во</Label>
       <div class="flex items-center gap-2">
         <Input
             v-model.number="model.quantity"

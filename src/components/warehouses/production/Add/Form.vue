@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6 bg-white rounded-lg shadow">
+  <div class="mx-auto p-6 bg-white rounded-lg shadow">
 
     <BackButton title="Создать производственное задание"/>
 
@@ -27,7 +27,7 @@
       </div>
     </div>
 
-    <div class="mb-8 md:flex md:space-x-2 max-md:space-y-2">
+    <div class="md:flex md:space-x-2 max-md:space-y-2">
       <DynamicSelect
           v-model="form.techCartId"
           :options="techCarts"
@@ -37,18 +37,35 @@
       />
 
       <div>
-        <!--        <Label>Объем производства</Label>-->
-        <Input type="number" v-model="form.quantity" min="1" placeholder="бъем производства"/>
+        <Input type="number"
+               v-model="form.quantity"
+               min="1" placeholder="Кол-во производства"
+        />
       </div>
 
-      </div>
+    </div>
 
-    <div class="mb-8" >
-      <WarehousesRecipesShowComponentsTable
-          v-if="selectedTechCart"
-          :key="selectedTechCart?.id"
-          :components="selectedTechCart?.output_products"
-      />
+    <div class="my-4" v-if="selectedTechCart">
+
+      <DynamicsShadcnTabs
+          v-model="activeTab"
+          :tabs="tabs"
+          class="w-full"
+      >
+        <template #tab-product>
+          <WarehousesRecipesShowComponentsTable
+              :key="selectedTechCart?.id"
+              :components="selectedTechCart?.output_products"
+          />
+        </template>
+
+        <template #tab-material>
+          <WarehousesRecipesShowComponentsTable
+              :key="selectedTechCart?.id"
+              :components="selectedTechCart?.material_items"
+          />
+        </template>
+      </DynamicsShadcnTabs>
 
     </div>
 
@@ -97,17 +114,20 @@ import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
 import {Textarea} from '@/components/ui/textarea'
-import {Calendar} from '@/components/ui/calendar'
-import {format} from 'date-fns'
 import DatePicker from "@/components/common/DatePicker.vue";
 import BackButton from "@/components/BackButton.vue";
 import WarehousesRecipesShowComponentsTable from "@/components/warehouses/recipes/show/ComponentsTable.vue";
 import DynamicSelect from "@/components/dynamics/Dropdown/Select.vue";
+import DynamicsShadcnTabs from "@/components/dynamics/shadcn/Tabs.vue";
+
+
+const activeTab = ref('')
+
 
 // Состояния формы
 const form = ref({
   techCartId: '',
-  quantity: 0,
+  quantity: 1,
   planned_start_date: new Date().toISOString().split('T')[0], // Формат YYYY-MM-DD
   notes: '',
   organization: 'Элект-03',
@@ -144,7 +164,6 @@ const fetchTechCarts = async () => {
   try {
     const {data} = await axios.get('/recipes')
     techCarts.value = data?.recipes
-    console.log(data)
   } catch (err) {
     error.value = 'Ошибка загрузки техкарт'
     console.error(err)
@@ -182,6 +201,19 @@ watch(() => form.value.techCartId, (techCartId) => {
   selectedTechCart.value = techCarts.value.find(i => (i.id == techCartId))
   console.log(selectedTechCart.value, techCartId)
 })
+
+const tabs = [
+  {
+    value: 'product',
+    title: 'Продукция',
+    content: 'Выходные продукты'
+  },
+  {
+    value: 'material',
+    title: 'Материалы',
+    content: 'Password content here'
+  }
+]
 
 
 </script>

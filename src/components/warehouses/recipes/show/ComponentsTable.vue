@@ -4,7 +4,7 @@
       :data="components"
       :columns="columns"
       :custom-actions="true"
-      :loading="loading"
+      :loadingL A="loading"
   />
 </template>
 
@@ -30,40 +30,32 @@ const columns = [
     cell: (cell) => cell.row.index + 1,
   },
   {
-    accessorKey: "component_type",
-    header: "Тип компонента",
-    cell: (row) => {
-      const type = row.getValue();
-      switch(type) {
-        case 'Product': return 'Продукт';
-        case 'ProductVariant': return 'Вариант продукта';
-        case 'Material': return 'Материал';
-        default: return type;
-      }
-    }
+    accessorKey: "product_name",
+    header: "Готовая продукция",
   },
+
   {
-    accessorKey: "component_id",
-    header: "ID компонента",
+    accessorKey: "quantity",
+    header: "Кол-во",
+    cell: ({row}) => Math.trunc(row.original?.quantity) || Math.trunc(row.original?.qty),
   },
   {
     accessorKey: "quantity",
-    header: "Количество",
+    header: "Запланировано",
+    cell: ({row}) => Math.trunc(row.original?.quantity) || Math.trunc(row.original?.qty),
   },
-  {
-    accessorKey: "unit_id",
-    header: "ID единицы измерения",
-  },
-  {
-    accessorKey: "isActive",
-    header: "Активен",
-    cell: (row) => {
-      return row.getValue()
-          ? h(Check, {class: "h-4 w-4 text-green-500"})
-          : h(X, {class: "h-4 w-4 text-red-500"});
-    },
-  },
+
+  // {
+  //   accessorKey: "isActive",
+  //   header: "Активен",
+  //   cell: (row) => {
+  //     return row.getValue()
+  //         ? h(Check, {class: "h-4 w-4 text-green-500"})
+  //         : h(X, {class: "h-4 w-4 text-red-500"});
+  //   },
+  // },
 ];
+
 
 </script>
 

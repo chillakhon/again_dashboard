@@ -112,7 +112,7 @@
           </div>
 
           <div v-if="order.items_count > 0" class="flex justify-between text-muted-foreground mt-1">
-            <span>Количество товаров:</span>
+            <span>Кол-во товаров:</span>
             <span>{{ order.items_count }} шт</span>
           </div>
         </div>

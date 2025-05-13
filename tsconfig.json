@@ -18,14 +18,15 @@
     "resolveJsonModule": true,
     "isolatedModules": true,  // Important for Vite
     "lib": ["esnext", "dom", "dom.iterable"],
-    "noEmit": true,  // Recommended for Vite projects
+    "noEmit": true  // Recommended for Vite projects
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "types/**/*.d.ts"
+    "types/**/*.d.ts",
+    "node_modules/unplugin-auto-import/auto-imports.d.ts"
   ],
   "exclude": [
     "node_modules",

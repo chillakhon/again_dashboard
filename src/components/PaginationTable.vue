@@ -49,7 +49,7 @@ const emit = defineEmits(['currentPage'])
 const props = defineProps({
   itemsPerPage: {
     type: Number,
-    default: 10, // Количество элементов на странице
+    default: 10, // Кол-во элементов на странице
   },
   total: {
     type: Number,
@@ -57,7 +57,7 @@ const props = defineProps({
   },
   siblingCount: {
     type: Number,
-    default: 1, // Количество соседних страниц
+    default: 1, // Кол-во соседних страниц
   },
   showEdges: {
     type: Boolean,

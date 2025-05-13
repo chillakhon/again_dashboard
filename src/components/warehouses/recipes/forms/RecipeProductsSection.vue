@@ -88,7 +88,7 @@
           </div>
 
           <div class="">
-            <Label class="text-xs">Количество</Label>
+            <Label class="text-xs">Кол-во</Label>
             <div class="flex gap-2">
               <Input
                   v-model.number="product.qty"
@@ -113,7 +113,7 @@
           </div>
         </div>
 
-        <!-- Количество -->
+        <!-- Кол-во -->
       </div>
     </div>
   </div>
