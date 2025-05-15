@@ -22,35 +22,12 @@
 
   </div>
 
-  <!--  <div>-->
-  <!--    <Loader v-if="isLoading"/>-->
-  <!--    <CityZoneTable-->
-  <!--        v-else-->
-  <!--        :key="renderTable"-->
-  <!--        :data="cityZones"-->
-  <!--        @deleted="fetchData();"-->
-  <!--        @updated="fetchData();"-->
-  <!--    />-->
-  <!--    <div v-show="!isLoading" class="w-full flex justify-end mt-1">-->
-  <!--      <PaginationTable-->
-  <!--          :total="totalItems"-->
-  <!--          :default-page="currentPage"-->
-  <!--          :items-per-page="itemsPerPage"-->
-  <!--          :sibling-count="1"-->
-  <!--          :show-edges="true"-->
-  <!--          @current-page="page => { currentPage = page; fetchData(); }"-->
-  <!--      />-->
-  <!--    </div>-->
-  <!--  </div>-->
 </template>
 
 <script setup lang="ts">
 import {ref, onMounted} from "vue";
 import axios from "axios";
 import {toast} from "vue-sonner";
-import Loader from "@/components/common/Loader.vue";
-import WarehousesProductionAdd from "@/components/warehouses/production/Add/Index.vue";
-import PaginationTable from "@/components/PaginationTable.vue";
 import BackButton from "@/components/BackButton.vue";
 import {CirclePlus} from "lucide-vue-next";
 import {Button} from "@/components/ui/button";

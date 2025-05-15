@@ -12,7 +12,6 @@
 import {h, PropType, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {CreateRecipeComponent} from "@/models/CreateRecipeComponent";
-import {Check, X} from "lucide-vue-next";
 
 const props = defineProps({
   components: {
@@ -36,24 +35,27 @@ const columns = [
 
   {
     accessorKey: "quantity",
-    header: "Кол-во",
-    cell: ({row}) => Math.trunc(row.original?.quantity) || Math.trunc(row.original?.qty),
+    header: "Норма",
+    cell: ({row}) => {
+      let qty = Math.trunc(row.original?.quantity) || Math.trunc(row.original?.qty)
+      // return 231
+      return qty
+    },
   },
   {
     accessorKey: "quantity",
     header: "Запланировано",
-    cell: ({row}) => Math.trunc(row.original?.quantity) || Math.trunc(row.original?.qty),
+    cell: ({row}) => {
+      let qty = ` ${Math.trunc(row.original?.quantity) ||
+      Math.trunc(row.original?.qtyInit ||
+          Math.trunc(row.original?.qty))} шт`
+      // return 231
+      console.log(row.original)
+      return qty
+    },
   },
 
-  // {
-  //   accessorKey: "isActive",
-  //   header: "Активен",
-  //   cell: (row) => {
-  //     return row.getValue()
-  //         ? h(Check, {class: "h-4 w-4 text-green-500"})
-  //         : h(X, {class: "h-4 w-4 text-red-500"});
-  //   },
-  // },
+
 ];
 
 
