@@ -88,6 +88,7 @@ import {
 import {onMounted, ref} from "vue";
 import Loader from "@/components/common/Loader.vue";
 import HomeChart from "@/components/dashboard/charts/HomeChart.vue";
+import {toast} from "vue-sonner";
 
 const isLoading = ref<Boolean>(true)
 const data = ref()
@@ -102,8 +103,13 @@ async function fetchData() {
         data.value = res.data
         // console.log(data.value.chartData)
       })
-      .catch(err => console.log(err))
-      .finally(() => isLoading.value = false)
+      .catch(err => {
+        toast.error(err.response.data.message || err.response.data.error || 'Что то пащло не так!')
+        console.log(err)
+      })
+      .finally(() => {
+        isLoading.value = false
+      })
 }
 
 

@@ -37,6 +37,7 @@ import UsersTable from "@/components/users/Table.vue";
 import UsersAdd from "@/components/users/Add/Index.vue";
 import {User} from "@/models/user/User"
 import Loader from "@/components/common/Loader.vue";
+import {toast} from "vue-sonner";
 
 const data = ref()
 const users = ref<User[]>([]);
@@ -65,7 +66,8 @@ async function fetchData() {
 
         totalItems.value = res.data.users.total;
       })
-      .catch(() => {
+      .catch((err) => {
+        toast.error(err.response.data.message || err.response.data.error || 'Что пощло не так!')
         users.value = [];
       })
       .finally(() => {

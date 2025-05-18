@@ -45,7 +45,7 @@ export class User {
     }
 
     get isSuperAdmin(): boolean {
-        return this.roles.some(role => role.id === 3);
+        return this.roles.some(role => role.id === 1 || 2);
     }
 
     get isVerified(): boolean {
