@@ -29,8 +29,8 @@ const columns = [
     cell: (cell) => cell.row.index + 1,
   },
   {
-    accessorKey: "material.name",
-    header: "Материалы",
+    accessorKey: "output.name",
+    header: "Готовая продукция",
   },
 
   {

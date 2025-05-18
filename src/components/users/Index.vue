@@ -55,14 +55,12 @@ const deleteUser = (user) => {
 async function fetchData() {
 
   await axios
-      .get(
-          `/users?page=${currentPage.value}&per_page=${itemsPerPage.value}`
-      )
+      .get(`/users?page=${currentPage.value}&per_page=${itemsPerPage.value}`)
       .then((res) => {
         if (res.data.users.data) {
           users.value = res.data.users.data.map(item => User.fromJSON(item))
           data.value = res.data
-          console.log(res.data)
+          // console.log(res.data)
         }
 
         totalItems.value = res.data.users.total;

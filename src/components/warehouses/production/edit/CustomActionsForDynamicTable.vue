@@ -2,14 +2,17 @@
   <div class="flex space-x-2 justify-end">
 
 
-    <CityZoneDetailsShow :city_zone="item"/>
+    <!--    <Show :city_zone="item"/>-->
 
-    <DynamicsDataTableEdit
-        :item="item"
-        :edit="edit"
-        @save_changes="$emit('save_changes', $event)"
-    />
-    <dynamics-alert-dialog
+    <!--    {{ item?.base_batch_number }}-->
+
+
+    <!--    <Edit-->
+    <!--        :item="item"-->
+    <!--        :edit="edit"-->
+    <!--        @save_changes="$emit('save_changes', $event)"-->
+    <!--    />-->
+    <AlertDialog
         title=""
         description="Вы уверены что хотите удалить?"
         button-name="Удалить"
@@ -20,17 +23,24 @@
 
     <ArrowRight
         class="text-gray-400 hover:text-gray-500 transition cursor-pointer"
-        :size="17" @click="changeTab(item)"
+        :size="17"
+        @click="router.push(`/warehouses/production/edit/${item?.base_batch_number}`)"
     />
+
+    <!--    <ArrowRight-->
+    <!--        class="text-gray-400 hover:text-gray-500 transition cursor-pointer"-->
+    <!--        :size="17" @click="changeTab(item)"-->
+    <!--    />-->
 
   </div>
 </template>
 
 <script setup lang="ts">
 import {Trash2, ArrowRight, Pencil, Eye} from "lucide-vue-next";
-import {useTabsStore} from "~/stores/useTabsStore";
+import AlertDialog from "@/components/dynamics/AlertDialog.vue"
+import {useRouter} from "vue-router";
 
-const tabStore = useTabsStore()
+const router = useRouter()
 
 defineProps({
   item: {
@@ -47,12 +57,5 @@ defineEmits([
   'save_changes', 'deleted', 'arrow_right'
 ]);
 
-
-const changeTab = (value: any) => {
-  tabStore.setItem(value)
-  if (value) {
-    tabStore.setCurrentTab('customer_zones');
-  }
-};
 
 </script>

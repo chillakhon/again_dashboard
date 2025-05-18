@@ -47,7 +47,7 @@
     <!-- Выбор ролей -->
     <div class="space-y-2">
       <Label for="roles">Роли <span class="text-red-500">*</span></Label>
-      <MultiSelect
+      <DynamicsDropdownSelect
           id="roles"
           :options="props.roles"
           optionLabel="name"
@@ -89,6 +89,7 @@ import {Label} from '@/components/ui/label'
 import {Loader2} from 'lucide-vue-next'
 import {useUserFunctions} from "@/composables/userFunctions";
 import MultiSelect from "@/components/common/MultiSelect.vue";
+import DynamicsDropdownSelect from "@/components/dynamics/Dropdown/Select.vue";
 
 const props = defineProps({
   roles: {

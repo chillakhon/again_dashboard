@@ -135,7 +135,6 @@ const handleSubmit = async () => {
             component_type: 'ProductVariant'
           };
         }
-        // Иначе оставляем как есть (базовый продукт)
         return product;
       })
     };

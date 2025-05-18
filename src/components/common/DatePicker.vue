@@ -119,7 +119,7 @@ const displayValue = computed(() => {
           variant="outline"
           :class="cn(
           'w-full justify-start text-left font-normal',
-          !internalValue.value && 'text-muted-foreground'
+          !internalValue && 'text-muted-foreground'
         )"
       >
         <CalendarIcon class="mr-2 h-4 w-4" />

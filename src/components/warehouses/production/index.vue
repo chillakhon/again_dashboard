@@ -7,9 +7,9 @@
       <!--          :filter="searchParams"-->
       <!--      />-->
     </div>
-<!--    <WarehousesProductionAdd-->
-<!--        @created="fetchData()"-->
-<!--    />-->
+    <!--    <WarehousesProductionAdd-->
+    <!--        @created="fetchData()"-->
+    <!--    />-->
 
     <Button
         variant="outline"
@@ -19,8 +19,14 @@
     >
       <CirclePlus class="w-3 h-3"/>
     </Button>
-
   </div>
+
+  <Loader v-if="isLoading"/>
+
+  <warehousesProductionTable
+      v-else
+      :data="productionBatches"
+  />
 
 </template>
 
@@ -32,6 +38,8 @@ import BackButton from "@/components/BackButton.vue";
 import {CirclePlus} from "lucide-vue-next";
 import {Button} from "@/components/ui/button";
 import {useRouter} from "vue-router";
+import warehousesProductionTable from "@/components/warehouses/production/Table.vue";
+import {BatchGet} from "@/models/BatchGet";
 
 const data = ref()
 const router = useRouter()
@@ -49,10 +57,10 @@ const searchParams = ref({
 });
 
 // Массив для данных городских зон
-const cityZones = ref<[]>([]);
+const productionBatches = ref<BatchGet[]>([]);
 
 onMounted(async () => {
-  // await fetchData();
+  await fetchData();
 });
 
 async function fetchData() {
@@ -62,25 +70,24 @@ async function fetchData() {
 
     if (searchParams.value.search) {
       response = await axios.get(
-          `/city-zone/name/${encodeURIComponent(searchParams.value.search)}?page=${currentPage.value}&per_page=${itemsPerPage.value}`
+          `/production/name/${encodeURIComponent(searchParams.value.search)}?page=${currentPage.value}&per_page=${itemsPerPage.value}`
       );
-      totalItems.value = response.data.meta.count || cityZones.value.length;
+      totalItems.value = response.data.total || productionBatches.value.length;
     } else {
       response = await axios.get(
-          `/city-zone?page=${currentPage.value}&per_page=${itemsPerPage.value}`
+          `/production?page=${currentPage.value}&per_page=${itemsPerPage.value}`
       );
       // data.value = response.data.data
-      totalItems.value = response.data.meta.count || cityZones.value.length;
+      totalItems.value = response.data.total || productionBatches.value.length;
     }
 
     if (!response.data.data?.length) {
+      productionBatches.value = []
       toast.error('Записи не найдены');
       return
     }
 
-    cityZones.value = response.data.data.map((item: any) => {
-      return item
-    });
+    productionBatches.value = response.data.data.map((item: any) => BatchGet.fromJSON(item));
 
   } catch (error: any) {
     toast.error(error.message);

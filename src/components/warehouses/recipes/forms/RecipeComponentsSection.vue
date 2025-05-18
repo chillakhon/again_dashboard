@@ -38,7 +38,7 @@
                 <SelectValue placeholder="Выберите тип"/>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Material" class="text-xs">Материал</SelectItem>
+                <SelectItem value="Product" class="text-xs">Материал</SelectItem>
                 <!--                <SelectItem value="Product" class="text-xs">Продукт</SelectItem>-->
               </SelectContent>
             </Select>
@@ -46,7 +46,7 @@
 
           <!-- Component Selection -->
           <div class="md:col-span-4">
-            <Label class="text-xs">{{ item.component_type === 'Material' ? 'Материал' : 'Продукт' }}</Label>
+            <Label class="text-xs">{{ item.component_type === 'Product' ? 'Материал' : 'Продукт' }}</Label>
             <Select required v-model="item.component_id" @update:modelValue="loadVariants(item)">
               <SelectTrigger class="h-8 text-xs">
                 <SelectValue>
@@ -54,7 +54,7 @@
                 </SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <template v-if="item.component_type === 'Material'">
+                <template v-if="item.component_type === 'Product'">
                   <SelectItem
                       v-for="material in materials"
                       :key="material.id"
@@ -143,7 +143,7 @@ const addComponent = () => {
       ...props.model?.material_items,
       {
         id: Date.now().toString(),
-        component_type: 'Material',
+        component_type: 'Product',
         component_id: null,
         variant_id: null,
         quantity: 0,
@@ -166,7 +166,7 @@ const loadVariants = (item) => {
 
 const getComponentName = (item) => {
   if (!item.component_id) return 'Выберите'
-  if (item.component_type === 'Material') {
+  if (item.component_type === 'Product') {
     return props.materials?.find(m => m.id === item.component_id)?.name || 'Материал'
   } else {
     return props.products?.find(p => p.id === item.component_id)?.name || 'Продукт'

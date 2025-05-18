@@ -5,18 +5,22 @@
 
     <!--    <h1 class="text-2xl font-bold mb-6">Производственное задание №</h1>-->
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-5 items-end">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-5 items-end">
       <div>
         <Label>Организация</Label>
         <div class="flex items-center gap-2 mt-1">
           <Input v-model="form.organization" disabled/>
-          <Button variant="outline">Выбрать</Button>
+<!--          <Button variant="outline">Выбрать</Button>-->
         </div>
       </div>
 
       <div>
-        <Label>Планируемая дата производства</Label>
+        <Label>Начало произ-ва</Label>
         <DatePicker placeholder="Выберите дату" v-model="form.planned_start_date"/>
+      </div>
+      <div>
+        <Label>Завершение произ-ва</Label>
+        <DatePicker placeholder="Выберите дату" v-model="form.planned_end_datetime"/>
       </div>
     </div>
 
@@ -36,8 +40,9 @@
         />
       </div>
 
-      <div class="md:min-w-[250]">
+      <div class="md:min-w-[100px] w-full">
         <DynamicSelect
+            class=""
             v-model="form.batches.performer_id"
             :options="users"
             placeholder="Выберите исполнитель"
@@ -51,20 +56,21 @@
     <div class="my-4" v-if="selectedTechCart">
 
       <DynamicsShadcnTabs
+          :key="renderRecipe"
           v-model="activeTab"
           :tabs="tabs"
           class="w-full"
       >
         <template #tab-product>
-          <WarehousesRecipesShowComponentsTable
+          <ProductsTable
               :key="renderComp"
               :components="form.batches.output_products"
           />
         </template>
 
         <template #tab-material>
-          <WarehousesRecipesShowComponentsTable
-              :key="selectedTechCart?.id"
+          <ComponentsTable
+              :key="renderComp"
               :components="form.batches?.material_items"
           />
         </template>
@@ -118,13 +124,18 @@ import {Label} from '@/components/ui/label'
 import {Textarea} from '@/components/ui/textarea'
 import DatePicker from "@/components/common/DatePicker.vue";
 import BackButton from "@/components/BackButton.vue";
-import WarehousesRecipesShowComponentsTable from "@/components/warehouses/recipes/show/ComponentsTable.vue";
-import DynamicSelect from "@/components/dynamics/Dropdown/Select.vue";
+import ProductsTable from "@/components/warehouses/recipes/show/ProductsTable.vue";
+import ComponentsTable from "@/components/warehouses/recipes/show//ComponentsTable.vue";import DynamicSelect from "@/components/dynamics/Dropdown/Select.vue";
 import DynamicsShadcnTabs from "@/components/dynamics/shadcn/Tabs.vue";
 import {User} from "@/models/user/User";
+import {toast} from "vue-sonner";
+import {useRouter} from "vue-router";
 
+
+const router = useRouter()
 
 const renderComp = ref(1)
+const renderRecipe = ref(1)
 const activeTab = ref('')
 const selectedTechCart = ref<any>(null)
 // Данные для формы
@@ -133,17 +144,16 @@ const users = ref<any[]>([])
 const isLoading = ref(false)
 
 
-
-
 // Состояния формы
 const form = ref({
   techCartId: '',
   quantity: 1,
   planned_start_date: new Date().toISOString().split('T')[0],
+  planned_end_datetime: new Date().toISOString().split('T')[0],
   notes: '',
-  organization: 'Элект-03',
-  start_time: '08:00',
-  end_time: '17:00',
+  organization: 'Again',
+  // start_time: '08:00',
+  // end_time: '17:00',
   batches: {
     id: '',
     recipe_id: null,
@@ -156,9 +166,12 @@ const form = ref({
 
 watch(() => selectedTechCart.value?.output_products, (newProducts) => {
   form.value.batches.output_products = newProducts ? [...newProducts] : []
+  // console.log(form.value.batches, 'tuck tec')
+  renderRecipe.value++
 }, {deep: true})
 watch(() => selectedTechCart.value?.material_items, (newProducts) => {
   form.value.batches.material_items = newProducts ? [...newProducts] : []
+  // renderRecipe.value++
 }, {deep: true})
 
 watch(() => form.value.quantity, (newQty) => {
@@ -166,6 +179,10 @@ watch(() => form.value.quantity, (newQty) => {
   form.value.batches.output_products = form.value.batches.output_products.map(product => ({
     ...product,
     qtyInit: product.qty * newQty
+  }))
+  form.value.batches.material_items = form.value.batches.material_items.map(product => ({
+    ...product,
+    qtyInitQuantity: product.quantity * newQty
   }))
   renderComp.value++
 }, {immediate: true})
@@ -182,34 +199,60 @@ const fetchTechCarts = async () => {
 }
 const fetchUsers = async () => {
   try {
-    const {data} = await axios.get('/users')
-    users.value = data.users?.data.map(i => User.fromJSON(i)).filter(i => i.getRoleNames !== 'Клиент')
-    console.log(users.value)
+    const {data} = await axios.get('/users?only_admin_users=true')
+    users.value = data.users?.data.map(i => User.fromJSON(i))
+    // console.log(users.value)
   } catch (err) {
     console.error(err)
   }
 }
 
 const onSubmit = async () => {
-  console.log(form.value)
-  return
-  try {
-    isLoading.value = true
-    await axios.post('/batches', {
-      quantity: form.value.quantity,
-      planned_start_date: form.value.planned_start_date,
-      notes: form.value.notes,
-      tech_cart_id: form.value.techCartId,
-      start_time: form.value.start_time,
-      end_time: form.value.end_time
-    })
-    // Редирект или уведомление об успехе
-  } catch (err) {
-    console.error(err)
-  } finally {
-    isLoading.value = false
-  }
+  isLoading.value = true
+  await axios.post('/production/create-batch', {
+    quantity: form.value.quantity,
+    planned_start_date: form.value.planned_start_date,
+    planned_end_datetime: form.value.planned_end_datetime,
+    notes: form.value.notes,
+    batches: prepareDataFormBatches(form.value.batches)
+  })
+      .then((res) => {
+        if (res.data.success) {
+          router.push('/warehouses/production/list')
+        } else {
+          toast.success(res.data.message)
+        }
+      })
+      .catch(err => {
+        toast.error(err.response.data.error || err.response.data.message || 'Что то пащло не так')
+      })
+      .finally(() => {
+        isLoading.value = false
+      })
 }
+
+function prepareDataFormBatches(batches) {
+  return [
+    {
+      id: batches.id || "",
+      batch_number: null,
+      recipe_id: batches.recipe_id,
+      planned_qty: batches.planned_qty || null,
+      performer_id: batches.performer_id,
+      material_items: batches.material_items.map(item => ({
+        component_type: item.component_type,
+        component_id: item.component_id,
+        quantity: item.qtyInitQuantity || item.quantity
+      })),
+      output_products: batches.output_products.map(product => ({
+        component_type: product.component_type,
+        component_id: product.component_id,
+        qty: product.qtyInit || product.qty || null
+      }))
+    }
+  ]
+}
+
 
 onMounted(async () => {
   await fetchTechCarts()

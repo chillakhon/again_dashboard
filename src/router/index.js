@@ -72,6 +72,11 @@ const routes = [
                         name: 'production-create',
                         component: () => import('../components/warehouses/production/Add/Form.vue'),
                     },
+                    {
+                        path: '/warehouses/production/edit/:id',
+                        name: 'production-edit',
+                        component: () => import('../components/warehouses/production/edit/index.vue'),
+                    },
                     // {
                     //     path: '/warehouses/tech_operations',
                     //     name: 'tech_operations',

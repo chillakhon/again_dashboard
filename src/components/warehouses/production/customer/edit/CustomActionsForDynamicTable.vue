@@ -1,12 +1,11 @@
 <template>
   <div class="flex space-x-2 justify-end">
-
-    <DynamicsDataTableEdit
+    <Edit
         :item="item"
         :edit="edit"
         @save_changes="$emit('save_changes', $event)"
     />
-    <dynamics-alert-dialog
+    <AlertDialog
         title=""
         description="Вы уверены что хотите удалить?"
         button-name="Удалить"
