@@ -12,11 +12,13 @@
               <span>Новые заказы</span>
               <div class="h-2 w-2 rounded-full bg-red-500 animate-pulse"/>
             </CardDescription>
-            <CardTitle class="text-4xl text-primary group-hover:text-primary/90 transition-colors">{{data?.new?.count ?? 0}}</CardTitle>
+            <CardTitle class="text-4xl text-primary group-hover:text-primary/90 transition-colors">
+              {{ data?.new?.count ?? 0 }}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-muted-foreground">{{data?.new?.total_amount ?? 0}} ₽</span>
+              <span class="text-sm text-muted-foreground">{{ data?.new?.total_amount ?? 0 }} ₽</span>
               <ChevronRight class="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors"/>
             </div>
           </CardContent>
@@ -31,11 +33,13 @@
               <span>В обработке</span>
               <div class="h-2 w-2 rounded-full bg-amber-500"/>
             </CardDescription>
-            <CardTitle class="text-4xl text-amber-500 group-hover:text-amber-500/90 transition-colors">{{data?.processing?.count ?? 0}}</CardTitle>
+            <CardTitle class="text-4xl text-amber-500 group-hover:text-amber-500/90 transition-colors">
+              {{ data?.processing?.count ?? 0 }}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-muted-foreground">{{data?.processing?.total_amount ?? 0}} ₽</span>
+              <span class="text-sm text-muted-foreground">{{ data?.processing?.total_amount ?? 0 }} ₽</span>
               <ChevronRight class="h-4 w-4 text-muted-foreground group-hover:text-amber-500 transition-colors"/>
             </div>
           </CardContent>
@@ -51,7 +55,7 @@
               <div class="h-2 w-2 rounded-full bg-blue-500"/>
             </CardDescription>
             <CardTitle class="text-4xl text-blue-500 group-hover:text-blue-500/90 transition-colors">
-              {{ data?.approved?.count ?? 0}}
+              {{ data?.approved?.count ?? 0 }}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -65,7 +69,7 @@
     </div>
 
 
-    <HomeChart  :chartData="data.chartData"/>
+    <HomeChart :chartData="data.chartData"/>
 
 
   </div>
@@ -96,7 +100,7 @@ async function fetchData() {
   await axios.get('/orders/stats')
       .then(res => {
         data.value = res.data
-        console.log(data.value.chartData)
+        // console.log(data.value.chartData)
       })
       .catch(err => console.log(err))
       .finally(() => isLoading.value = false)
