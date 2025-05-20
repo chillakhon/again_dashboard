@@ -29,7 +29,7 @@ const columns = [
     cell: (cell) => cell.row.index + 1,
   },
   {
-    accessorKey: "output.name",
+    accessorKey: "component.name",
     header: "Готовая продукция",
   },
 
