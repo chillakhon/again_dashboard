@@ -209,8 +209,11 @@ const fetchUsers = async () => {
 
 const onSubmit = async () => {
   isLoading.value = true
+
+  // console.log(form.value.quantity)
+  // return
   await axios.post('/production/create-batch', {
-    quantity: form.value.quantity,
+    // quantity: form.value.quantity,
     planned_start_date: form.value.planned_start_date,
     planned_end_date: form.value.planned_end_datetime,
     notes: form.value.notes,
@@ -237,7 +240,7 @@ function prepareDataFormBatches(batches) {
       id: batches.id || "",
       batch_number: null,
       recipe_id: batches.recipe_id,
-      planned_quantity: batches.planned_qty || null,
+      planned_quantity: form.value.quantity || null,
       performer_id: batches.performer_id,
       material_items: batches.material_items.map(item => ({
         component_type: item.component_type,

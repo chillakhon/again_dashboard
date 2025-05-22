@@ -26,24 +26,28 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-5 items-end">
-      <div>
-        <Label>Статус</Label>
-        <Input v-model="form.status" disabled class="mt-1"/>
-      </div>
+    <div class="md:flex md:space-x-2 my-5 items-end w-full">
 
-      <div>
-        <Label>Кол-во про-ва</Label>
-        <Input
-            type="number"
-            v-model="form.planned_quantity"
-            min="1"
-            placeholder="Кол-во производства"
+      <div class="w-full">
+        <Label>Техкарты</Label>
+        <DynamicSelect
+            v-model="form.batches[0].recipe_id"
+            :options="recipes"
+            placeholder="Выберите техкарту"
+            option-label="name"
+            option-value="id"
             class="mt-1"
         />
       </div>
 
-      <div>
+      <div class="w-full">
+        <!--        {{useStatus().getStatusConfig(form.status).text}}-->
+        <Label>Статус</Label>
+        <Input v-model="useStatus().getStatusConfig(form.status).text" disabled class="mt-1"/>
+      </div>
+
+
+      <div class="w-full">
         <Label>Исполнитель</Label>
         <DynamicSelect
             v-model="form.batches[0].performer_id"
@@ -54,6 +58,19 @@
             class="mt-1"
         />
       </div>
+
+
+      <div class="max-w-20 ">
+        <Label>Кол-во</Label>
+        <Input
+            type="number"
+            v-model="form.planned_quantity"
+            min="1"
+            placeholder="Кол-во производства"
+            class="mt-1"
+        />
+      </div>
+
     </div>
 
     <div class="my-4" v-if="form.batches[0].recipe">
@@ -119,6 +136,7 @@ import DynamicsShadcnTabs from "@/components/dynamics/shadcn/Tabs.vue";
 import {toast} from "vue-sonner";
 import {useRouter} from "vue-router";
 import {User} from "@/models/user/User";
+import {useStatus} from "@/composables/useStatus";
 
 const router = useRouter()
 const props = defineProps({
@@ -130,6 +148,7 @@ const props = defineProps({
 
 const activeTab = ref('product')
 const users = ref<any[]>([])
+const recipes = ref<any[]>([])
 const isLoading = ref(false)
 
 // Инициализация формы с данными из props
@@ -148,12 +167,21 @@ const fetchUsers = async () => {
   try {
     const {data} = await axios.get('/users?only_admin_users=true')
     users.value = data.users?.data.map(i => User.fromJSON(i)) || []
-    // console.log(users.value)
   } catch (err) {
     console.error(err)
     toast.error('Не удалось загрузить список пользователей')
   }
 }
+const fetchRecipes = async () => {
+  try {
+    const data = await axios.get('/recipes')
+    recipes.value = data.data.recipes || []
+  } catch (err) {
+    console.error(err)
+    toast.error('Не удалось загрузить список пользователей')
+  }
+}
+
 
 // Отправка формы
 const onSubmit = async () => {
@@ -226,6 +254,7 @@ watch(() => form.value.planned_quantity, (newQty) => {
 
 onMounted(async () => {
   await fetchUsers()
+  await fetchRecipes()
 })
 
 const tabs = [
