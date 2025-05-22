@@ -14,6 +14,7 @@
           @click.stop="clearSelection"
           class="absolute right-8 h-full flex items-center text-muted-foreground hover:text-foreground transition-colors"
           type="button"
+          :disabled="disabled"
       >
         <X class="h-4 w-4" />
       </button>

@@ -4,7 +4,7 @@
       :data="components"
       :columns="columns"
       :custom-actions="true"
-      :loadingL A="loading"
+      :loading="loading"
   />
 </template>
 
@@ -19,6 +19,10 @@ const props = defineProps({
     default: () => []
   },
   loading: Boolean,
+  planned_quantity: {
+    type: Number,
+    default: 1
+  }
 });
 
 
@@ -37,18 +41,14 @@ const columns = [
     accessorKey: "quantity",
     header: "Норма",
     cell: ({row}) => {
-      // return 231
-      return Math.trunc(row.original?.quantity) || Math.trunc(row.original?.qty)
+      return Math.trunc(row.original?.quantity)
     },
   },
   {
     accessorKey: "quantity",
     header: "Запланировано",
     cell: ({row}) => {
-      let qty = ` ${ Math.trunc(row.original?.qtyInit || row.original?.qtyInitQuantity ||
-          Math.trunc(row.original?.qty) || Math.trunc(row.original?.quantity) )} шт`
-      // return 231
-      // console.log(row.original)
+      let qty = ` ${ Math.trunc(row.original?.quantity) * Math.trunc(props.planned_quantity)} шт`
       return qty
     },
   },

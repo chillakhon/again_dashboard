@@ -30,7 +30,7 @@
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody class="text-sm">
+        <TableBody class="text-xs">
           <template v-if="table.getRowModel().rows?.length">
             <template v-for="row in table.getRowModel().rows" :key="row.id">
               <TableRow :data-state="row.getIsSelected() && 'selected'">

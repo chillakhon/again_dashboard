@@ -4,7 +4,7 @@
       :data="components"
       :columns="columns"
       :custom-actions="true"
-      :loadingL A="loading"
+      :loading="loading"
   />
 </template>
 
@@ -12,6 +12,7 @@
 import {PropType} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {CreateRecipeComponent} from "@/models/CreateRecipeComponent";
+import {useStatus} from "@/composables/useStatus";
 
 const props = defineProps({
   components: {
@@ -19,6 +20,10 @@ const props = defineProps({
     default: () => []
   },
   loading: Boolean,
+  planned_quantity: {
+    type: Number,
+    default: 1
+  },
 });
 
 
@@ -37,7 +42,6 @@ const columns = [
     accessorKey: "quantity",
     header: "Норма",
     cell: ({row}) => {
-      // return 231
       return Math.trunc(row.original?.qty)
     },
   },
@@ -45,11 +49,15 @@ const columns = [
     accessorKey: "quantity",
     header: "Запланировано",
     cell: ({row}) => {
-      let qty = ` ${ Math.trunc(row.original?.qtyInit || row.original?.qtyInitQuantity ||
-          Math.trunc(row.original?.qty)  )} шт`
-      return qty
+      return ` ${Math.trunc(row.original?.qty) * Math.trunc(props.planned_quantity)} шт`
     },
   },
+  // {
+  //   accessorKey: "status",
+  //   header: "Статус",
+  //   cell: ({row}) => {
+  //   },
+  // },
 ];
 
 

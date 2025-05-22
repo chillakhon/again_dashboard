@@ -9,7 +9,7 @@
       </div>
 
       <div>
-        <Label>Начало произ-ва</Label>
+        <Label>Начало пр-ва</Label>
         <DatePicker
             placeholder="Выберите дату"
             v-model="form.planned_start_datetime"
@@ -17,7 +17,7 @@
         />
       </div>
       <div>
-        <Label>Завершение произ-ва</Label>
+        <Label>Завершение пр-ва</Label>
         <DatePicker
             placeholder="Выберите дату"
             v-model="form.planned_end_datetime"
@@ -29,7 +29,7 @@
     <div class="md:flex md:space-x-2 my-5 items-end w-full">
 
       <div class="w-full">
-        <Label>Техкарты</Label>
+        <Label>Техкарт</Label>
         <DynamicSelect
             v-model="form.batches[0].recipe_id"
             :options="recipes"
@@ -37,11 +37,11 @@
             option-label="name"
             option-value="id"
             class="mt-1"
+            disabled
         />
       </div>
 
       <div class="w-full">
-        <!--        {{useStatus().getStatusConfig(form.status).text}}-->
         <Label>Статус</Label>
         <Input v-model="useStatus().getStatusConfig(form.status).text" disabled class="mt-1"/>
       </div>
@@ -59,9 +59,8 @@
         />
       </div>
 
-
-      <div class="max-w-20 ">
-        <Label>Кол-во</Label>
+      <div class="md:min-w-[100px]">
+        <Label>Объем пр-ва</Label>
         <Input
             type="number"
             v-model="form.planned_quantity"
@@ -82,18 +81,21 @@
         <template #tab-product>
           <ProductsTable
               :components="form.batches[0].output_products"
+              :planned_quantity="form.planned_quantity"
+              :status="form.status"
           />
         </template>
 
         <template #tab-material>
           <ComponentsTable
               :components="form.batches[0].material_items"
+              :planned_quantity="form.planned_quantity"
           />
         </template>
         <template #tab-complete>
           <CompletedTable
               :components="form.batches[0].output_products"
-              :status="form.status"
+              :planned_quantity="form.planned_quantity"
           />
         </template>
       </DynamicsShadcnTabs>
@@ -146,6 +148,7 @@ const props = defineProps({
   }
 })
 
+const renderComp = ref(1)
 const activeTab = ref('product')
 const users = ref<any[]>([])
 const recipes = ref<any[]>([])
@@ -229,28 +232,7 @@ const onSubmit = async () => {
   }
 }
 
-// Watcher для обновления количеств при изменении planned_quantity
-watch(() => form.value.planned_quantity, (newQty) => {
-  if (!newQty || !form.value.batches[0]) return
 
-  // Обновляем выходные продукты
-  form.value.batches[0].output_products = form.value.batches[0].output_products.map(product => {
-    const originalQty = product.qty / (form.value.planned_quantity || 1)
-    return {
-      ...product,
-      qty: originalQty * newQty
-    }
-  })
-
-  // Обновляем материалы
-  form.value.batches[0].material_items = form.value.batches[0].material_items.map(item => {
-    const originalQty = parseFloat(item.quantity) / (form.value.planned_quantity || 1)
-    return {
-      ...item,
-      quantity: (originalQty * newQty).toFixed(3)
-    }
-  })
-}, {immediate: true})
 
 onMounted(async () => {
   await fetchUsers()
