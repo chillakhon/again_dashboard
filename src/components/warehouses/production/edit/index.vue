@@ -23,7 +23,6 @@ onMounted(async () => {
 async function fetchProduction(batchNumber) {
   await axios.get(`/production?batch_number=${route.params.id}&with_batches=true`)
       .then(res => {
-        console.log(res.data)
         batch.value = res.data?.data
       })
       .catch(err => {

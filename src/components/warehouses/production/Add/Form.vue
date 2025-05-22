@@ -212,7 +212,7 @@ const onSubmit = async () => {
   await axios.post('/production/create-batch', {
     quantity: form.value.quantity,
     planned_start_date: form.value.planned_start_date,
-    planned_end_datetime: form.value.planned_end_datetime,
+    planned_end_date: form.value.planned_end_datetime,
     notes: form.value.notes,
     batches: prepareDataFormBatches(form.value.batches)
   })
@@ -237,7 +237,7 @@ function prepareDataFormBatches(batches) {
       id: batches.id || "",
       batch_number: null,
       recipe_id: batches.recipe_id,
-      planned_qty: batches.planned_qty || null,
+      planned_quantity: batches.planned_qty || null,
       performer_id: batches.performer_id,
       material_items: batches.material_items.map(item => ({
         component_type: item.component_type,

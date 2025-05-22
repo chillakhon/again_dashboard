@@ -1,17 +1,16 @@
 <template>
   <div class="flex space-x-2 justify-end">
+    <AlertDialog
+        title="Отменить производство"
+        description="Вы уверены что хотите отменить это производственное задание?"
+        button-name="Отменить"
+        button-style="bg-orange-500 hover:bg-orange-600"
+        :icon="XCircle"
+        @continue="$emit('cancel-production', item)"
+        button-component="icon"
+        icon-size="17"
+    />
 
-
-    <!--    <Show :city_zone="item"/>-->
-
-    <!--    {{ item?.base_batch_number }}-->
-
-
-    <!--    <Edit-->
-    <!--        :item="item"-->
-    <!--        :edit="edit"-->
-    <!--        @save_changes="$emit('save_changes', $event)"-->
-    <!--    />-->
     <AlertDialog
         title=""
         description="Вы уверены что хотите удалить?"
@@ -26,17 +25,11 @@
         :size="17"
         @click="router.push(`/warehouses/production/edit/${item?.base_batch_number}`)"
     />
-
-    <!--    <ArrowRight-->
-    <!--        class="text-gray-400 hover:text-gray-500 transition cursor-pointer"-->
-    <!--        :size="17" @click="changeTab(item)"-->
-    <!--    />-->
-
   </div>
 </template>
 
 <script setup lang="ts">
-import {Trash2, ArrowRight, Pencil, Eye} from "lucide-vue-next";
+import {Trash2, ArrowRight, XCircle} from "lucide-vue-next";
 import AlertDialog from "@/components/dynamics/AlertDialog.vue"
 import {useRouter} from "vue-router";
 
@@ -54,7 +47,7 @@ defineProps({
 });
 
 defineEmits([
-  'save_changes', 'deleted', 'arrow_right'
+  'save_changes', 'deleted', 'arrow_right', 'cancel-production'
 ]);
 
 

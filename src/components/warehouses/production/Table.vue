@@ -1,5 +1,4 @@
 <template>
-<!--  {{data}}-->
   <DynamicsDataTable
       :data="data"
       :columns="columns"
@@ -12,17 +11,23 @@
           :edit="edit"
           @save_changes="handleSaveChanges"
           @deleted="handleDelete($event.id)"
+          @cancel-production="cancelBatch($event)"
       />
     </template>
   </DynamicsDataTable>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue"
-import CustomActionsForDynamicTable from "@/components/warehouses/production/edit/CustomActionsForDynamicTable.vue"
-import {BatchGet} from "@/models/BatchGet";
-import {useDateFormat} from "@/composables/useDateFormat";
+import { ref, h } from 'vue';
+import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
+import CustomActionsForDynamicTable from "@/components/warehouses/production/edit/CustomActionsForDynamicTable.vue";
+import { BatchGet } from "@/models/BatchGet";
+import { useDateFormat } from "@/composables/useDateFormat";
+import { useStatus } from "@/composables/useStatus";
+import {useProductionFunctions} from "@/composables/useProductionFunctions";
+import {Batch} from "@/models/Batch";
+
+const { getStatusConfig, statusClasses } = useStatus();
 
 const props = defineProps({
   loading: Boolean,
@@ -34,9 +39,9 @@ const props = defineProps({
     type: Array,
     default: () => []
   }
-})
+});
 
-const emits = defineEmits(["deleted", "updated"])
+const emits = defineEmits(["deleted", "updated"]);
 
 const edit = ref({
   title: "Редактирование партии",
@@ -45,7 +50,7 @@ const edit = ref({
     performers: props.performers
   },
   loader: false
-})
+});
 
 const columns = [
   {
@@ -56,8 +61,18 @@ const columns = [
     accessorKey: "status",
     header: "Статус",
     cell: ({ row }: any) => {
-      const status = row.original?.status
-      return status ? translateStatus(status) : '—'
+      const status = row.original?.status;
+      if (!status) return '—';
+
+      const config = getStatusConfig(status);
+      return h('span', {
+        style: {
+          color: config.color,
+          backgroundColor: config.bgColor,
+          padding: '2px 6px',
+          borderRadius: '6px',
+        }
+      }, config.text);
     }
   },
   {
@@ -76,33 +91,27 @@ const columns = [
     accessorKey: "performers",
     header: "Исполнители",
     cell: ({ row }: any) => {
-      const performers = row.original?.performers
-      return performers?.map(p => p.email).join(', ') || '—'
+      const performers = row.original?.performers;
+      return performers?.map(p => {
+        return `${p?.first_name} ${p?.last_name}`;
+      }).join(', ') || '—';
     }
   }
-]
-
-function translateStatus(status: string): string {
-  const statusMap: Record<string, string> = {
-    'in_progress': 'В процессе',
-    'planned': 'Запланировано',
-    'completed': 'Завершено',
-    'cancelled': 'Отменено'
-  }
-  return statusMap[status] || status
-}
+];
 
 
+const cancelBatch = async (item: Batch) => {
+  await useProductionFunctions().cancelBatch({
+    batch_number: item.base_batch_number
+  })
+};
 
 const handleDelete = async (id: number) => {
-  // Implement batch deletion logic here
-  // const success = await useBatchFunctions().deleteBatch(id)
-  // if (success) emits("deleted")
-}
+  // Логика удаления
+};
+
 
 const handleSaveChanges = async (data: BatchGet) => {
-  // Implement batch update logic here
-  // const success = await useBatchFunctions().updateBatch(data.toJSON())
-  // if (success) emits("updated")
-}
+  // Логика сохранения
+};
 </script>

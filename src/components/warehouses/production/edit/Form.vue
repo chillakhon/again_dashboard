@@ -1,6 +1,6 @@
 <template>
   <div class="mx-auto p-6 bg-white rounded-lg shadow text-sm">
-    <BackButton title="Редактировать производственное задание"/>
+    <BackButton title="Производственное задание"/>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 my-5 items-end">
       <div>
@@ -49,7 +49,7 @@
             v-model="form.batches[0].performer_id"
             :options="users"
             placeholder="Выберите исполнитель"
-            option-label="email"
+            option-label="fullName"
             option-value="id"
             class="mt-1"
         />
@@ -118,6 +118,7 @@ import DynamicSelect from "@/components/dynamics/Dropdown/Select.vue";
 import DynamicsShadcnTabs from "@/components/dynamics/shadcn/Tabs.vue";
 import {toast} from "vue-sonner";
 import {useRouter} from "vue-router";
+import {User} from "@/models/user/User";
 
 const router = useRouter()
 const props = defineProps({
@@ -146,7 +147,8 @@ if (form.value.planned_end_datetime) {
 const fetchUsers = async () => {
   try {
     const {data} = await axios.get('/users?only_admin_users=true')
-    users.value = data.users?.data || []
+    users.value = data.users?.data.map(i => User.fromJSON(i)) || []
+    // console.log(users.value)
   } catch (err) {
     console.error(err)
     toast.error('Не удалось загрузить список пользователей')
@@ -223,7 +225,6 @@ watch(() => form.value.planned_quantity, (newQty) => {
 }, {immediate: true})
 
 onMounted(async () => {
-  console.log(form.value)
   await fetchUsers()
 })
 

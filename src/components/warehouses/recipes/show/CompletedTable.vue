@@ -38,7 +38,7 @@ const columns = [
     header: "Норма",
     cell: ({row}) => {
       // return 231
-      return Math.trunc(row.original?.quantity) || Math.trunc(row.original?.qty)
+      return Math.trunc(row.original?.qty)
     },
   },
   {
@@ -46,9 +46,7 @@ const columns = [
     header: "Запланировано",
     cell: ({row}) => {
       let qty = ` ${ Math.trunc(row.original?.qtyInit || row.original?.qtyInitQuantity ||
-          Math.trunc(row.original?.qty) || Math.trunc(row.original?.quantity) )} шт`
-      // return 231
-      // console.log(row.original)
+          Math.trunc(row.original?.qty)  )} шт`
       return qty
     },
   },

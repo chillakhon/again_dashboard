@@ -2,15 +2,7 @@
   <div class="flex justify-between mb-2 max-md:flex-wrap">
     <div class="md:w-[500px]">
       <BackButton title="Производственные задания"/>
-      <!--      <CityZoneSearch-->
-      <!--          @search="handleSearchEvent"-->
-      <!--          :filter="searchParams"-->
-      <!--      />-->
     </div>
-    <!--    <WarehousesProductionAdd-->
-    <!--        @created="fetchData()"-->
-    <!--    />-->
-
     <Button
         variant="outline"
         size="icon"
