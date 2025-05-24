@@ -11,14 +11,14 @@
         icon-size="17"
     />
 
-    <AlertDialog
-        title=""
-        description="Вы уверены что хотите удалить?"
-        button-name="Удалить"
-        button-style="bg-red-500 hover:bg-red-600"
-        :icon="Trash2"
-        @continue="$emit('deleted', item)"
-    />
+<!--    <AlertDialog-->
+<!--        title=""-->
+<!--        description="Вы уверены что хотите удалить?"-->
+<!--        button-name="Удалить"-->
+<!--        button-style="bg-red-500 hover:bg-red-600"-->
+<!--        :icon="Trash2"-->
+<!--        @continue="$emit('deleted', item)"-->
+<!--    />-->
 
     <ArrowRight
         class="text-gray-400 hover:text-gray-500 transition cursor-pointer"

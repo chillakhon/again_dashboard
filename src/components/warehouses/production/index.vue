@@ -17,7 +17,9 @@
 
   <warehousesProductionTable
       v-else
+      :key="renderTable"
       :data="productionBatches"
+      @updated="fetchData()"
   />
 
 </template>
@@ -56,7 +58,7 @@ onMounted(async () => {
 });
 
 async function fetchData() {
-  isLoading.value = true;
+  // isLoading.value = true;
   try {
     let response;
 

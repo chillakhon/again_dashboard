@@ -63,15 +63,15 @@
       >
         <template #tab-product>
           <ProductsTable
-              :key="renderComp"
               :components="form.batches.output_products"
+              :planned_quantity="form.quantity"
           />
         </template>
 
         <template #tab-material>
           <ComponentsTable
-              :key="renderComp"
               :components="form.batches?.material_items"
+              :planned_quantity="form.quantity"
           />
         </template>
       </DynamicsShadcnTabs>
@@ -88,20 +88,6 @@
       />
     </div>
 
-    <!--    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">-->
-    <!--      <div>-->
-    <!--        <Label>Начало производства</Label>-->
-    <!--        <Input type="time" v-model="form.start_time" class="mt-1"/>-->
-    <!--      </div>-->
-    <!--      <div>-->
-    <!--        <Label>Завершение производства</Label>-->
-    <!--        <Input type="time" v-model="form.end_time" class="mt-1"/>-->
-    <!--      </div>-->
-    <!--      <div>-->
-    <!--        <Label>Время производства</Label>-->
-    <!--        <Input :value="productionDuration" disabled class="mt-1"/>-->
-    <!--      </div>-->
-    <!--    </div>-->
 
     <div class="flex justify-end gap-4">
       <!--      <Button variant="outline">Отмена</Button>-->
@@ -152,8 +138,7 @@ const form = ref({
   planned_end_datetime: new Date().toISOString().split('T')[0],
   notes: '',
   organization: 'Again',
-  // start_time: '08:00',
-  // end_time: '17:00',
+
   batches: {
     id: '',
     recipe_id: null,
@@ -174,18 +159,6 @@ watch(() => selectedTechCart.value?.material_items, (newProducts) => {
   // renderRecipe.value++
 }, {deep: true})
 
-watch(() => form.value.quantity, (newQty) => {
-  if (!newQty) return
-  form.value.batches.output_products = form.value.batches.output_products.map(product => ({
-    ...product,
-    qtyInit: product.qty * newQty
-  }))
-  form.value.batches.material_items = form.value.batches.material_items.map(product => ({
-    ...product,
-    qtyInitQuantity: product.quantity * newQty
-  }))
-  renderComp.value++
-}, {immediate: true})
 
 
 // Загрузка техкарт
@@ -210,7 +183,7 @@ const fetchUsers = async () => {
 const onSubmit = async () => {
   isLoading.value = true
 
-  // console.log(form.value.quantity)
+  console.log(prepareDataFormBatches(form.value.batches))
   // return
   await axios.post('/production/create-batch', {
     // quantity: form.value.quantity,
@@ -245,12 +218,12 @@ function prepareDataFormBatches(batches) {
       material_items: batches.material_items.map(item => ({
         component_type: item.component_type,
         component_id: item.component_id,
-        quantity: item.qtyInitQuantity || item.quantity
+        quantity: item.quantity * form.value.quantity
       })),
       output_products: batches.output_products.map(product => ({
         component_type: product.component_type,
         component_id: product.component_id,
-        qty: product.qtyInit || product.qty || null
+        qty:  Math.trunc(product.qty) * form.value.quantity
       }))
     }
   ]

@@ -69,7 +69,6 @@
             class="mt-1"
         />
       </div>
-
     </div>
 
     <div class="my-4" v-if="form.batches[0].recipe">
@@ -111,12 +110,13 @@
       />
     </div>
 
-    <div class="flex justify-end gap-4">
-      <Button variant="outline" @click="router.back()">Отмена</Button>
+    <div class="flex justify-end gap-2">
       <Button @click="onSubmit" :disabled="isLoading">
         <span v-if="isLoading">Обновление...</span>
         <span v-else>Сохранить изменения</span>
       </Button>
+      <Button variant="outline" @click="emits('complete_batch', batch?.batches)">Завершить</Button>
+      <Button variant="outline" @click="router.back()">Отмена</Button>
     </div>
   </div>
 </template>
@@ -148,7 +148,9 @@ const props = defineProps({
   }
 })
 
-const renderComp = ref(1)
+const emits = defineEmits(['complete_batch'])
+
+
 const activeTab = ref('product')
 const users = ref<any[]>([])
 const recipes = ref<any[]>([])
@@ -185,7 +187,6 @@ const fetchRecipes = async () => {
   }
 }
 
-
 // Отправка формы
 const onSubmit = async () => {
   isLoading.value = true
@@ -195,29 +196,48 @@ const onSubmit = async () => {
     const payload = {
       base_batch_number: form.value.base_batch_number,
       planned_quantity: form.value.planned_quantity,
-      planned_start_datetime: form.value.planned_start_datetime?.toISOString(),
-      planned_end_datetime: form.value.planned_end_datetime?.toISOString(),
+      planned_start_date: form.value.planned_start_datetime
+          ? form.value.planned_start_datetime.toISOString().slice(0, 19).replace('T', ' ')
+          : null,
+      planned_end_date: form.value.planned_end_datetime
+          ? form.value.planned_end_datetime.toISOString().slice(0, 19).replace('T', ' ')
+          : null,
       notes: form.value.notes,
       batches: form.value.batches.map(batch => ({
         id: batch.id,
+        batch_number: batch.batch_number,
+        recipe_id: batch.recipe_id,
         performer_id: batch.performer_id,
-        planned_start_date: batch.planned_start_date,
-        planned_end_date: batch.planned_end_date,
+        planned_quantity: form.value.planned_quantity,
+        planned_start_date: batch.planned_start_date
+            ? new Date(batch.planned_start_date).toISOString().slice(0, 19).replace('T', ' ')
+            : null,
+        planned_end_date: batch.planned_end_date
+            ? new Date(batch.planned_end_date).toISOString().slice(0, 19).replace('T', ' ')
+            : null,
         notes: batch.notes,
         material_items: batch.material_items.map(item => ({
-          material_type: item.material_type,
-          material_id: item.material_id,
-          quantity: item.quantity
+          component_type: item.material_type,
+          component_id: item.material_id,
+          quantity: item.norm_qty * form.value.planned_quantity,
+          norm_qty: item.norm_qty
         })),
         output_products: batch.output_products.map(product => ({
-          output_type: product.output_type,
-          output_id: product.output_id,
-          qty: product.qty
+          component_type: product.output_type,
+          component_id: product.output_id,
+          qty: product.norm_qty * form.value.planned_quantity,
+          norm_qty: product.norm_qty
         }))
       }))
     }
 
-    const response = await axios.put(`/production/batches/${form.value.batches[0].id}`, payload)
+
+
+    console.log(payload)
+    // return
+
+
+    const response = await axios.put(`/production/update-batch`, payload)
 
     if (response.data.success) {
       toast.success('Производственное задание успешно обновлено')
@@ -231,8 +251,6 @@ const onSubmit = async () => {
     isLoading.value = false
   }
 }
-
-
 
 onMounted(async () => {
   await fetchUsers()

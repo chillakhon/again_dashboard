@@ -41,15 +41,21 @@ const columns = [
     accessorKey: "quantity",
     header: "Норма",
     cell: ({row}) => {
-      return Math.trunc(row.original?.quantity)
+      return Math.trunc(row.original?.norm_qty) || Math.trunc(row.original?.quantity)
+
+      // return Math.trunc(row.original?.quantity)
     },
   },
   {
     accessorKey: "quantity",
     header: "Запланировано",
     cell: ({row}) => {
-      let qty = ` ${ Math.trunc(row.original?.quantity) * Math.trunc(props.planned_quantity)} шт`
-      return qty
+
+      return `${ (Math.trunc(row.original?.norm_qty) || Math.trunc(row.original?.quantity)) * Math.trunc(props.planned_quantity)} шт`
+
+
+      // let qty = ` ${ Math.trunc(row.original?.quantity) * Math.trunc(props.planned_quantity)} шт`
+      // return qty
     },
   },
 ];

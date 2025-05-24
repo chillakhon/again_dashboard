@@ -12,7 +12,6 @@
 import {PropType} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {CreateRecipeComponent} from "@/models/CreateRecipeComponent";
-import {useStatus} from "@/composables/useStatus";
 
 const props = defineProps({
   components: {
@@ -42,22 +41,25 @@ const columns = [
     accessorKey: "quantity",
     header: "Норма",
     cell: ({row}) => {
-      return Math.trunc(row.original?.qty)
+      return Math.trunc(row.original?.norm_qty) || Math.trunc(row.original?.qty)
+
+      // return Math.trunc(row.original?.qty)
     },
   },
   {
     accessorKey: "quantity",
     header: "Запланировано",
     cell: ({row}) => {
-      return ` ${Math.trunc(row.original?.qty) * Math.trunc(props.planned_quantity)} шт`
+      return `${ (Math.trunc(row.original?.norm_qty) || Math.trunc(row.original?.qty)) * Math.trunc(props.planned_quantity)} шт`
+
+      // return ` ${Math.trunc(row.original?.qty) * Math.trunc(props.planned_quantity)} шт`
     },
   },
-  // {
-  //   accessorKey: "status",
-  //   header: "Статус",
-  //   cell: ({row}) => {
-  //   },
-  // },
+
+
+
+
+
 ];
 
 

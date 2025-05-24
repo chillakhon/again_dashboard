@@ -56,14 +56,20 @@ export function useProductionFunctions() {
     /**
      * Завершение производственного задания
      */
-    const completeBatch = async (id: number, params: BatchParams = {}): Promise<Batch | null> => {
+    const completeBatch = async (params: BatchParams = {}): Promise<boolean> => {
         try {
-            const response = await axios.put(`${apiUrl}/${id}/complete`, null, {params});
+            const response = await axios.put(`${apiUrl}/complete`, null, {params});
             toast.success(response.data.message || "Задание успешно завершено");
-            return response.data?.data ? Batch.fromJSON(response.data.data) : null;
+            return true
+            // if (response.data.status){
+            //     toast.success(response.data.message || "Задание успешно завершено");
+            //     return true
+            // }
+            // return false
+            // return response.data?.data ? Batch.fromJSON(response.data.data) : null;
         } catch (error) {
             handleError(error, "Ошибка при завершении задания");
-            return null;
+            return false;
         }
     };
 
@@ -73,6 +79,16 @@ export function useProductionFunctions() {
     const cancelBatch = async (params: BatchParams = {}): Promise<Batch | null> => {
         try {
             const response = await axios.put(`${apiUrl}/cancel`, null, {params});
+            toast.success(response.data.message || "Задание успешно отменено");
+            return response.data?.data ? Batch.fromJSON(response.data.data) : null;
+        } catch (error) {
+            handleError(error, "Ошибка при отмене задания");
+            return null;
+        }
+    };
+    const cancelBatchAllBatch = async (params: BatchParams = {}): Promise<Batch | null> => {
+        try {
+            const response = await axios.put(`${apiUrl}/cancel/all-batch`, null, {params});
             toast.success(response.data.message || "Задание успешно отменено");
             return response.data?.data ? Batch.fromJSON(response.data.data) : null;
         } catch (error) {
@@ -128,6 +144,7 @@ export function useProductionFunctions() {
         updateBatch,
         completeBatch,
         cancelBatch,
-        deleteBatch
+        deleteBatch,
+        cancelBatchAllBatch
     };
 }

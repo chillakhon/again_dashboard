@@ -101,9 +101,10 @@ const columns = [
 
 
 const cancelBatch = async (item: Batch) => {
-  await useProductionFunctions().cancelBatch({
+  const res = await useProductionFunctions().cancelBatchAllBatch({
     batch_number: item.base_batch_number
   })
+  emits('updated')
 };
 
 const handleDelete = async (id: number) => {
