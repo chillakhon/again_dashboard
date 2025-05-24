@@ -193,11 +193,8 @@ const onSubmit = async () => {
     batches: prepareDataFormBatches(form.value.batches)
   })
       .then((res) => {
-        if (res.data.success) {
           router.push('/warehouses/production/list')
-        } else {
           toast.success(res.data.message)
-        }
       })
       .catch(err => {
         toast.error(err.response.data.error || err.response.data.message || 'Что то пащло не так')
