@@ -25,13 +25,14 @@
 
     <div v-else class="space-y-2">
       <div
-          v-for="(item, index) in model.material_items"
+          v-for="(item, index) in model?.material_items"
           :key="item?.id ?? index"
           class="grid grid-cols-1 gap-2 border p-2 rounded-lg bg-background hover:bg-accent/50 transition-colors"
       >
         <div class="grid md:grid-cols-10 grid-cols-1 gap-2 items-end">
           <!-- Component Type -->
           <div class="md:col-span-3">
+<!--            {{item.component_type}}-->
             <Label class="text-xs">Тип</Label>
             <Select v-model="item.component_type">
               <SelectTrigger class="h-8 text-xs">

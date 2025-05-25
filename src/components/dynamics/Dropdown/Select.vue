@@ -1,4 +1,5 @@
 <template>
+  <Label v-if="title" class="text-xs">{{title}}</Label>
   <Select
       :required="props.required"
       :disabled="props.disabled"
@@ -61,7 +62,11 @@ const props = defineProps<{
   optionLabel?: string
   optionValue?: number | string
   disabled: boolean,
-  required: boolean
+  required: boolean,
+  title: {
+    type: string,
+    default: ''
+  }
 }>()
 
 const emit = defineEmits(['update:modelValue'])

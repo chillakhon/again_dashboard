@@ -5,7 +5,7 @@ export class CreateRecipeComponent {
     unit_id: number;
 
     constructor(data: any) {
-        this.component_type = 'Material';
+        this.component_type = 'Product';
         this.component_id = data.component_id;
         this.quantity = data.quantity;
         this.unit_id = data.unit_id;

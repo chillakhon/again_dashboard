@@ -13,13 +13,13 @@
           :disabled="availableProducts?.length === 0"
           class="h-8 text-xs"
       >
-        <PlusIcon class="h-3 w-3 mr-1" />
-        Добавить
+        <PlusIcon class="h-3 w-3 mr-1"/>
+<!--        Добавить-->
       </Button>
     </div>
 
     <div v-if="modelValue.output_products?.length === 0" class="rounded-lg border border-dashed p-4 text-center">
-      <PackagePlusIcon class="mx-auto h-5 w-5 text-muted-foreground" />
+      <PackagePlusIcon class="mx-auto h-5 w-5 text-muted-foreground"/>
       <h3 class="mt-1 text-xs font-medium">Нет продуктов</h3>
       <p class="mt-1 text-xs text-muted-foreground">Добавьте получаемые продукты</p>
     </div>
@@ -45,10 +45,12 @@
             />
           </div>
 
+<!--          {{ product }}-->
           <!-- Variant Selection -->
           <div class="md:col-span-4">
             <DynamicDropdownSelect
-                v-model="product.variant_id"
+                {{product.component_id}}
+                v-model="product.component_id"
                 :options="getProductVariants(product.component_id)"
                 title="Вариант"
                 option-value="id"
@@ -86,7 +88,7 @@
                 class="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
                 @click="removeProduct(index)"
             >
-              <Trash2Icon class="h-3.5 w-3.5" />
+              <Trash2Icon class="h-3.5 w-3.5"/>
             </Button>
           </div>
         </div>
@@ -96,16 +98,16 @@
 </template>
 
 <script setup lang="ts">
-import { PlusIcon, PackagePlusIcon, Trash2Icon } from 'lucide-vue-next'
-import { Label } from "@/components/ui/label"
+import {PlusIcon, PackagePlusIcon, Trash2Icon} from 'lucide-vue-next'
+import {Label} from "@/components/ui/label"
 import DynamicDropdownSelect from "@/components/dynamics/Dropdown/Select.vue"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { CreateRecipe } from "@/models/CreateRecipe"
+import {Button} from "@/components/ui/button"
+import {Input} from "@/components/ui/input"
+import {CreateRecipe} from "@/models/CreateRecipe"
 
 const props = defineProps({
-  modelValue: { type: CreateRecipe, required: true },
-  availableProducts: { type: Array, required: true },
+  modelValue: {type: CreateRecipe, required: true},
+  availableProducts: {type: Array, required: true},
   isLoading: Boolean,
   errors: Object
 })
@@ -114,27 +116,27 @@ const emit = defineEmits(['update:modelValue'])
 
 // Filter products to exclude already added ones (except current index)
 const filteredAvailableProducts = (currentIndex) => {
-  return props.availableProducts.filter(product =>
-      !props.modelValue.output_products.some((p, i) =>
+  return props.availableProducts?.filter(product =>
+      !props.modelValue?.output_products.some((p, i) =>
           p.component_id === product.id && i !== currentIndex
       )
   )
 }
 
 const addProduct = () => {
-  const availableProduct = props.availableProducts.find(
-      p => !props.modelValue.output_products.some(added => added.component_id === p.id)
+  const availableProduct = props.availableProducts?.find(
+      p => !props.modelValue?.output_products.some(added => added.component_id === p.id)
   )
 
   if (availableProduct) {
     const newProducts = [
-      ...props.modelValue.output_products,
+      ...props.modelValue?.output_products,
       {
         component_type: 'Product',
         component_id: availableProduct.id,
         variant_id: null,
         qty: 1,
-        is_default: props.modelValue.output_products.length === 0
+        is_default: props.modelValue?.output_products.length === 0
       }
     ]
 
@@ -146,7 +148,7 @@ const addProduct = () => {
 }
 
 const removeProduct = (index) => {
-  const newProducts = [...props.modelValue.output_products]
+  const newProducts = [...props.modelValue?.output_products]
   const wasDefault = newProducts[index].is_default
   newProducts.splice(index, 1)
 
@@ -167,18 +169,18 @@ const onProductChange = (product) => {
 }
 
 const hasVariants = (productId) => {
-  const product = props.availableProducts.find(p => p.id === productId)
+  const product = props.availableProducts?.find(p => p.id === productId)
   return product?.has_variants && product.variants?.length > 0
 }
 
 const getProductVariants = (productId) => {
-  const product = props.availableProducts.find(p => p.id === productId)
+  const product = props.availableProducts?.find(p => p.id === productId)
   if (!product) return []
 
   const variants = product.variants || []
   // Add "no variant" option if product has variants but we allow no variant selection
   if (variants.length > 0) {
-    return [...variants, { id: null, name: 'Без вариантов', price: 0 }]
+    return [...variants, {id: null, name: 'Без вариантов', price: 0}]
   }
   return variants
 }
@@ -187,7 +189,7 @@ const getVariantName = (productId, variantId) => {
   if (!productId) return 'Выберите продукт'
   if (!variantId) return 'Без вариантов'
 
-  const product = props.availableProducts.find(p => p.id === productId)
+  const product = props.availableProducts?.find(p => p.id === productId)
   const variant = product?.variants?.find(v => v.id === variantId)
   return variant?.name || 'Вариант не найден'
 }

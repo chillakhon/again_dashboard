@@ -126,18 +126,40 @@ const handleSubmit = async () => {
     // Подготовка данных перед отправкой
     const formData = {
       ...recipeData.value,
-      output_products: recipeData.value.output_products.map(product => {
-        // Если выбран вариант, используем его ID и меняем тип
+      output_products: recipeData.value.output_products.flatMap(product => {
         if (product.variant_id) {
-          return {
-            ...product,
-            component_id: product.variant_id,
-            component_type: 'ProductVariant'
-          };
+          return [
+            {
+              component_type: 'ProductVariant',
+              component_id: product.variant_id,
+              qty: product.qty,
+              is_default: product.is_default
+            },
+            {
+              component_type: 'Product',
+              component_id: product.component_id,
+              qty: product.qty,
+              is_default: product.is_default
+
+            }
+          ];
         }
-        return product;
+
+        return [
+          {
+            component_type: 'Product',
+            component_id: product.component_id,
+            qty: product.qty,
+            is_default: product.is_default
+
+          }
+        ];
       })
     };
+
+    console.log(formData)
+    // return
+
     const response = await axios.post('/recipes', formData);
 
     toast.success('Техкарта успешно создана!');

@@ -23,7 +23,8 @@
             @update:model="recipeData = $event"
         />
 
-        <RecipeProductsSection
+<!--        {{recipeData}}-->
+        <RecipeProductsSectionEdit
             v-model="recipeData"
             :available-products="availableProducts"
             :is-loading="isLoading"
@@ -52,10 +53,8 @@ import {toast} from 'vue-sonner'
 import axios from 'axios'
 import {CreateRecipe} from '@/models/CreateRecipe'
 import {useFormErrors} from '@/composables/useFormErrors'
-
 import RecipeBasicInfo from '@/components/warehouses/recipes/forms/RecipeBasicInfo.vue'
 import RecipeComponentsSection from '@/components/warehouses/recipes/forms/RecipeComponentsSection.vue'
-import RecipeProductsSection from '@/components/warehouses/recipes/forms/RecipeProductsSection.vue'
 import BackButton from '@/components/BackButton.vue'
 import Loader from '@/components/common/Loader.vue'
 import {Button} from '@/components/ui/button'
@@ -63,6 +62,7 @@ import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Material} from "@/models/Material";
 import Product from "@/models/Product";
 import {Unit} from "@/models/Unit";
+import RecipeProductsSectionEdit from "@/components/warehouses/recipes/edit/RecipeProductsSectionEdit.vue";
 
 const router = useRouter()
 const route = useRoute()
@@ -119,7 +119,7 @@ const handleSubmit = async () => {
     resetErrors();
 
 
-    console.log(recipeData.value)
+    // console.log(recipeData.value)
 
     // Подготовка данных перед отправкой
     const formData = {
@@ -133,7 +133,7 @@ const handleSubmit = async () => {
             component_type: 'ProductVariant',
             qty: product.qty
           };
-        }else {
+        } else {
           return {
             ...product,
             component_id: product.component_id,
@@ -148,11 +148,11 @@ const handleSubmit = async () => {
     };
 
     console.log(formData)
-    // return
+    return
     const response = await axios.put(`/recipes/${route.params?.id}`, formData);
 
     toast.success('Техкарта успешно создана!');
-    await router.push({ name: 'recipes-list' });
+    await router.push({name: 'recipes-list'});
   } catch (error: any) {
     console.error('Ошибка при создании техкарты:', error);
 
@@ -182,7 +182,7 @@ const fetchRecipesById = async (id) => {
       }
     })
 
-    if (res.data.recipes){
+    if (res.data.recipes) {
       recipeData.value = new CreateRecipe(res.data.recipes)
     }
 
