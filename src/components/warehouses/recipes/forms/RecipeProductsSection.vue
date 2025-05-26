@@ -14,7 +14,6 @@
           class="h-8 text-xs"
       >
         <PlusIcon class="h-3 w-3 mr-1" />
-        Добавить
       </Button>
     </div>
 
@@ -35,7 +34,7 @@
           <div class="md:col-span-5">
             <DynamicDropdownSelect
                 v-model="product.component_id"
-                :options="filteredAvailableProducts(index)"
+                :options="availableProducts"
                 title="Продукт"
                 option-value="id"
                 option-label="name"
@@ -56,12 +55,6 @@
                 :disabled="!product.component_id || !hasVariants(product.component_id)"
                 class="w-full"
             >
-              <template #option-label="{ option }">
-                {{ option.name }} ({{ formatCurrency(option.price) }})
-              </template>
-              <template #value-label="{ value }">
-                {{ getVariantName(product.component_id, value) }}
-              </template>
             </DynamicDropdownSelect>
           </div>
 
@@ -172,6 +165,7 @@ const hasVariants = (productId) => {
 }
 
 const getProductVariants = (productId) => {
+
   const product = props.availableProducts.find(p => p.id === productId)
   if (!product) return []
 
@@ -183,20 +177,6 @@ const getProductVariants = (productId) => {
   return variants
 }
 
-const getVariantName = (productId, variantId) => {
-  if (!productId) return 'Выберите продукт'
-  if (!variantId) return 'Без вариантов'
 
-  const product = props.availableProducts.find(p => p.id === productId)
-  const variant = product?.variants?.find(v => v.id === variantId)
-  return variant?.name || 'Вариант не найден'
-}
 
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-    maximumFractionDigits: 0
-  }).format(value || 0)
-}
 </script>

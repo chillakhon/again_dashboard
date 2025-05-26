@@ -25,6 +25,7 @@
     </div>
 
     <div v-else class="space-y-2">
+<!--      {{modelValue.output_products}}-->
       <div
           v-for="(product, index) in modelValue.output_products"
           :key="product.component_id + '-' + index"
@@ -35,7 +36,7 @@
           <div class="md:col-span-5">
             <DynamicDropdownSelect
                 v-model="product.component_id"
-                :options="filteredAvailableProducts(index)"
+                :options="availableProducts"
                 title="Продукт"
                 option-value="id"
                 option-label="name"
@@ -45,12 +46,10 @@
             />
           </div>
 
-<!--          {{ product }}-->
           <!-- Variant Selection -->
           <div class="md:col-span-4">
             <DynamicDropdownSelect
-                {{product.component_id}}
-                v-model="product.component_id"
+                v-model="product.variant_id"
                 :options="getProductVariants(product.component_id)"
                 title="Вариант"
                 option-value="id"
@@ -58,12 +57,6 @@
                 :disabled="!product.component_id || !hasVariants(product.component_id)"
                 class="w-full"
             >
-              <template #option-label="{ option }">
-                {{ option.name }} ({{ formatCurrency(option.price) }})
-              </template>
-              <template #value-label="{ value }">
-                {{ getVariantName(product.component_id, value) }}
-              </template>
             </DynamicDropdownSelect>
           </div>
 
@@ -104,6 +97,7 @@ import DynamicDropdownSelect from "@/components/dynamics/Dropdown/Select.vue"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {CreateRecipe} from "@/models/CreateRecipe"
+import {onMounted} from "vue";
 
 const props = defineProps({
   modelValue: {type: CreateRecipe, required: true},
@@ -185,20 +179,9 @@ const getProductVariants = (productId) => {
   return variants
 }
 
-const getVariantName = (productId, variantId) => {
-  if (!productId) return 'Выберите продукт'
-  if (!variantId) return 'Без вариантов'
 
-  const product = props.availableProducts?.find(p => p.id === productId)
-  const variant = product?.variants?.find(v => v.id === variantId)
-  return variant?.name || 'Вариант не найден'
-}
 
-const formatCurrency = (value) => {
-  return new Intl.NumberFormat('ru-RU', {
-    style: 'currency',
-    currency: 'RUB',
-    maximumFractionDigits: 0
-  }).format(value || 0)
-}
+onMounted(() => {
+  console.log(props.modelValue)
+})
 </script>

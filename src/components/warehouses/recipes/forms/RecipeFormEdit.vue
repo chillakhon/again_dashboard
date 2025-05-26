@@ -63,6 +63,7 @@ import {Material} from "@/models/Material";
 import Product from "@/models/Product";
 import {Unit} from "@/models/Unit";
 import RecipeProductsSectionEdit from "@/components/warehouses/recipes/edit/RecipeProductsSectionEdit.vue";
+import {CreateRecipeProduct} from "@/models/CreateRecipeProduct";
 
 const router = useRouter()
 const route = useRoute()
@@ -183,10 +184,12 @@ const fetchRecipesById = async (id) => {
     })
 
     if (res.data.recipes) {
-      recipeData.value = new CreateRecipe(res.data.recipes)
+      let result = new CreateRecipe(res.data.recipes)
+      result.output_products = CreateRecipeProduct.groupByParent(result.output_products)
+      recipeData.value = result
     }
 
-    console.log(recipeData.value)
+    // console.log(recipeData.value)
 
   } catch (err) {
     console.error('Ошибка загрузки рецептов:', err)
