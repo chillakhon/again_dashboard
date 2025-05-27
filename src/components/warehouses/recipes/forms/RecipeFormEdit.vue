@@ -186,6 +186,7 @@ const fetchRecipesById = async (id) => {
     if (res.data.recipes) {
       let result = new CreateRecipe(res.data.recipes)
       result.output_products = CreateRecipeProduct.groupByParent(result.output_products)
+      console.log(result.output_products)
       recipeData.value = result
     }
 

@@ -46,44 +46,32 @@ export class CreateRecipeProduct {
      * Группирует продукты и их варианты (ProductVariant) по родительскому продукту.
      */
     static groupByParent(items: CreateRecipeProduct[]): CreateRecipeProduct[] {
-        const grouped: CreateRecipeProduct[] = [];
+        const products = items.filter(i => i.component_type === 'Product');
+        const variants = items.filter(i => i.component_type === 'ProductVariant');
 
-        items.forEach(item => {
-            if (item.component_type === 'Product') {
-                const product = new CreateRecipeProduct(item);
-                product.variants = [];
-                grouped.push(product);
+        const result: CreateRecipeProduct[] = [];
+
+        // 1) Для каждого варианта — клонируем родительский продукт и ставим variant_id
+        variants.forEach(variant => {
+            const parent = products.find(p => p.component_id === variant.parent_product_id);
+            if (parent) {
+                const cloned = new CreateRecipeProduct(parent);
+                cloned.variant_id = variant.component_id;
+                result.push(cloned);
             }
         });
 
-        items.forEach(item => {
-            if (item.component_type === 'ProductVariant') {
-                const parent = grouped.find(
-                    p => p.component_type === 'Product' && p.component_id === item.parent_product_id
-                );
-
-                if (parent) {
-                    parent.variant_id = item.component_id
-                    parent.variants?.push(new CreateRecipeProduct(item));
-                } else {
-                    // Если родитель не найден, создаем временного родителя
-                    const placeholderParent = new CreateRecipeProduct({
-                        id: null,
-                        parent_product_id: null,
-                        component_type: 'Product',
-                        component_id: item.parent_product_id,
-                        component: { name: item.component?.parent_product_name ?? 'Unknown' },
-                        unit_id: null,
-                        qty: null,
-                        is_default: null,
-                        variant_id: null,
-                        variants: [new CreateRecipeProduct(item)]
-                    });
-                    grouped.push(placeholderParent);
-                }
+        // 2) Добавляем продукты без вариантов
+        const usedProductIds = new Set(result.map(r => r.component_id));
+        products.forEach(product => {
+            if (!usedProductIds.has(product.component_id)) {
+                // клонируем сам продукт, variant_id у него останется null
+                result.push(new CreateRecipeProduct(product));
             }
         });
 
-        return grouped;
+        return result;
     }
+
+
 }
