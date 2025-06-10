@@ -1,5 +1,4 @@
 <template>
-
   <Loader v-if="isLoading"/>
   <div v-else>
     <UsersAdd
@@ -47,7 +46,7 @@ const currentPage = ref(1);
 const totalItems = ref(0);
 const itemsPerPage = ref(10);
 
-const deleteUser = (user) => {
+const deleteUser = (user: any) => {
   users.value = users.value.filter(
       (item) => item.id !== user.id
   );
@@ -59,7 +58,7 @@ async function fetchData() {
       .get(`/users?page=${currentPage.value}&per_page=${itemsPerPage.value}`)
       .then((res) => {
         if (res.data.users.data) {
-          users.value = res.data.users.data.map(item => User.fromJSON(item))
+          users.value = res.data.users.data.map((item: any) => User.fromJSON(item))
           data.value = res.data
           // console.log(res.data)
         }
@@ -75,7 +74,7 @@ async function fetchData() {
       });
 }
 
-onMounted((res) => {
+onMounted(() => {
   fetchData();
 });
 </script>

@@ -450,14 +450,14 @@ const navigation = [
       {name: 'Telegram', href: '/dialogs/telegram', icon: PhChatTeardropDots},
     ]
   },
-  {
-    name: 'Склад', href: '/warehouses', icon: PhWarehouse,
-    children: [
-      {name: 'Техкарты', href: '/warehouses/recipes/list', icon: PhList},
-      // {name: 'Техоперации', href: '/warehouses/tech_operations', icon: PhPackage},
-      {name: 'Производственные задания', href: '/warehouses/production/list', icon: PhFactory},
-    ],
-  },
+  // {
+  //   name: 'Склад', href: '/warehouses', icon: PhWarehouse,
+  //   children: [
+  //     {name: 'Техкарты', href: '/warehouses/recipes/list', icon: PhList},
+  //     // {name: 'Техоперации', href: '/warehouses/tech_operations', icon: PhPackage},
+  //     {name: 'Производственные задания', href: '/warehouses/production/list', icon: PhFactory},
+  //   ],
+  // },
   {name: 'Доставка', href: '/deliveries', icon: PhTruck},
   {name: 'Пользователи', href: '/users', icon: PhUsers},
 ]

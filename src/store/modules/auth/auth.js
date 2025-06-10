@@ -1,6 +1,7 @@
 import authApi from '@/api/authApi.js'
 import { ref } from 'vue';
 import Cookies from 'js-cookie';
+import {ModulePermissions} from "@/models/ModulePermissions";
 
 export default {
     namespaced: true,
@@ -17,10 +18,16 @@ export default {
         authenticated: state => !!state.access_token && !!state.user,
         user: state => state.user,
         hasError: state => !!state.error,
+        permissions: state => state.user?.permissions || [],
+        hasPermission: state => (permissionId) => {
+            return state.user?.permissions?.includes(permissionId) || false;
+        },
+        permissionsInstance: state => {
+            return new ModulePermissions(state.user?.permissions || []);
+        }
     },
 
     actions: {
-
         async signIn ( { commit, dispatch }, credentials ){
             commit( 'set_loadStatus', true );
             commit( 'set_error', null );
@@ -33,8 +40,7 @@ export default {
             } finally {
                 commit( 'set_loadStatus', false );
             }
-        },
-
+        },  
         async attempt ({ commit, state }, access_token ){
             
             if ( access_token ){
@@ -54,7 +60,6 @@ export default {
                 commit( 'set_error', 'Failed to fetch user info' );
             }
         },
-
     },
     
     mutations: {
