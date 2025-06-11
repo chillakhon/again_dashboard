@@ -60,7 +60,6 @@ async function fetchData() {
         if (res.data.users.data) {
           users.value = res.data.users.data.map((item: any) => User.fromJSON(item))
           data.value = res.data
-          // console.log(res.data)
         }
 
         totalItems.value = res.data.users.total;

@@ -8,16 +8,21 @@
           :filter="filter"
       />
     </div>
-    <Button type="submit">Найти</Button>
+    <Button v-if="showButton" type="submit">Найти</Button>
   </form>
 </template>
 
 <script setup>
 import {Button} from "@/components/ui/button";
+import DynamicsFilterColumn from "@/components/Filter/Column.vue";
 
 const props = defineProps({
   columns: Array,
   filter: Object,
+  showButton: {
+    type: Boolean,
+    default: true
+  }
 });
 
 const emits = defineEmits(["search"]);

@@ -49,7 +49,7 @@ const columns = [
   {
     accessorKey: "id",
     header: "No",
-    cell: (cell) => {
+    cell: (cell: any) => {
       return (cell.row.index += 1);
     },
   },
@@ -72,7 +72,7 @@ const columns = [
   {
     accessorKey: "isActive",
     header: "Активировано",
-    cell: (row) => {
+    cell: (row: any) => {
       return row.getValue()
           ? h(Check, {class: "h-4 w-4 text-green-500"})
           : h(X, {class: "h-4 w-4 text-red-500"});

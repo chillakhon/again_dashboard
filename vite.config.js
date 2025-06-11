@@ -30,7 +30,7 @@ export default defineConfig({
             },
         }),
         Components({
-            dirs: ['src/components'], // директория для компонентов
+            dirs: ['src/components'], // директория для компонентовå
             dts: 'src/components.d.ts', // генерирует файл с типами компонентов
             // Если используете UI библиотеки, добавьте резолверы:
             // resolvers: [

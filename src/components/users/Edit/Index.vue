@@ -1,21 +1,21 @@
 <template>
   <form class="grid gap-3" v-show="!item.changePass">
     <div class="flex gap-2">
-      <Input type="text" placeholder="Имя" v-model="item.profile.first_name" />
-      <Input type="text" placeholder="Фамилия" v-model="item.profile.last_name" />
+      <Input type="text" placeholder="Имя" v-model="item.profile.first_name"/>
+      <Input type="text" placeholder="Фамилия" v-model="item.profile.last_name"/>
     </div>
 
-    <Input type="email" placeholder="Почта (E-mail)" v-model="item.email" />
-    <Input type="tel" placeholder="Телефон" v-model="item.profile.phone" />
+    <Input type="email" placeholder="Почта (E-mail)" v-model="item.email"/>
+    <Input type="tel" placeholder="Телефон" v-model="item.profile.phone"/>
 
     <div class="space-y-2">
       <Label for="roles">Роли <span class="text-red-500">*</span></Label>
       <MultiSelect
           id="roles"
+          v-model="selectedRoleIds"
           :options="roles"
           optionLabel="name"
           optionValue="id"
-          v-model="selectedRoleIds"
           placeholder="Выберите роли"
       />
     </div>
@@ -48,40 +48,37 @@
   </button>
 </template>
 
-<script setup lang="ts">
-import { Input } from "@/components/ui/input"
+<script setup>
+import {Input} from "@/components/ui/input"
 import UsersEditChangePassword from "@/components/users/Edit/ChangePassword.vue"
-import { User } from "@/models/user/User"
 import axios from "axios"
-import {computed, onMounted, ref} from "vue"
-import MultiSelect from "@/components/common/MultiSelect.vue"
-import { Label } from "@/components/ui/label"
+import {watch, onMounted, ref} from "vue"
+import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue"
+import {Label} from "@/components/ui/label"
 
 const permissions = ref([])
 const roles = ref([])
 
 const props = defineProps({
   item: {
-    type: Object as () => User,
+    type: Object,
     required: true
   }
 })
 
-const selectedPermissionIds = computed({
-  get: () => props.item.permissions?.map(p => p.id) || [],
-  set: (value) => {
-    props.item.permissions = permissions.value.filter(p => value.includes(p.id))
-  }
+const selectedPermissionIds = ref()
+
+const selectedRoleIds = ref()
+
+
+watch(selectedPermissionIds, (ids) => {
+  props.item.permissions = ids
 })
 
-// Аналогично для ролей, если нужно
-const selectedRoleIds = computed({
-  get: () => props.item.roles?.map(r => r.id) || [],
-  set: (value) => {
-    props.item.roles = roles.value.filter(r => value.includes(r.id))
-  }
-})
 
+watch(selectedRoleIds, (ids) => {
+  props.item.roles = ids
+})
 
 // Инициализация
 if (!props.item.changePass) {
@@ -122,4 +119,6 @@ function getPermissions() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

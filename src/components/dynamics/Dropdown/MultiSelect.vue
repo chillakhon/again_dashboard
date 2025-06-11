@@ -1,3 +1,42 @@
+<template>
+  <Select
+      multiple
+      :modelValue="modelValue"
+      @update:modelValue="handleValueChange"
+      :disabled="disabled"
+  >
+    <SelectTrigger class="w-full">
+      <SelectValue :placeholder="placeholder || 'Выберите...'">
+        {{ modelValue?.length > 0 ? `Выбрано: ${modelValue?.length}` : placeholder }}
+      </SelectValue>
+    </SelectTrigger>
+    <SelectContent>
+      <div class="max-h-60 overflow-y-auto">
+        <SelectItem
+            v-for="(option, index) in options"
+            :key="index"
+            :value="getOptionValue(option)"
+            :disabled="option.disabled"
+        >
+          <div class="flex items-center gap-2">
+            <span
+                class="flex h-4 w-4 items-center justify-center rounded-sm border"
+                :class="{
+                'bg-primary border-primary': isSelected(option),
+                'border-border': !isSelected(option),
+              }"
+            >
+              <Check v-if="isSelected(option)" class="h-3 w-3 text-primary-foreground" />
+            </span>
+            {{ getOptionLabel(option) }}
+          </div>
+        </SelectItem>
+      </div>
+    </SelectContent>
+  </Select>
+</template>
+
+
 <script setup lang="ts">
 import { Check } from 'lucide-vue-next'
 import {
@@ -7,10 +46,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
-interface SelectOption {
-  [key: string]: any
-}
 
 const props = defineProps<{
   options: any[]
@@ -40,44 +75,7 @@ const getOptionValue = (option: any) => {
 // Проверяем, выбрана ли опция
 const isSelected = (option: any) => {
   const value = getOptionValue(option)
-  return props.modelValue.includes(value)
+  return props.modelValue?.includes(value)
 }
 </script>
 
-<template>
-  <Select
-      multiple
-      :modelValue="modelValue"
-      @update:modelValue="handleValueChange"
-      :disabled="disabled"
-  >
-    <SelectTrigger class="w-full">
-      <SelectValue :placeholder="placeholder || 'Выберите...'">
-        {{ modelValue.length > 0 ? `Выбрано: ${modelValue.length}` : placeholder }}
-      </SelectValue>
-    </SelectTrigger>
-    <SelectContent>
-      <div class="max-h-60 overflow-y-auto">
-        <SelectItem
-            v-for="(option, index) in options"
-            :key="index"
-            :value="getOptionValue(option)"
-            :disabled="option.disabled"
-        >
-          <div class="flex items-center gap-2">
-            <span
-                class="flex h-4 w-4 items-center justify-center rounded-sm border"
-                :class="{
-                'bg-primary border-primary': isSelected(option),
-                'border-border': !isSelected(option),
-              }"
-            >
-              <Check v-if="isSelected(option)" class="h-3 w-3 text-primary-foreground" />
-            </span>
-            {{ getOptionLabel(option) }}
-          </div>
-        </SelectItem>
-      </div>
-    </SelectContent>
-  </Select>
-</template>

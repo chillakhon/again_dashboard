@@ -55,6 +55,7 @@ export function useUserFunctions() {
 
 
     const changeUser = async (user, loader) => {
+
         try {
             loader = true;
             if (user.changePass) {

@@ -33,7 +33,7 @@
   </Popover>
 </template>
 
-<script setup lang="ts">
+<script setup >
 import { ref, watch } from 'vue'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
@@ -55,7 +55,7 @@ const df = new DateFormatter('en-US', {
   dateStyle: 'medium'
 })
 
-const formatForBackend = (date: CalendarDate) => {
+const formatForBackend = (date) => {
   const jsDate = date.toDate(getLocalTimeZone())
   const year = jsDate.getFullYear()
   const month = String(jsDate.getMonth() + 1).padStart(2, '0')
