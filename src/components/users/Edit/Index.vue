@@ -10,7 +10,7 @@
 
     <div class="space-y-2">
       <Label for="roles">Роли <span class="text-red-500">*</span></Label>
-      <MultiSelect
+      <DropdownSelect
           id="roles"
           v-model="selectedRoleIds"
           :options="roles"
@@ -54,6 +54,7 @@ import UsersEditChangePassword from "@/components/users/Edit/ChangePassword.vue"
 import axios from "axios"
 import {watch, onMounted, ref} from "vue"
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue"
+import DropdownSelect from "@/components/dynamics/Dropdown/Select.vue"
 import {Label} from "@/components/ui/label"
 
 const permissions = ref([])

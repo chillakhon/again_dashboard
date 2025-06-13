@@ -28,17 +28,17 @@
         <Button
             type="submit"
             @click="saveChanges"
-            :disabled="edit.loader"
+            :disabled="edit?.loader"
         >
           <Loader2 class="w-4 h-4 mr-2 animate-spin" v-if="edit.loader"/>
-          Сохранить изменения
+          Сохранить
         </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import {Pencil, Loader2} from "lucide-vue-next";
 import {ref} from "vue"
 import {
