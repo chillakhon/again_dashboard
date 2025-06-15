@@ -1,58 +1,144 @@
-export default class Product {
-    name: string | null = null;
-    description: string | null = null;
-    type: string | null = "simple";
-    default_unit_id: string | null = "1";
-    is_active: boolean | null = false;
-    has_variants: boolean | null = false;
-    allow_preorder: boolean | null = false;
-    after_purchase_processing_time: string | null = "0";
-    sku: string | null = null;
-    price: number | null = 0;
-    cost_price: number | null = 0;
-    stock_quantity: number | null = 0;
-    barcode: string | null = null;
-    min_order_quantity: number | null = 1;
-    max_order_quantity: number | null = 1;
-    is_featured: boolean | null = false;
-    is_new: boolean | null = true;
-    discount_price: number | null = null;
-    weight: string | null = '0';
-    length: string | null = '0';
-    width: string | null = '0';
-    height: string | null = '0';
-    images: any[] | null = [];
-    categories: number[] | null = [1];
-    options: any[] | null = null;
-    variants: any[] | null = null;
-    imageFiles: File[] | null = [];
+export class Product {
+    id: number | null;
+    uuid: string | null;
+    name: string | null;
+    description: string | null;
+    type: string | null;
+    default_unit_id: string | null;
+    unit_id: string | null;
+    is_active: boolean | null;
+    has_variants: boolean | null;
+    allow_preorder: boolean | null;
+    after_purchase_processing_time: string | null;
+    sku: string | null;
+    price: number | null;
+    cost_price: number | null;
+    stock_quantity: number | null;
+    barcode: string | null;
+    min_order_quantity: number | null;
+    max_order_quantity: number | null;
+    is_featured: boolean | null;
+    is_new: boolean | null;
+    discount_price: number | null;
+    old_price: number | string;
+    weight: string | null;
+    length: string | null;
+    width: string | null;
+    height: string | null;
+    images: any[] | null;
+    categories: number[] | null;
+    options: any[] | null;
+    variants: Product[] | null;
+    imageFiles: File[] | null;
+    colors: any[] | null;
 
-
-    get discountPercentage(): number {
-        if (!this.discount_price || this.discount_price <= 0 || !this.price || this.price <= 0) {
-            return 0;
-        }
-        const discount = ((this.price - this.discount_price) / this.price) * 100;
-        return Math.round(discount);
-    }
-
-    set changeDiscount(value: number) {
-        this.discount_price = value;
-    }
-
-    constructor(init?: Partial<Product>) {
-        Object.assign(this, init);
+    constructor() {
+        this.id = null;
+        this.uuid = null;
+        this.name = null;
+        this.description = null;
+        this.type = "simple";
+        this.default_unit_id = "1";
+        this.unit_id = "1";
+        this.is_active = false;
+        this.has_variants = false;
+        this.allow_preorder = false;
+        this.after_purchase_processing_time = "0";
+        this.sku = null;
+        this.price = 0;
+        this.cost_price = 0;
+        this.stock_quantity = 0;
+        this.barcode = null;
+        this.min_order_quantity = 1;
+        this.max_order_quantity = 1;
+        this.is_featured = false;
+        this.is_new = true;
+        this.discount_price = null;
+        this.old_price = '';
+        this.weight = "0";
+        this.length = "0";
+        this.width = "0";
+        this.height = "0";
+        this.images = [];
+        this.categories = [1];
+        this.options = null;
+        this.variants = null;
+        this.imageFiles = [];
+        this.colors = [];
     }
 
     static fromJSON(json: any): Product {
-        return new Product({
-            ...json,
-            images: json.images ?? [],
-            categories: json.categories ?? [1],
-            options: json.options ?? null,
-            variants: json.variants ?? null,
-            imageFiles: json.imageFiles ?? []
-        });
+        const product = new Product();
+        product.id = json.id ?? null;
+        product.name = json.name ?? null;
+        product.description = json.description ?? null;
+        product.type = json.type ?? "simple";
+        product.default_unit_id = json.default_unit_id ?? "1";
+        product.is_active = json.is_active ?? false;
+        product.has_variants = json.has_variants ?? false;
+        product.allow_preorder = json.allow_preorder ?? false;
+        product.after_purchase_processing_time = json.after_purchase_processing_time ?? "0";
+        product.sku = json.sku ?? null;
+        product.price = json.price ?? 0;
+        product.cost_price = json.cost_price ?? 0;
+        product.stock_quantity = json.stock_quantity ?? 0;
+        product.barcode = json.barcode ?? null;
+        product.min_order_quantity = json.min_order_quantity ?? 1;
+        product.max_order_quantity = json.max_order_quantity ?? 1;
+        product.is_featured = json.is_featured ?? false;
+        product.is_new = json.is_new ?? true;
+        product.discount_price = json.discount_price ?? null;
+        product.old_price = json.old_price ?? '';
+        product.weight = json.weight ?? "";
+        product.length = json.length ?? "";
+        product.width = json.width ?? "";
+        product.height = json.height ?? "";
+        product.images = json.images ?? [];
+        product.categories = json.categories ?? [1];
+        product.options = json.options ?? null;
+        product.variants = json.variants ?? [];
+        // product.imageFiles = json.imageFiles ?? [];
+
+        return product;
+    }
+
+    static fromJSONForVariantCreate(json: any): Product {
+        const product = new Product();
+        product.id = json.id ?? null;
+        product.name = json.name ?? null;
+        product.uuid = json.uuid ?? `variant_generated_${Math.round(10)}`;
+        product.barcode = json.barcode ?? null;
+        product.cost_price = json.cost_price ?? 0;
+        product.price = json.price ?? 0;
+        product.type = json.type ?? "simple";
+        product.unit_id = json.unit_id ?? '1';
+        product.is_active = json.is_active ?? false;
+        product.colors = json.colors ?? [];
+
+        // product.description = json.description ?? null;
+        // product.default_unit_id = json.default_unit_id ?? "1";
+        // product.has_variants = json.has_variants ?? false;
+        // product.allow_preorder = json.allow_preorder ?? false;
+        // product.after_purchase_processing_time = json.after_purchase_processing_time ?? "0";
+        // product.sku = json.sku ?? null;
+        // product.stock_quantity = json.stock_quantity ?? 0;
+        // product.min_order_quantity = json.min_order_quantity ?? 1;
+        // product.max_order_quantity = json.max_order_quantity ?? 1;
+        // product.is_featured = json.is_featured ?? false;
+        // product.is_new = json.is_new ?? true;
+        // product.discount_price = json.discount_price ?? null;
+        // product.old_price = json.old_price ?? '';
+        // product.weight = json.weight ?? "";
+        // product.length = json.length ?? "";
+        // product.width = json.width ?? "";
+        // product.height = json.height ?? "";
+        // product.images = json.images ?? [];
+        // product.categories = json.categories ?? [1];
+        // product.options = json.options ?? null;
+        // product.variants = json.variants ?? [];
+        // product.imageFiles = json.imageFiles ?? [];
+
+        return product;
     }
 
 
@@ -84,9 +170,40 @@ export default class Product {
             categories: this.categories,
             options: this.options,
             variants: this.variants,
-            // Note: File objects are not included as they can't be serialized to JSON
+        };
+    }
+
+    toJSONForCreate(): Record<string, any> {
+        return {
+            name: this.name,
+            price: this.price,
+            description: this.description,
+            is_active: this.is_active,
+            barcode: this.barcode,
+            is_new: this.is_new,
+            discount_price: this.discount_price,
+            weight: this.weight,
+            length: this.length,
+            width: this.width,
+            height: this.height,
+            variants: this.variants,
+
+            has_variants: this.has_variants,
+            default_unit_id: this.default_unit_id,
+
+            // type: this.type,
+            // allow_preorder: this.allow_preorder,
+            // after_purchase_processing_time: this.after_purchase_processing_time,
+            // sku: this.sku,
+            // cost_price: this.cost_price,
+            // stock_quantity: this.stock_quantity,
+            // min_order_quantity: this.min_order_quantity,
+            // images: this.images,
+            // max_order_quantity: this.max_order_quantity,
+            // categories: this.categories,
+            // options: this.options,
+            // is_featured: this.is_featured,
         };
     }
 
 }
-

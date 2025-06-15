@@ -60,7 +60,7 @@ import Loader from '@/components/common/Loader.vue'
 import {Button} from '@/components/ui/button'
 import {Card, CardContent, CardHeader} from "@/components/ui/card";
 import {Material} from "@/models/Material";
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 import {Unit} from "@/models/Unit";
 import RecipeProductsSectionEdit from "@/components/warehouses/recipes/edit/RecipeProductsSectionEdit.vue";
 import {CreateRecipeProduct} from "@/models/CreateRecipeProduct";

@@ -36,7 +36,7 @@
 
 <script setup lang="ts">
 import {ref} from "vue";
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 import {Button} from "@/components/ui/button";
 import axios from "axios";
 import {toast} from 'vue-sonner'

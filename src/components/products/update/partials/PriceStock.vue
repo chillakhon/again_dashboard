@@ -99,7 +99,7 @@ import {
   NumberFieldIncrement,
   NumberFieldInput,
 } from '@/components/ui/number-field'
-import Product  from '@/models/Product';
+import {Product}  from '@/models/Product';
 
 const product = defineModel<Product>('product');
 

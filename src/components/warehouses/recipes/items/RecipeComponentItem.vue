@@ -181,7 +181,7 @@ import {
 } from 'lucide-vue-next'
 import { Unit } from '@/models/Unit'
 import { Material } from '@/models/Material'
-import Product from '@/models/Product'
+import {Product} from '@/models/Product'
 import { Label } from '@/components/ui/label'
 import {
   Select,

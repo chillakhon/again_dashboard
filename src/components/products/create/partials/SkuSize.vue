@@ -1,5 +1,5 @@
 <template>
-  <Accordion type="single" collapsible>
+  <Accordion type="single" collapsible default-value="item-1">
     <AccordionItem value="item-1">
       <AccordionTrigger>
         <span class="pl-1 text-sm">Артикул и габариты</span>
@@ -40,7 +40,7 @@
                   id="barcode"
                   type="text"
                   required
-                  placeholder="Штрих-код"
+                  placeholder="Вес"
                   v-model="product.weight"
               />
 
@@ -56,7 +56,7 @@
                     id="barcode"
                     type="text"
                     required
-                    placeholder="Штрих-код"
+                    placeholder="Длина"
                     v-model="product.length"
                 />
               </div>
@@ -68,7 +68,7 @@
                     id="barcode"
                     type="text"
                     required
-                    placeholder="Штрих-код"
+                    placeholder="Ширина"
                     v-model="product.width"
                 />
               </div>
@@ -80,7 +80,7 @@
                     id="barcode"
                     type="text"
                     required
-                    placeholder="Штрих-код"
+                    placeholder="Высота"
                     v-model="product.height"
                 />
               </div>
@@ -96,10 +96,16 @@
 import {Input} from "@/components/ui/input";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Label} from "@/components/ui/label";
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 
+const props = defineProps({
+  product: {
+    type: Product,
+    required: true,
+  }
+})
 
-const product = defineModel<Product>('product')
+// const product = defineModel<Product>('product')
 
 </script>
 

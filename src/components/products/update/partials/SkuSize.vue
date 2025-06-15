@@ -96,7 +96,7 @@
 import {Input} from "@/components/ui/input";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import {Label} from "@/components/ui/label";
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 
 
 const product = defineModel<Product>('product')

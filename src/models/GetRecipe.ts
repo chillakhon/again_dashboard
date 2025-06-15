@@ -1,4 +1,4 @@
-import Product from "./Product";
+import {Product} from "./Product";
 import { RecipeItem } from "./RecipeItem";
 import {User} from "@/models/user/User";
 import {ProductVariant} from "@/models/Production";
@@ -36,7 +36,7 @@ export class GetRecipe {
         this.created_at = data.created_at;
         this.updated_at = data.updated_at;
         this.deleted_at = data.deleted_at;
-        this.products = data.products?.map((p: any) => new Product(p)) || [];
+        this.products = data.products?.map((p: any) => new Product()) || [];
         this.selected_variants = data.selected_variants?.map((v: any) => new ProductVariant(v)) || [];
         this.items = data.items?.map((i: any) => new RecipeItem(i)) || [];
         this.output_unit = new Unit(data.output_unit);

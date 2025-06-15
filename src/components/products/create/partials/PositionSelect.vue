@@ -24,7 +24,7 @@
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/components/ui/accordion";
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 
 const product = defineModel<Product>('product')
 

@@ -1,7 +1,6 @@
 <template>
   <Toaster/>
   <div>
-    <!--        <PageHeading :title="pageTitle"/>-->
     <BackButton title="Новый товар" class="mb-2"/>
     <form @submit.prevent="handleCreate" class="">
 
@@ -64,16 +63,16 @@
 
 
           <div class="border p-2 rounded-lg font-medium">
-            <ProductVariant/>
+            <ProductVariant :product="product"/>
           </div>
         </div>
       </div>
 
-      <Button
-          type="submit"
-          class="bg-blue-400 hover:bg-blue-500 active:bg-blue-400 mt-2">
-        Создать
-      </Button>
+      <div class="flex justify-end py-2">
+        <Button type="submit" class="">
+          Создать
+        </Button>
+      </div>
 
     </form>
   </div>
@@ -91,14 +90,14 @@ import PriceStock from "@/components/products/create/partials/PriceStock.vue";
 import SkuSize from "@/components/products/create/partials/SkuSize.vue";
 import ProductVariant from "@/components/products/create/partials/ProductVariant.vue";
 import PositionSelect from "@/components/products/create/partials/PositionSelect.vue";
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 import Button from "@/components/ui/button/Button.vue";
 import {toast} from 'vue-sonner'
 import axios from "axios";
 import {useRouter} from "vue-router";
 
 const router = useRouter()
-const product = ref<Product>(new Product())
+const product = ref<Product>(Product.fromJSON({}))
 
 const handleCreate = async () => {
   if (!product.value.name) {
@@ -127,18 +126,11 @@ const handleCreate = async () => {
 
 async function createProduct() {
 
-  const p = product.value
+  const p = product.value.toJSONForCreate()
 
-  const formData: Record<string, number> = {};
 
-  for (const key in p) {
-    if (typeof p[key] === "boolean") {
-      formData[key] = p[key] ? 1 : 0;
-    } else {
-      formData[key] = p[key]
-    }
-  }
-
+  console.log(p)
+  return
   await axios.post("products", product.value)
       .then(res => {
         toast("Успех!", {

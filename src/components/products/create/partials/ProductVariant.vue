@@ -7,49 +7,36 @@
       Варианты товара - это отдельные товарные позиции, которые отличаются по одной или нескольким значениям свойств
       вариантов. Например, футболка размера S может быть вариантом товара футболка
     </div>
+
+
     <Drawer>
-      <DrawerTrigger class="text-blue-300">Добавить</DrawerTrigger>
+      <DrawerTrigger class="text-blue-300">Посмотреть</DrawerTrigger>
+      <DrawerContent>
+        <div class="h-[80vh] overflow-y-auto p-2">
 
-      <div class="text-gray-700 w-full ">
-        <DrawerContent>
-          <div class="w-full flex flex-col justify-center items-center">
-            <DrawerHeader>
-              <DrawerTitle>Добавление вариантов</DrawerTitle>
-              <DrawerDescription>
+          <!--          <div>-->
 
-                <SelectBox
-                    :data="units"
-                    option-label="name"
-                    @selectedValue="console.log($event)"
-                />
+          <div class="flex w-full justify-between items-center mb-2">
 
-                <div class="w-full">
-                  <div class="grid w-full items-center gap-2 p-2">
-                    <Label for="name">Наименование*</Label>
-                    <Input
-                        id="name"
-                        type="text"
-                        required
-                        placeholder="Наименование"
-                    />
-                  </div>
+            <span class="font-medium text-gray-600">Варианты товара</span>
 
-                </div>
-              </DrawerDescription>
-            </DrawerHeader>
-
-            <DrawerFooter>
-              <div class="flex">
-                <Button class="bg-blue-500 hover:bg-blue-600 mr-2">Добавить</Button>
-                <DrawerClose>
-                  <Button>Отменить</Button>
-                </DrawerClose>
-              </div>
-            </DrawerFooter>
-
+            <Button variant="outline" @click="product.variants?.push(Product.fromJSONForVariantCreate({})); renderTable++">
+              <Plus />
+              Добавить
+            </Button>
           </div>
-        </DrawerContent>
-      </div>
+
+          <ProductVariantTable
+              class="w-full"
+              :key="renderTable"
+              :product="product"
+          />
+
+          {{product.variants}}
+          <!--          </div>-->
+
+        </div>
+      </DrawerContent>
 
     </Drawer>
 
@@ -57,23 +44,29 @@
 </template>
 
 <script setup lang="ts">
+import {Plus} from 'lucide-vue-next'
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer'
 import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
-import SelectBox from "@/components/SelectBox.vue";
 import axios from "axios";
 import {ref} from "vue";
+import {Product} from "@/models/Product";
+import ProductVariantTable from "@/components/products/create/ProductVariantTable.vue";
 
+const props = defineProps({
+  product: {
+    type: Product,
+    required: true,
+  }
+})
+
+
+const renderTable = ref()
 
 const units = ref()
 

@@ -65,7 +65,7 @@ import {
 import {computed, h, nextTick, onMounted, ref} from "vue";
 import {Input} from "@/components/ui/input";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 
 const products = defineModel<Product[] | null>('products')
 

@@ -28,7 +28,7 @@
 import {h, onMounted, ref} from "vue";
 import PaginationTable from "@/components/PaginationTable.vue";
 import axios from "axios";
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 import {Button} from "@/components/ui/button/index";
 import {toast} from 'vue-sonner'
 import Loader from "@/components/common/Loader.vue";

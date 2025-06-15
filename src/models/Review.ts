@@ -1,4 +1,4 @@
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 import {ReviewAttribute} from "@/models/ReviewAttribute";
 import {Client} from "@/models/Client";
 
@@ -44,7 +44,7 @@ export class Review {
         this.published_at = data.published_at;
         this.rating = data.rating;
         this.responses = data.responses || [];
-        this.reviewable = new Product(data.reviewable);
+        this.reviewable = new Product();
         this.status = data.status;
         this.updated_at = data.updated_at;
     }

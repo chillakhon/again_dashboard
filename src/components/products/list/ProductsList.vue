@@ -60,7 +60,7 @@ import Button from "@/components/ui/button/Button.vue";
 import AgGridTable from "@/components/AgGridTable.vue";
 import {toast} from 'vue-sonner'
 import {useRouter} from "vue-router";
-import product from "@/models/Product";
+import {Product} from "@/models/Product";
 import ProductSearch from "@/components/products/list/ProductSearch.vue";
 
 const router = useRouter()

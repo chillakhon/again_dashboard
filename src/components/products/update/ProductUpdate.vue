@@ -92,7 +92,7 @@ import PriceStock from "@/components/products/update/partials/PriceStock.vue";
 import SkuSize from "@/components/products/update/partials/SkuSize.vue";
 import ProductVariant from "@/components/products/update/partials/ProductVariant.vue";
 import PositionSelect from "@/components/products/update/partials/PositionSelect.vue";
-import Product from "@/models/Product";
+import {Product} from "@/models/Product";
 import Button from "@/components/ui/button/Button.vue";
 import {toast} from 'vue-sonner'
 import axios from "axios";
