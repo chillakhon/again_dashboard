@@ -1,25 +1,19 @@
 import axios from "axios";
 import {toast} from "vue-sonner";
+import {useErrorHandler} from "@/composables/useErrorHandler";
+import {useSuccessHandler} from "@/composables/useSuccessHandler";
 
 export function useUserFunctions() {
-
     const addUser = async (user) => {
-        await axios
-            .post(`/users`, user)
-            .then((res) => {
-                if (res.data.status) {
-                    toast.success(res.data.message);
-                } else {
-                    toast.error(res.data.message);
-                }
-            })
-            .catch((e) => {
-                if (e.response) {
-                    toast.error("Что то пошло не так");
-                }
-            });
+        try {
+            const res = await axios.post(`/users`, user);
+            useSuccessHandler().showSuccess(res);
+            return true;
+        } catch (e) {
+            useErrorHandler().showError(e);
+            return false;
+        }
     };
-
 
     const updateUser = async (user) => {
         if (!user) return
@@ -53,7 +47,6 @@ export function useUserFunctions() {
     };
 
 
-
     const changeUser = async (user, loader) => {
 
         try {
@@ -72,19 +65,23 @@ export function useUserFunctions() {
                 });
                 toast.success("Пароль успешно изменен");
             } else {
-                // Подготовка данных для обновления пользователя
+                // Подготовка данных для обновления пользовател
+
                 const userData = {
                     first_name: user.profile?.first_name || '',
                     last_name: user.profile?.last_name || '',
                     phone: user.profile?.phone || null,
                     email: user.email,
-                    roles: user.roles?.map((role) => role.id) || [],
-                    permissions: user.permissions?.map((perm) => perm.id) || [],
+                    roles: [user.role],
+                    permissions: user.perms,
                 };
 
 
-                await axios.put(`/users/${user.id}`, userData);
-                toast.success("Данные пользователя обновлены");
+                await axios.put(`/users/${user.id}`, userData)
+                    .then(res => {
+                        toast.success(res.data.message || "Данные пользователя обновлены");
+                        return true
+                    })
             }
         } catch (e) {
             if (e.response) {

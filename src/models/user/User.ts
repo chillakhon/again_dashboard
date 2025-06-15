@@ -30,10 +30,11 @@ export class User {
         this.roles = data.roles
             ? data.roles.map(role => UserRole.fromJSON(role))
             : [];
+            // this.roles = data?.roles[0]?.id || null;
 
         // Инициализация permissions с созданием экземпляров UserPermission
         this.permissions = data.permissions
-            ? data.permissions.map(perm => perm)
+            ?  data.permissions?.map(perm => UserPermission.fromJSON(perm))
             : [];
     }
 
@@ -45,7 +46,7 @@ export class User {
     }
 
     get isSuperAdmin(): boolean {
-        return this.roles.some(role => role.id === 1 || 2);
+        return <boolean>this.roles?.some(role => role.id === 1 || 2);
     }
 
     get isVerified(): boolean {
@@ -61,6 +62,7 @@ export class User {
     }
 
     get getRoleNames(): string | null {
+
         return this.roles.length > 0
             ? this.roles.map(role => role.name).join(", ")
             : null;
@@ -110,4 +112,24 @@ export class User {
             }) : null
         };
     }
+
+
+    public static searchByNameOrEmail(users: User[], query: string): User[] {
+        const lowerQuery = query.toLowerCase().trim();
+
+        return users.filter(user => {
+            const firstName = user.profile?.first_name?.toLowerCase() || '';
+            const lastName = user.profile?.last_name?.toLowerCase() || '';
+            const fullName = `${firstName} ${lastName}`.trim();
+            const email = user.email?.toLowerCase() || '';
+
+            return (
+                firstName.includes(lowerQuery) ||
+                lastName.includes(lowerQuery) ||
+                fullName.includes(lowerQuery) ||
+                email.includes(lowerQuery)
+            );
+        })
+        }
+
 }

@@ -62,11 +62,13 @@
                     </template>
                     <template v-else>
                       <Edit
+                          v-if="editPermission"
                           :item="JSON.parse(JSON.stringify(row.original))"
                           :edit="edit"
                           @save_changes="emits('save_changes', $event)"
                       />
                       <AlertDialog
+                          :show-icon="deletePermission"
                           title="Подтверждение удаления"
                           description="Вы уверены что хотите удалить этот элемент?"
                           button-name="Удалить"
@@ -131,7 +133,16 @@ const props = defineProps({
   printTitle: {
     type: String,
     default: 'Документ'
-  }
+  },
+
+  deletePermission: {
+    type: Boolean,
+    default: true
+  },
+  editPermission: {
+    type: Boolean,
+    default: true
+  },
 
 });
 const emits = defineEmits([

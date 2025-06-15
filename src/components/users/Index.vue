@@ -1,20 +1,33 @@
 <template>
-  <Loader v-if="isLoading"/>
-  <div v-else>
-    <UsersAdd
-        class="mb-2"
-        :permissions="data?.permissions"
-        :roles="data?.roles"
-        @submit="fetchData()"
-    />
-    <UsersTable
-        :users="users"
-        @deleted="deleteUser($event)"
-        :key="users.length"
-    />
-    <div
-        class="mt-2 flex justify-end"
-    >
+  <PermissionGuard :permission="PermissionsData.MANAGE_USERS">
+
+    <div class="flex justify-between">
+      <UsersSearch
+          class="md:w-[400px]"
+          :filter="searchParams"
+          @search="handlingSearch"
+      />
+
+      <UsersAdd
+          class="mb-2"
+          :permissions="data?.permissions"
+          :roles="data?.roles"
+          @submit="fetchData()"
+      />
+
+
+    </div>
+    <PermissionGuard :permission="PermissionsData.USERS_VIEW">
+      <Loader v-if="isLoading"/>
+      <UsersTable
+          v-else
+          :key="renderTable"
+          :users="users"
+          @deleted="deleteUser($event)"
+          @updated="fetchData()"
+      />
+    </PermissionGuard>
+    <div class="mt-2 flex justify-end">
       <PaginationTable
           :items-per-page="itemsPerPage"
           :total="totalItems"
@@ -25,7 +38,7 @@
         "
       />
     </div>
-  </div>
+  </PermissionGuard>
 </template>
 
 <script setup lang="ts">
@@ -37,14 +50,25 @@ import UsersAdd from "@/components/users/Add/Index.vue";
 import {User} from "@/models/user/User"
 import Loader from "@/components/common/Loader.vue";
 import {toast} from "vue-sonner";
+import {PermissionsData} from "@/constants/PermissionsData";
+import usePermission from "@/composables/usePermission";
+import PermissionGuard from "@/components/PermissionGuard.vue";
+import UsersSearch from "@/components/users/UsersSearch.vue";
 
 const data = ref()
 const users = ref<User[]>([]);
+const renderTable = ref(1)
+
+
+const searchParams = ref({
+  search: '',
+});
+
 
 const isLoading = ref(true);
 const currentPage = ref(1);
 const totalItems = ref(0);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(20);
 
 const deleteUser = (user: any) => {
   users.value = users.value.filter(
@@ -60,6 +84,7 @@ async function fetchData() {
         if (res.data.users.data) {
           users.value = res.data.users.data.map((item: any) => User.fromJSON(item))
           data.value = res.data
+          allUser.value = users.value
         }
 
         totalItems.value = res.data.users.total;
@@ -70,10 +95,24 @@ async function fetchData() {
       })
       .finally(() => {
         isLoading.value = false;
+        renderTable.value++
       });
 }
 
-onMounted(() => {
-  fetchData();
+onMounted(async () => {
+  await fetchData();
 });
+
+
+const allUser = ref<User[]>();
+
+function handlingSearch() {
+  if (!searchParams.value.search) {
+    users.value = allUser.value;
+  } else {
+    users.value = User.searchByNameOrEmail(users.value, searchParams.value.search)
+  }
+  renderTable.value++
+}
+
 </script>

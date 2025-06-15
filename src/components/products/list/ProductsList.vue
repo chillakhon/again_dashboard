@@ -1,10 +1,23 @@
 <template>
   <Loader v-if="isLoading"/>
   <div v-else class="">
-    <div class="flex items-center pb-4 justify-between">
+
+
+    <div class="flex max-md:flex-col justify-between">
+
+      <ProductSearch
+          class="md:w-[400px]"
+          :filter="paramsSearch"
+      />
+
       <router-link to="/products/create">
-        <Button>Добавить товар</Button>
+        <Button variant="outline">Добавить</Button>
       </router-link>
+
+    </div>
+
+    <div class="flex items-center pb-4 justify-between">
+
     </div>
     <div v-if="data.length && data.length > 0">
       <div class="">
@@ -48,6 +61,7 @@ import AgGridTable from "@/components/AgGridTable.vue";
 import {toast} from 'vue-sonner'
 import {useRouter} from "vue-router";
 import product from "@/models/Product";
+import ProductSearch from "@/components/products/list/ProductSearch.vue";
 
 const router = useRouter()
 
@@ -57,6 +71,12 @@ const currentPage = ref(1);
 const itemsPerPage = ref(10);
 const isLoading = ref(true)
 const renderTable = ref(0)
+
+
+
+const paramsSearch = {
+  search: '',
+}
 
 const back_url = process.env.VUE_APP_BASE_URL
 

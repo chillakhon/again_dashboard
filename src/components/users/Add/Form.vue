@@ -24,7 +24,7 @@
 
     <div class="space-y-2">
       <Label for="phone">Телефон <span class="text-red-500">*</span></Label>
-      <Input type="text" placeholder="Телефон" v-model="form.phone" />
+      <Input type="text" placeholder="Телефон" v-model="form.phone"/>
     </div>
 
     <!-- Поля для пароля -->
@@ -47,8 +47,10 @@
     <!-- Выбор ролей -->
     <div class="space-y-2">
       <Label for="roles">Роли <span class="text-red-500">*</span></Label>
+<!--      {{hasPermission(PermissionsData.ROLES_MANAGE)}}-->
       <DynamicsDropdownSelect
           id="roles"
+          :disabled="!hasPermission(PermissionsData.ROLES_MANAGE, false)"
           :options="props.roles"
           optionLabel="name"
           optionValue="id"
@@ -63,6 +65,7 @@
       <Label for="permissions">Разрешения</Label>
       <MultiSelect
           id="permissions"
+          :disabled="!hasPermission(PermissionsData.PERMISSIONS_MANAGE, false)"
           :options="props.permissions"
           v-model="form.permissions"
           optionLabel="name"
@@ -90,6 +93,8 @@ import {Loader2} from 'lucide-vue-next'
 import {useUserFunctions} from "@/composables/userFunctions";
 import MultiSelect from "@/components/common/MultiSelect.vue";
 import DynamicsDropdownSelect from "@/components/dynamics/Dropdown/Select.vue";
+import usePermission from "@/composables/usePermission";
+import {PermissionsData} from "@/constants/PermissionsData";
 
 const props = defineProps({
   roles: {
@@ -103,6 +108,9 @@ const props = defineProps({
     required: true
   }
 })
+
+
+const {hasPermission} = usePermission()
 
 const form = ref({
   first_name: '',
@@ -119,7 +127,7 @@ const loading = ref(false)
 
 const emit = defineEmits(['submit'])
 
-const submitForm = form => {
+const submitForm = async form => {
   if (
       form.first_name &&
       form.last_name &&
@@ -138,9 +146,10 @@ const submitForm = form => {
       return toast.error("Пароль должен быть не менее 8 символов!");
     }
 
-
-    useUserFunctions().addUser(form, loading);
-    emit("submit");
+    const result = await useUserFunctions().addUser({...form, roles: [form.roles]}, loading)
+    if (result) {
+      emit("submit");
+    }
   } else {
     toast.error("Заполните все данные для создания пользователя");
   }

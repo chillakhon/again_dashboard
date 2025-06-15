@@ -1,24 +1,20 @@
 <template>
   <component
-    :is="dynamicComponent"
-    :column="column"
-    :filter="filter"
-  ></component>
+      :is="dynamicComponent"
+      :column="column"
+      :filter="filter"
+  />
 </template>
 
 <script setup>
+import { defineAsyncComponent } from 'vue';
+
 const props = defineProps({
   column: Object,
   filter: Object,
 });
 
-const dynamicComponent = ref(
-  (
-    await import(
-      `@/components/dynamics/Filter/UI/${props.column.type}/Index.vue`
-    )
-  ).default
+const dynamicComponent = defineAsyncComponent(() =>
+    import(`@/components/dynamics/Filter/UI/${props.column.type}/Index.vue`)
 );
 </script>
-
-<style scoped></style>

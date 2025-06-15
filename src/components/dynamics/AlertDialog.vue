@@ -7,9 +7,10 @@
     <AlertDialogTrigger v-else>
       <div class="">
         <component
-          :is="icon"
-          :size="17"
-          class="text-gray-400 hover:text-gray-500 transition"
+            v-if="showIcon"
+            :is="icon"
+            :size="17"
+            class="text-gray-400 hover:text-gray-500 transition"
         />
       </div>
     </AlertDialogTrigger>
@@ -43,17 +44,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Button } from '@/components/ui/button'
+import {Button} from '@/components/ui/button'
 
 
 const emit = defineEmits(["continue"]);
 
 const props = defineProps({
-  disabledButton: Boolean,
+  disabledButton: {
+    type: Boolean,
+    default: false,
+  },
   buttonName: String,
   title: String,
   description: String,
   buttonStyle: String,
   icon: Object,
+  showIcon: Boolean,
 });
 </script>

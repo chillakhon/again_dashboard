@@ -1,21 +1,31 @@
-// permissions-data.ts
 export enum PermissionsData {
-    USERS_VIEW = 1,
-    USERS_CREATE = 2,
-    USERS_EDIT = 3,
-    USERS_DELETE = 4,
-    ROLES_MANAGE = 5,
-    PERMISSIONS_MANAGE = 6,
-    ORDERS_VIEW = 7,
-    ORDERS_MANAGE = 8,
-    PRODUCTS_VIEW = 9,
-    PRODUCTS_MANAGE = 10,
-    CLIENTS_VIEW = 11,
-    CLIENTS_MANAGE = 12,
-    SETTINGS_MANAGE = 13,
-    MANAGE_USERS = 14,
-    MANAGE_CLIENTS = 15,
-    VIEW_REPORTS = 16
-}
+    // Пользователи
+    USERS_VIEW = 1,               // Просмотр пользователей
+    USERS_CREATE = 2,             // Создание пользователей
+    USERS_EDIT = 3,               // Редактирование пользователей
+    USERS_DELETE = 4,             // Удаление пользователей
+    MANAGE_USERS = 14,            // Управление пользователями (полный доступ)
 
-// export type Permission = keyof typeof PermissionsData;
+    // Роли и разрешения
+    ROLES_MANAGE = 5,             // Управление ролями
+    PERMISSIONS_MANAGE = 6,       // Управление разрешениями
+
+    // Заказы
+    ORDERS_VIEW = 7,              // Просмотр заказов
+    ORDERS_MANAGE = 8,            // Управление заказами
+
+    // Продукты
+    PRODUCTS_VIEW = 9,            // Просмотр продуктов
+    PRODUCTS_MANAGE = 10,         // Управление продуктами
+
+    // Клиенты
+    CLIENTS_VIEW = 11,            // Просмотр клиентов
+    CLIENTS_MANAGE = 12,          // Управление клиентами
+    MANAGE_CLIENTS = 15,          // Управление клиентами (альтернативное)
+
+    // Система
+    SETTINGS_MANAGE = 13,         // Управление настройками
+
+    // Отчеты
+    VIEW_REPORTS = 16             // Просмотр отчетов
+}

@@ -1,7 +1,5 @@
 import authApi from '@/api/authApi.js'
-import { ref } from 'vue';
-import Cookies from 'js-cookie';
-import {ModulePermissions} from "@/models/ModulePermissions";
+
 
 export default {
     namespaced: true,
@@ -21,9 +19,6 @@ export default {
         permissions: state => state.user?.permissions || [],
         hasPermission: state => (permissionId) => {
             return state.user?.permissions?.includes(permissionId) || false;
-        },
-        permissionsInstance: state => {
-            return new ModulePermissions(state.user?.permissions || []);
         }
     },
 
@@ -60,6 +55,7 @@ export default {
                 commit( 'set_error', 'Failed to fetch user info' );
             }
         },
+
     },
     
     mutations: {

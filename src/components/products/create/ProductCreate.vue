@@ -5,7 +5,6 @@
     <BackButton title="Новый товар" class="mb-2"/>
     <form @submit.prevent="handleCreate" class="">
 
-
       <div class="grid ">
 
         <div class="space-y-3">

@@ -12,7 +12,8 @@
       <Label for="roles">Роли <span class="text-red-500">*</span></Label>
       <DropdownSelect
           id="roles"
-          v-model="selectedRoleIds"
+          :disabled="!hasPermission(PermissionsData.ROLES_MANAGE, false)"
+          v-model="selectedRoleId"
           :options="roles"
           optionLabel="name"
           optionValue="id"
@@ -24,6 +25,7 @@
       <Label for="permissions">Разрешения</Label>
       <MultiSelect
           id="permissions"
+          :disabled="!hasPermission(PermissionsData.PERMISSIONS_MANAGE, false)"
           :options="permissions"
           v-model="selectedPermissionIds"
           optionLabel="name"
@@ -33,29 +35,31 @@
     </div>
   </form>
 
-  <UsersEditChangePassword
-      v-show="item.changePass"
-      :changePass="item.changePass"
-      :item="item"
-  />
+<!--  <UsersEditChangePassword-->
+<!--      v-show="item.changePass"-->
+<!--      :changePass="item.changePass"-->
+<!--      :item="item"-->
+<!--  />-->
 
-  <button
-      type="button"
-      class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
-      @click="item.changePass = !item.changePass"
-  >
-    {{ !item.changePass ? "Изменить пароль" : "Сбросить изменение" }}
-  </button>
+<!--  <button-->
+<!--      type="button"-->
+<!--      class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"-->
+<!--      @click="item.changePass = !item.changePass"-->
+<!--  >-->
+<!--    {{ !item.changePass ? "Изменить пароль" : "Сбросить изменение" }}-->
+<!--  </button>-->
 </template>
 
 <script setup>
 import {Input} from "@/components/ui/input"
 import UsersEditChangePassword from "@/components/users/Edit/ChangePassword.vue"
 import axios from "axios"
-import {watch, onMounted, ref} from "vue"
+import {onMounted, ref, watch} from "vue"
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue"
 import DropdownSelect from "@/components/dynamics/Dropdown/Select.vue"
 import {Label} from "@/components/ui/label"
+import {PermissionsData} from "@/constants/PermissionsData";
+import usePermission from "@/composables/usePermission";
 
 const permissions = ref([])
 const roles = ref([])
@@ -67,18 +71,21 @@ const props = defineProps({
   }
 })
 
+const {hasPermission} = usePermission()
+
+
 const selectedPermissionIds = ref()
 
-const selectedRoleIds = ref()
+const selectedRoleId = ref()
 
 
 watch(selectedPermissionIds, (ids) => {
-  props.item.permissions = ids
+  props.item.perms = ids
 })
 
 
-watch(selectedRoleIds, (ids) => {
-  props.item.roles = ids
+watch(selectedRoleId, (id) => {
+  props.item.role = id
 })
 
 // Инициализация
@@ -92,12 +99,15 @@ if (!props.item.permissions) {
   props.item.permissions = []
 }
 
-onMounted(() => {
-  getRoles()
-  getPermissions()
+onMounted(async () => {
+  await getPermissions()
+  await getRoles()
+  // console.log(roles.value)
+  selectedRoleId.value = props.item.roles[0]?.id || ''
+  selectedPermissionIds.value = props.item.permissions.map(item => item.id || '')
 })
 
-function getRoles() {
+async function getRoles() {
   axios.get('roles')
       .then(res => {
         roles.value = res.data.data || []
@@ -108,7 +118,7 @@ function getRoles() {
       })
 }
 
-function getPermissions() {
+async function getPermissions() {
   axios.get('permissions')
       .then(res => {
         permissions.value = res.data.data || []

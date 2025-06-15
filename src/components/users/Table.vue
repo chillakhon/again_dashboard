@@ -5,7 +5,9 @@
       :columns="columns"
       :edit="edit"
       :loading="loading"
-      @save_changes="useUserFunctions().changeUser($event, edit.loader)"
+      :deletePermission="hasPermission(PermissionsData.USERS_DELETE, false)"
+      :editPermission="hasPermission(PermissionsData.USERS_EDIT, false)"
+      @save_changes="handlingUpdateUser"
       @deleted="
       useUserFunctions().deleteUser($event.id);
       emits('deleted', $event);
@@ -19,10 +21,12 @@
 <script setup lang="ts">
 import UsersEdit from '@/components/users/Edit/Index.vue'
 import {Check, X} from "lucide-vue-next";
-import {h, PropType, ref} from "vue";
+import {h, onMounted, PropType, ref} from "vue";
 import {useUserFunctions} from "@/composables/userFunctions";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {User} from "@/models/user/User";
+import usePermission from "@/composables/usePermission";
+import {PermissionsData} from "@/constants/PermissionsData";
 
 
 const props = defineProps({
@@ -33,15 +37,20 @@ const props = defineProps({
   loading: Boolean,
 });
 
-const emits = defineEmits(["deleted"]);
+const emits = defineEmits(["deleted", "updated"]);
 
-const isOpen = ref(false);
 const edit = ref({
   title: "Редактирование пользователя",
   description: "Измените данные пользователя",
   component: UsersEdit,
   loader: false,
 });
+
+
+//
+// onMounted(() => {
+//   console.log(props.users)
+// })
 
 
 const columns = [
@@ -79,6 +88,13 @@ const columns = [
     },
   },
 ];
+
+const {hasPermission} = usePermission()
+
+async function handlingUpdateUser(user: any) {
+  await useUserFunctions().changeUser(user)
+  emits('updated')
+}
 
 </script>
 
