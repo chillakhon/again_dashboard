@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-5 font-medium text-sm">
+  <div class="font-medium text-sm">
 
     <div class="border-b py-3 pl-1 text-sm text-gray-800">Варианты товара</div>
 
@@ -10,7 +10,9 @@
 
 
     <Drawer>
-      <DrawerTrigger class="text-blue-300">Посмотреть</DrawerTrigger>
+      <DrawerTrigger class="w-full flex justify-start">
+        <Button type="button" variant="outline">Посмотреть</Button>
+      </DrawerTrigger>
       <DrawerContent>
         <div class="h-[80vh] overflow-y-auto p-2">
 

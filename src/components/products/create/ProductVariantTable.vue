@@ -22,6 +22,7 @@ import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Product} from "@/models/Product";
 import {Input} from '@/components/ui/input'
 import {h} from "vue"
+import ProductImage from "@/components/products/create/ProductImage.vue";
 
 
 const props = defineProps({
@@ -44,20 +45,49 @@ const columns = [
   },
 
   {
-    accessorKey: 'price',
-    header: 'Цена',
+    accessorKey: "images",
+    header: "Фото",
+    cell: (cell: any) => h(ProductImage, {
+      item: cell.row.original || {},
+      onUploaded: () => {
+        emits('updated')
+      },
+      class: "text-center",
+    })
+  },
+
+
+  {
+    accessorKey: 'name',
+    header: 'Название',
     cell: ({row}: any) => {
       return h(Input, {
-        modelValue: row.original.price,
+        modelValue: row.original.name,
         'onUpdate:modelValue': (val: any) => {
-          row.original.price = Number(val)
+          row.original.name = val
         },
-        class: 'w-24 text-center',
-        type: 'number',
-        min: 0,
+        class: 'w-full text-center',
+        type: 'text',
+        placeholder: "Пример xs черный",
       })
     },
   },
+  {
+    accessorKey: 'barcode',
+    header: 'Штрих код',
+    cell: ({row}: any) => {
+      return h(Input, {
+        modelValue: row.original.barcode,
+        'onUpdate:modelValue': (val: any) => {
+          row.original.barcode = val
+        },
+        class: 'w-full text-center',
+        type: 'text',
+        placeholder: "Штрих код",
+      })
+    },
+  },
+
   {
     accessorKey: 'price',
     header: 'Цена',
@@ -69,6 +99,23 @@ const columns = [
         },
         class: 'w-24 text-center',
         type: 'number',
+        placeholder: "Цена",
+        min: 0,
+      })
+    },
+  },
+  {
+    accessorKey: 'cost_price',
+    header: 'Цена закупкы',
+    cell: ({row}: any) => {
+      return h(Input, {
+        modelValue: row.original.cost_price,
+        'onUpdate:modelValue': (val: any) => {
+          row.original.cost_price = val
+        },
+        class: 'w-24 text-center',
+        type: 'text',
+        placeholder: "Цена закупкы",
         min: 0,
       })
     },

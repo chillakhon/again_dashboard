@@ -6,7 +6,7 @@
 <!--        :size="17"-->
 <!--      />-->
     </DialogTrigger>
-    <DialogContent class="w-100%">
+    <DialogContent :class="dynamicStyle" class="w-full">
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription v-if="description">
@@ -41,6 +41,7 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  dynamicStyle: String
 });
 const emits = defineEmits(["close"]);
 </script>
