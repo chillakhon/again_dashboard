@@ -14,14 +14,13 @@
       <DrawerContent>
         <div class="h-[80vh] overflow-y-auto p-2">
 
-          <!--          <div>-->
-
           <div class="flex w-full justify-between items-center mb-2">
 
             <span class="font-medium text-gray-600">Варианты товара</span>
 
-            <Button variant="outline" @click="product.variants?.push(Product.fromJSONForVariantCreate({})); renderTable++">
-              <Plus />
+            <Button variant="outline"
+                    @click="product.variants?.push(Product.fromJSONForVariantCreate({})); renderTable++">
+              <Plus/>
               Добавить
             </Button>
           </div>
@@ -30,10 +29,8 @@
               class="w-full"
               :key="renderTable"
               :product="product"
+              @deleted="renderTable++"
           />
-
-          {{product.variants}}
-          <!--          </div>-->
 
         </div>
       </DrawerContent>
@@ -54,7 +51,7 @@ import {Button} from "@/components/ui/button";
 import {Label} from "@/components/ui/label";
 import {Input} from "@/components/ui/input";
 import axios from "axios";
-import {ref} from "vue";
+import {ref, watch} from "vue";
 import {Product} from "@/models/Product";
 import ProductVariantTable from "@/components/products/create/ProductVariantTable.vue";
 
@@ -66,16 +63,12 @@ const props = defineProps({
 })
 
 
-const renderTable = ref()
+const renderTable = ref(1)
 
-const units = ref()
-
-const fetchUnits = async () => {
-  axios.get('units').then(res => {
-    units.value = res.data
-  })
-}
-
-fetchUnits()
+// watch(() => props.product?.variants, () => {
+//   renderTable.value++
+// }, {
+//   deep: true
+// })
 
 </script>

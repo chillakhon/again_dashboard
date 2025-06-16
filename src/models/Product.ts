@@ -106,7 +106,7 @@ export class Product {
         const product = new Product();
         product.id = json.id ?? null;
         product.name = json.name ?? null;
-        product.uuid = json.uuid ?? `variant_generated_${Math.round(10)}`;
+        product.uuid = json.uuid ?? `variant_generated_${Math.round(Math.random() * 10)}`;
         product.barcode = json.barcode ?? null;
         product.cost_price = json.cost_price ?? 0;
         product.price = json.price ?? 0;
@@ -139,6 +139,12 @@ export class Product {
         // product.imageFiles = json.imageFiles ?? [];
 
         return product;
+    }
+
+
+    deleteProductByUuidToVariants(uuid: string): void {
+        if (!this.variants) return;
+        this.variants = this.variants.filter(variant => variant.uuid !== uuid);
     }
 
 
@@ -186,8 +192,8 @@ export class Product {
             length: this.length,
             width: this.width,
             height: this.height,
-            variants: this.variants,
 
+            variants: this.variants,
             has_variants: this.has_variants,
             default_unit_id: this.default_unit_id,
 
@@ -205,5 +211,6 @@ export class Product {
             // is_featured: this.is_featured,
         };
     }
+
 
 }
