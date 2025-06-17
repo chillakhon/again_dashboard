@@ -3,6 +3,7 @@
 
     <div @click="dialogOpen = true" class="w-10 cursor-pointer">
       <Image class="text-gray-400 hover:text-gray-500 transition cursor-pointer"/>
+<!--      {{ rowOriginal?.images }}-->
 
       <!--      <img :src="useImageFunctions().getImageByName(item.image_name, 'sm')" alt="img">-->
     </div>
@@ -17,7 +18,7 @@
       <template v-slot:content>
         <ProductImagePreviewAndUpload
             :item="item"
-            @uploaded="emit('uploaded'); dialogOpen = false"
+            @uploaded="emit('uploaded', $event);"
         />
       </template>
     </DynamicsModal>

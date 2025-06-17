@@ -35,15 +35,14 @@
 
             <!-- Вес (кг) -->
             <div class="grid w-full items-center gap-2 p-2">
-              <Label class="block text-sm font-medium text-gray-700" for="barcode">Вес кг</Label>
+              <Label class="block text-sm font-medium text-gray-700" for="barcode">Вес гр</Label>
               <Input
                   id="barcode"
                   type="text"
                   required
-                  placeholder="Вес"
+                  placeholder="В гр"
                   v-model="product.weight"
               />
-
             </div>
 
             <!-- Габариты -->
@@ -51,36 +50,36 @@
 
               <!-- Длина -->
               <div class="grid w-full items-center gap-2 p-2">
-                <Label class="block text-sm font-medium text-gray-700" for="barcode">Габариты (Д)</Label>
+                <Label class="block text-sm font-medium text-gray-700" for="barcode">Длина</Label>
                 <Input
                     id="barcode"
                     type="text"
                     required
-                    placeholder="Длина"
+                    placeholder="См"
                     v-model="product.length"
                 />
               </div>
 
               <!-- Ширина -->
               <div class="grid w-full items-center gap-2 p-2">
-                <Label class="block text-sm font-medium text-gray-700" for="barcode">Габариты (Ш)</Label>
+                <Label class="block text-sm font-medium text-gray-700" for="barcode">Ширина</Label>
                 <Input
                     id="barcode"
                     type="text"
                     required
-                    placeholder="Ширина"
+                    placeholder="См"
                     v-model="product.width"
                 />
               </div>
 
               <!-- Высота -->
               <div class="grid w-full items-center gap-2 p-2">
-                <Label class="block text-sm font-medium text-gray-700" for="barcode">Габариты (В)</Label>
+                <Label class="block text-sm font-medium text-gray-700" for="barcode">Высота</Label>
                 <Input
                     id="barcode"
                     type="text"
                     required
-                    placeholder="Высота"
+                    placeholder="См"
                     v-model="product.height"
                 />
               </div>

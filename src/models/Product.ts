@@ -106,7 +106,7 @@ export class Product {
         const product = new Product();
         product.id = json.id ?? null;
         product.name = json.name ?? null;
-        product.uuid = json.uuid ?? `variant_generated_${Math.round(Math.random() * 10)}`;
+        product.uuid = json.uuid ?? `variant_generated_${Math.round(Math.random() * 1000)}`;
         product.barcode = json.barcode ?? null;
         product.cost_price = json.cost_price ?? 0;
         product.price = json.price ?? 0;

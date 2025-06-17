@@ -1,106 +1,111 @@
 <template>
   <div class="space-y-4">
-    <div>
-      <div class="grid w-full items-center gap-4">
-        <div class="flex flex-col space-y-1.5 p-2 cursor-pointer">
-          <Input
-              class="cursor-pointer"
-              id="image-upload"
-              ref="fileInput"
-              type="file"
-              accept="image/*"
-              multiple
-              @change="handleFileUpload"
-          />
-        </div>
+    <div class="grid flex-1 items-center gap-4">
+      <div class="flex flex-col space-y-1.5 p-2 cursor-pointer">
+        <input
+            class="block w-full text-sm text-gray-500
+         file:mr-4 file:py-2 file:px-4
+         file:rounded-lg file:border-0
+         file:text-sm file:font-semibold
+         file:bg-primary file:text-white
+         hover:file:bg-primary/90
+         cursor-pointer transition"
+            id="image-upload"
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            multiple
+            @change="handleFileUpload"
+        />
+      </div>
 
-        <div v-if="sortedImages.length > 0" class="space-y-2 flex-1 flex-col">
-          <Label>Список изображений</Label>
-          <div class="space-y-2">
-            <div
-                v-for="(element, index) in sortedImages"
-                :key="element.id || new Date().getSeconds()"
-                class="group relative hover:bg-muted/50 transition-colors border rounded-md"
-                draggable="true"
-                @dragstart="handleDragStart($event, index)"
-                @dragover.prevent="handleDragOver($event, index)"
-                @dragenter.prevent="handleDragEnter($event, index)"
-                @dragleave.prevent
-                @drop.prevent="handleDrop($event, index)"
-                @dragend="handleDragEnd"
-                :class="{ 'opacity-50': draggedItemIndex === index }"
-            >
-              <div class="flex items-center gap-4">
-                <div class="flex-shrink-0">
-                  <div class="h-20 w-20" v-if="getPreviewUrl(element)">
-                    <img
-                        :src="getPreviewUrl(element)"
-                        :alt="element.path || element.file?.name || 'Uploaded image'"
-                        class="object-cover rounded-md border m-1"
-                        draggable="false"
-                    />
-                  </div>
-                  <div
-                      v-else
-                      class="h-16 w-16 bg-muted flex items-center justify-center rounded-md"
-                  >
-                    <UploadIcon class="h-6 w-6 text-muted-foreground"/>
-                  </div>
+      <div v-if="sortedImages.length > 0" class="space-y-2 flex-1 flex-col">
+        <Label>Список изображений</Label>
+        <div class="space-y-2">
+          <div
+              v-for="(element, index) in sortedImages"
+              :key="element.id || new Date().getSeconds()"
+              class="group relative hover:bg-muted/50 transition-colors border rounded-md"
+              draggable="true"
+              @dragstart="handleDragStart($event, index)"
+              @dragover.prevent="handleDragOver($event, index)"
+              @dragenter.prevent="handleDragEnter($event, index)"
+              @dragleave.prevent
+              @drop.prevent="handleDrop($event, index)"
+              @dragend="handleDragEnd"
+              :class="{ 'opacity-50': draggedItemIndex === index }"
+          >
+            <div class="flex items-center gap-4">
+              {{ element }}
+              <div class="flex-shrink-0">
+                <div class="h-20 w-20" v-if="getPreviewUrl(element)">
+                  <img
+                      :src="getPreviewUrl(element)"
+                      :alt="element.path || element.file?.name || 'Uploaded image'"
+                      class="object-cover rounded-md border m-1"
+                      draggable="false"
+                  />
                 </div>
+                <div
+                    v-else
+                    class="h-16 w-16 bg-muted flex items-center justify-center rounded-md"
+                >
+                  <UploadIcon class="h-6 w-6 text-muted-foreground"/>
+                </div>
+              </div>
 
-                <div class="flex-grow min-w-0">
-                  <p class="text-sm font-medium truncate">
-                    {{ element.file?.name || element.path || 'New image' }}
-                  </p>
-                  <p class="text-xs text-muted-foreground">
-                    Position: {{ element.position + 1 }}
-                  </p>
-                </div>
+              <div class="flex-grow min-w-0">
+                <p class="text-sm font-medium ">
+                  {{ element.file?.name || element.path || 'New image' }}
+                </p>
+                <p class="text-xs text-muted-foreground">
+                  Position: {{ element.position + 1 }}
+                </p>
+              </div>
 
-                <div class="flex items-center gap-1">
-                  <Button
-                      variant="ghost"
-                      size="icon"
-                      class="h-8 w-8"
-                      :disabled="element.position === 0"
-                      @click="moveUp(element.id!)"
-                  >
-                    <ArrowUpIcon class="h-4 w-4"/>
-                  </Button>
-                  <Button
-                      variant="ghost"
-                      size="icon"
-                      class="h-8 w-8"
-                      :disabled="element.position === sortedImages.length - 1"
-                      @click="moveDown(element.id!)"
-                  >
-                    <ArrowDownIcon class="h-4 w-4"/>
-                  </Button>
-                  <Button
-                      variant="ghost"
-                      size="icon"
-                      class="h-8 w-8 text-destructive hover:text-destructive"
-                      @click="removeImage(element.id!)"
-                  >
-                    <TrashIcon class="h-4 w-4"/>
-                  </Button>
-                </div>
+              <div class="flex items-center gap-1">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8"
+                    :disabled="element.position === 0"
+                    @click="moveUp(element.id!)"
+                >
+                  <ArrowUpIcon class="h-4 w-4"/>
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8"
+                    :disabled="element.position === sortedImages.length - 1"
+                    @click="moveDown(element.id!)"
+                >
+                  <ArrowDownIcon class="h-4 w-4"/>
+                </Button>
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    class="h-8 w-8 text-destructive hover:text-destructive"
+                    @click="removeImage(element.id!)"
+                >
+                  <TrashIcon class="h-4 w-4"/>
+                </Button>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        <div v-else
-             @click="triggerFileInput"
-             class="flex flex-col items-center justify-center py-8 border-2 border-dashed rounded-lg cursor-pointer"
-        >
-          <UploadIcon class="h-10 w-10 text-muted-foreground mb-2"/>
-          <p class="text-sm text-muted-foreground">No images uploaded yet</p>
-        </div>
+      <div v-else
+           @click="triggerFileInput"
+           class="flex flex-col items-center justify-center py-8 border-2 border-dashed rounded-lg cursor-pointer"
+      >
+        <UploadIcon class="h-10 w-10 text-muted-foreground mb-2"/>
+        <p class="text-sm text-muted-foreground">No images uploaded yet</p>
       </div>
     </div>
 
-    <div  class="flex justify-between">
+    <div class="flex justify-between">
       <p class="text-sm text-muted-foreground">
         {{ sortedImages.length }} image{{ sortedImages.length !== 1 ? 's' : '' }} uploaded
       </p>
@@ -260,6 +265,19 @@ const handleDragEnd = () => {
   const elements = document.querySelectorAll('.dragging');
   elements.forEach(el => el.classList.remove('dragging'));
 }
+
+
+const isInitialized = ref(false)
+
+watch(() => props.modelValue, (newVal) => {
+  console.log(newVal)
+  if (!isInitialized.value && newVal?.length) {
+    images.value = newVal
+    isInitialized.value = true
+  }
+  console.log(images.value)
+}, {immediate: true})
+
 </script>
 
 <style>

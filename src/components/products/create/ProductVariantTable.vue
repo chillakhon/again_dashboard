@@ -23,6 +23,7 @@ import {Product} from "@/models/Product";
 import {Input} from '@/components/ui/input'
 import {h} from "vue"
 import ProductImage from "@/components/products/create/ProductImage.vue";
+import {ImageModel} from "@/models/ImageModel";
 
 
 const props = defineProps({
@@ -33,7 +34,7 @@ const props = defineProps({
   loading: Boolean,
 });
 
-const emits = defineEmits(["deleted", "updated"]);
+const emits = defineEmits(["deleted", "updated", 'updatedVariantImage']);
 
 const columns = [
   {
@@ -48,9 +49,12 @@ const columns = [
     accessorKey: "images",
     header: "Фото",
     cell: (cell: any) => h(ProductImage, {
-      item: cell.row.original || {},
-      onUploaded: () => {
-        emits('updated')
+      item: cell.row.original ?? {},
+      onUploaded: (event: ImageModel) => {
+        // emits('updatedVariantImage', event);
+        // cell.row.original?.images.push(event)
+
+        console.log(cell.row.original);
       },
       class: "text-center",
     })

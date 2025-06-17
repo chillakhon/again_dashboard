@@ -2,6 +2,7 @@
   <Loader v-if="isLoading"/>
   <ImageManager
       v-else
+      :key="item.uuid || new Date().getSeconds()"
       v-model="images"
       :image-size="{
         value: 'md'
@@ -34,33 +35,50 @@ const isUploading = ref(false);
 const uploadProgress = ref(50)
 
 const isLoading = ref(true)
+
 const props = defineProps({
   item: {
     type: Product,
     required: true
-  }
+  },
 })
 
-const images = ref<ImageModel[]>([]);
+const images = ref<ImageModel[]>(props.item?.images || []);
 
 const fetchImages = async () => {
+
+  if (!props.item.id) return
+
   images.value = await getImages('Product', props.item.id);
 };
 
 
 const uploadToServer = async () => {
 
+
+  props.item?.images?.push(images.value)
+
+  console.log(images.value)
+  console.log(props.item?.images)
+  return
+  emits('uploaded');
+  // console.log(props.item)
+  // console.log(images.value)
+  return
+
   const imagesToUpload = images.value.map(img => ({
     file: img.file,
     name: img.path
   }));
+
+  if (!props.item?.id) return
 
   isUploading.value = true;
 
   try {
     await uploadImage(
         'Product',
-        props.item.id,
+        props.item?.id,
         imagesToUpload,
         (progress) => {
           uploadProgress.value = progress;
@@ -73,7 +91,7 @@ const uploadToServer = async () => {
 };
 
 onMounted(async () => {
-  await fetchImages();
+  // await fetchImages();
   isLoading.value = false
 });
 </script>
