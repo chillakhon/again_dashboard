@@ -1,12 +1,12 @@
 <template>
   <Dialog :open="dialogOpen" @update:open="emits('close')">
     <DialogTrigger as-child>
-<!--      <Pencil-->
-<!--        class="text-gray-400 hover:text-gray-500 transition cursor-pointer"-->
-<!--        :size="17"-->
-<!--      />-->
+      <!--      <Pencil-->
+      <!--        class="text-gray-400 hover:text-gray-500 transition cursor-pointer"-->
+      <!--        :size="17"-->
+      <!--      />-->
     </DialogTrigger>
-    <DialogContent :class="dynamicStyle" class="w-full">
+    <DialogContent :class="dynamicStyle" class="w-full h-[75vh] overflow-y-auto flex flex-col items-start">
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription v-if="description">
@@ -14,10 +14,12 @@
         </DialogDescription>
       </DialogHeader>
 
-      <slot name="content" />
+      <div class="w-full">
+        <slot name="content"/>
+      </div>
 
       <DialogFooter>
-        <slot name="footer" />
+        <slot name="footer"/>
       </DialogFooter>
     </DialogContent>
   </Dialog>

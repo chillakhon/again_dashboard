@@ -13,7 +13,6 @@
         <NumberField
             class="gap-2"
             :min="10"
-            :max="30000"
             :format-options="{
           style: 'currency',
           currency: 'RUB',
@@ -55,7 +54,7 @@
         <NumberField
             class="gap-2"
             :min="0"
-            :max="30000"
+
             :format-options="{
           style: 'currency',
           currency: 'RUB',

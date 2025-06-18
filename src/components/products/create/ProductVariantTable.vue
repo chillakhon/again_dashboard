@@ -118,7 +118,7 @@ const columns = [
           row.original.cost_price = val
         },
         class: 'w-24 text-center',
-        type: 'text',
+        type: 'number',
         placeholder: "Цена закупкы",
         min: 0,
       })

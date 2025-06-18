@@ -19,24 +19,27 @@
         />
       </div>
 
+      {{ sortedImages }}
       <div v-if="sortedImages.length > 0" class="space-y-2 flex-1 flex-col">
         <Label>Список изображений</Label>
-        <div class="space-y-2">
+        <div class="space-y-2" :key="renderListImg">
           <div
               v-for="(element, index) in sortedImages"
-              :key="element.id || new Date().getSeconds()"
+              :key="`${element.id}`"
               class="group relative hover:bg-muted/50 transition-colors border rounded-md"
               draggable="true"
               @dragstart="handleDragStart($event, index)"
               @dragover.prevent="handleDragOver($event, index)"
               @dragenter.prevent="handleDragEnter($event, index)"
-              @dragleave.prevent
+              @dragleave.prevent="handleDragLeave($event)"
               @drop.prevent="handleDrop($event, index)"
-              @dragend="handleDragEnd"
-              :class="{ 'opacity-50': draggedItemIndex === index }"
+              @dragend.prevent="handleDragEnd"
+              :class="{
+      'opacity-50': draggedItemIndex === index,
+      'drag-over': dragOverIndex === index && draggedItemIndex !== index
+    }"
           >
             <div class="flex items-center gap-4">
-              {{ element }}
               <div class="flex-shrink-0">
                 <div class="h-20 w-20" v-if="getPreviewUrl(element)">
                   <img
@@ -68,6 +71,7 @@
                     variant="ghost"
                     size="icon"
                     class="h-8 w-8"
+                    @mousedown.stop
                     :disabled="element.position === 0"
                     @click="moveUp(element.id!)"
                 >
@@ -77,6 +81,7 @@
                     variant="ghost"
                     size="icon"
                     class="h-8 w-8"
+                    @mousedown.stop
                     :disabled="element.position === sortedImages.length - 1"
                     @click="moveDown(element.id!)"
                 >
@@ -86,6 +91,7 @@
                     variant="ghost"
                     size="icon"
                     class="h-8 w-8 text-destructive hover:text-destructive"
+                    @mousedown.stop
                     @click="removeImage(element.id!)"
                 >
                   <TrashIcon class="h-4 w-4"/>
@@ -129,8 +135,9 @@ const props = defineProps<{
   imageSize?: { value: string }
 }>()
 
+const renderListImg = ref(1)
 
-const emit = defineEmits(['update:modelValue', 'upload']);
+const emit = defineEmits(['update:modelValue', 'upload', 'changeListImage']);
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const images = ref<ImageModel[]>(props.modelValue || [])
@@ -213,8 +220,12 @@ const handleDragStart = (event: DragEvent, index: number) => {
   event.dataTransfer?.setData('text/plain', index.toString());
   event.dataTransfer!.effectAllowed = 'move';
 
-  const element = event.target as HTMLElement;
-  element.classList.add('dragging');
+  // Для Firefox
+  const dragImage = new Image();
+  dragImage.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+  event.dataTransfer?.setDragImage(dragImage, 0, 0);
+
+  (event.currentTarget as HTMLElement).classList.add('dragging');
 }
 
 const handleDragOver = (event: DragEvent, index: number) => {
@@ -227,56 +238,47 @@ const handleDragEnter = (event: DragEvent, index: number) => {
   event.preventDefault();
   dragOverIndex.value = index;
 }
-
+const handleDragLeave = (event: DragEvent) => {
+  const element = event.currentTarget as HTMLElement;
+  if (!element.contains(event.relatedTarget as Node)) {
+    element.classList.remove('drag-over');
+    dragOverIndex.value = null;
+  }
+}
 const handleDrop = (event: DragEvent, dropIndex: number) => {
   event.preventDefault();
-  if (draggedItemIndex.value === null) return;
+  const dragIndex = Number(event.dataTransfer?.getData('text/plain'));
 
-  const dragIndex = draggedItemIndex.value;
-  if (dragIndex === dropIndex) return;
+  if (isNaN(dragIndex) || dragIndex === dropIndex) return;
 
-  // Create a new array with the moved item
   const newItems = [...sortedImages.value];
   const [movedItem] = newItems.splice(dragIndex, 1);
   newItems.splice(dropIndex, 0, movedItem);
 
-  // Update positions
+  // Обновляем позиции
   newItems.forEach((item, index) => {
     item.position = index;
   });
 
-  // Update the sorted array
   sortedImages.value = newItems;
-
-  // Reset drag states
-  draggedItemIndex.value = null;
-  dragOverIndex.value = null;
-
-  // Remove visual feedback
-  const elements = document.querySelectorAll('.dragging');
-  elements.forEach(el => el.classList.remove('dragging'));
+  resetDragState();
 }
+
 
 const handleDragEnd = () => {
-  draggedItemIndex.value = null;
-  dragOverIndex.value = null;
-
-  // Remove visual feedback
-  const elements = document.querySelectorAll('.dragging');
-  elements.forEach(el => el.classList.remove('dragging'));
+  resetDragState();
 }
 
-
-const isInitialized = ref(false)
-
-watch(() => props.modelValue, (newVal) => {
-  console.log(newVal)
-  if (!isInitialized.value && newVal?.length) {
-    images.value = newVal
-    isInitialized.value = true
-  }
-  console.log(images.value)
-}, {immediate: true})
+const resetDragState = () => {
+  draggedItemIndex.value = null;
+  dragOverIndex.value = null;
+  document.querySelectorAll('.dragging, .drag-over').forEach(el => {
+    el.classList.remove('dragging', 'drag-over');
+  });
+  emit('changeListImage')
+  // imageManager.moveUp()
+  // images.value = imageManager.getAllImages()
+}
 
 </script>
 
@@ -284,5 +286,22 @@ watch(() => props.modelValue, (newVal) => {
 .dragging {
   opacity: 0.5;
   background-color: rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.drag-over {
+  border: 2px dashed #3b82f6;
+  background-color: rgba(59, 130, 246, 0.1);
+  position: relative;
+}
+
+.drag-over::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #3b82f6;
 }
 </style>

@@ -1,12 +1,16 @@
 <template>
+
+  {{ images }}
+
   <Loader v-if="isLoading"/>
   <ImageManager
       v-else
-      :key="item.uuid || new Date().getSeconds()"
       v-model="images"
+      :key="renderListImage"
       :image-size="{
         value: 'md'
       }"
+      @changeListImage="renderListImage++"
       @upload="uploadToServer"
   />
 
@@ -27,7 +31,7 @@ import ImageManager from "@/components/dynamics/ImageManager.vue";
 import ShadcnProgress from "@/components/dynamics/ShadcnProgress.vue";
 
 const {uploadImage, getImages, deleteImage} = useImageFunctions();
-
+const renderListImage = ref(1)
 
 const emits = defineEmits(['uploaded'])
 
@@ -56,7 +60,7 @@ const fetchImages = async () => {
 const uploadToServer = async () => {
 
 
-  props.item?.images?.push(images.value)
+  props.item.images = images.value;
 
   console.log(images.value)
   console.log(props.item?.images)
