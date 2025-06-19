@@ -5,147 +5,168 @@ import {useSuccessHandler} from "@/composables/useSuccessHandler";
 
 export function useImageFunctions() {
 
-  // const uploadImage = async (imageableType: string, imageableId: number, imageFile: File): Promise<ImageModel | null> => {
-  //
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append('imageable_type', imageableType);
-  //     formData.append('imageable_id', imageableId.toString());
-  //     formData.append('image', imageFile);
-  //
-  //     const res = await axios.post(`${config.public.LARAVEL_API}/api/images`, formData, {
-  //       headers: {
-  //         'Content-Type': 'multipart/form-data'
-  //       }
-  //     });
-  //
-  //     if (res.data.success) {
-  //       // toast.success(res.data.message);
-  //       return ImageModel.fromJSON(res.data.image);
-  //     } else {
-  //       // toast.error(res.data.message);
-  //       return null;
-  //     }
-  //   } catch (e: any) {
-  //     if (e.response) {
-  //       toast.error(e.response.data.error);
-  //     }
-  //     return null;
-  //   }
-  // };
+    // const uploadImage = async (imageableType: string, imageableId: number, imageFile: File): Promise<ImageModel | null> => {
+    //
+    //   try {
+    //     const formData = new FormData();
+    //     formData.append('imageable_type', imageableType);
+    //     formData.append('imageable_id', imageableId.toString());
+    //     formData.append('image', imageFile);
+    //
+    //     const res = await axios.post(`${config.public.LARAVEL_API}/api/images`, formData, {
+    //       headers: {
+    //         'Content-Type': 'multipart/form-data'
+    //       }
+    //     });
+    //
+    //     if (res.data.success) {
+    //       // toast.success(res.data.message);
+    //       return ImageModel.fromJSON(res.data.image);
+    //     } else {
+    //       // toast.error(res.data.message);
+    //       return null;
+    //     }
+    //   } catch (e: any) {
+    //     if (e.response) {
+    //       toast.error(e.response.data.error);
+    //     }
+    //     return null;
+    //   }
+    // };
 
-  const getImages = async (imageableType: string, imageableId: number): Promise<ImageModel[]> => {
-    try {
-      const res = await axios.get(`${process.env.VUE_APP_BASE_URL}/api/images`, {
-        params: {
-          imageable_type: imageableType,
-          imageable_id: imageableId
+    const getImages = async (imageableType: string, imageableId: number): Promise<ImageModel[]> => {
+        try {
+            const res = await axios.get(`${process.env.VUE_APP_BASE_URL}/api/images`, {
+                params: {
+                    imageable_type: imageableType,
+                    imageable_id: imageableId
+                }
+            });
+
+            if (res.data.success) {
+                return res.data.images.map((img: any) => ImageModel.fromJSON(img));
+            } else {
+                // toast.error(res.data.message);
+                return [];
+            }
+        } catch (e: any) {
+            if (e.response) {
+                toast.error(e.response.data.error);
+            }
+            return [];
         }
-      });
+    };
 
-      if (res.data.success) {
-        return res.data.images.map((img: any) => ImageModel.fromJSON(img));
-      } else {
-        // toast.error(res.data.message);
-        return [];
-      }
-    } catch (e: any) {
-      if (e.response) {
-        toast.error(e.response.data.error);
-      }
-      return [];
+    const deleteImage = async (imageId: number): Promise<boolean> => {
+        try {
+            const res = await axios.delete(`${process.env.VUE_APP_BASE_URL}/api/images`, {
+                data: {id: imageId}
+            });
+
+            if (res.data.status) {
+                toast.success(res.data.message);
+                return true;
+            } else {
+                toast.error(res.data.message);
+                return false;
+            }
+        } catch (e: any) {
+            if (e.response) {
+                toast.error(e.response.data.error);
+            }
+            return false;
+        }
+    };
+
+    const uploadImage = async (
+        imageableType: string,
+        imageableId: number,
+        images: Array<{
+            file?: File | null;
+            name?: string | null;
+        }>,
+        onProgress?: (progress: number) => void
+    ): Promise<boolean> => {
+        try {
+            const formData = new FormData();
+            formData.append('imageable_type', imageableType);
+            formData.append('imageable_id', imageableId.toString());
+
+            const existingImages: string[] = [];
+
+            images.forEach((image, index) => {
+                if (image.file) {
+                    formData.append('images[]', image.file);
+                    formData.append(`image_file_${index}`, index.toString());
+                }
+
+                if (image.name) {
+                    existingImages.push(image.name);
+                    formData.append(`image_path_${image.name.replaceAll('.', '_')}`, index.toString());
+                }
+            });
+
+            existingImages.forEach((img, index) => {
+                formData.append(`existing_images[${index}]`, img);
+            });
+
+            const res = await axios.post(`${process.env.VUE_APP_BASE_URL}/api/images`, formData, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: (progressEvent) => {
+                    if (onProgress && progressEvent.total) {
+                        const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                        onProgress(progress);
+                    }
+                }
+            });
+
+            if (res.data.success) {
+                useSuccessHandler().showSuccess(res)
+                onProgress?.(100);
+                return true;
+            } else {
+                toast.error(res.data.message || 'Image upload failed');
+                return false;
+            }
+        } catch (e: any) {
+            toast.error(e.response?.data?.message || 'Error uploading images');
+            return false;
+        }
+    };
+
+
+    function getImageByName(name: string, imageSize = '') {
+        return `${process.env.VUE_APP_BASE_URL}/api/get/image/byname/${imageSize ? imageSize + '_' : ''}${name}`;
     }
-  };
 
-  const deleteImage = async (imageId: number): Promise<boolean> => {
-    try {
-      const res = await axios.delete(`${process.env.VUE_APP_BASE_URL}/api/images`, {
-        data: {id: imageId}
-      });
-
-      if (res.data.status) {
-        toast.success(res.data.message);
-        return true;
-      } else {
-        toast.error(res.data.message);
-        return false;
-      }
-    } catch (e: any) {
-      if (e.response) {
-        toast.error(e.response.data.error);
-      }
-      return false;
-    }
-  };
-
-  const uploadImage = async (
-    imageableType: string,
-    imageableId: number,
-    images: Array<{
-      file?: File | null;
-      name?: string | null;
-    }>,
-  onProgress?: (progress: number) => void
-  ): Promise<boolean> => {
-    try {
-      const formData = new FormData();
-      formData.append('imageable_type', imageableType);
-      formData.append('imageable_id', imageableId.toString());
-
-      const existingImages: string[] = [];
-
-      images.forEach((image, index) => {
+    function showImage(image: ImageModel) {
         if (image.file) {
-          formData.append('images[]', image.file);
-          formData.append(`image_file_${index}`, index.toString());
+            return URL.createObjectURL(image.file);
         }
-
-        if (image.name) {
-          existingImages.push(image.name);
-          formData.append(`image_path_${image.name.replaceAll('.', '_')}`, index.toString());
-        }
-      });
-
-      existingImages.forEach((img, index) => {
-        formData.append(`existing_images[${index}]`, img);
-      });
-
-      const res = await axios.post(`${process.env.VUE_APP_BASE_URL}/api/images`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: (progressEvent) => {
-          if (onProgress && progressEvent.total) {
-            const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-            onProgress(progress);
-          }
-        }
-      });
-
-      if (res.data.success) {
-        useSuccessHandler().showSuccess(res)
-        onProgress?.(100);
-        return true;
-      } else {
-        toast.error(res.data.message || 'Image upload failed');
-        return false;
-      }
-    } catch (e: any) {
-      toast.error(e.response?.data?.message || 'Error uploading images');
-      return false;
+        return '';
     }
-  };
 
 
-  function getImageByName(name: string, imageSize = '') {
-    return `${process.env.VUE_APP_BASE_URL}/api/get/image/byname/${imageSize ? imageSize + '_' : ''}${name}`;
-  }
+    // function getPreviewUrl = (image: ImageModel) => {
+    //   if (image.file) {
+    //     return URL.createObjectURL(image.file);
+    //   }
+    //   if (image.path) {
+    //     return props.imageSize
+    //         ? image.imageURL(props.imageSize)
+    //         : image.path;
+    //   }
+    //   return '';
+    // }
 
 
-  return {
-    uploadImage,
-    getImages,
-    deleteImage,
-    getImageByName
-  };
+    return {
+        uploadImage,
+        getImages,
+        deleteImage,
+        getImageByName,
+        showImage
+    };
 }

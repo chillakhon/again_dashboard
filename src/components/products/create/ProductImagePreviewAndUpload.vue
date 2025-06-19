@@ -1,19 +1,13 @@
 <template>
-
-  {{ images }}
-
   <Loader v-if="isLoading"/>
   <ImageManager
       v-else
       v-model="images"
-      :key="renderListImage"
       :image-size="{
         value: 'md'
       }"
-      @changeListImage="renderListImage++"
-      @upload="uploadToServer"
+      @saveImage="saveImage"
   />
-
   <ShadcnProgress
       class="mt-2"
       v-if="isUploading"
@@ -29,11 +23,12 @@ import {Product} from "@/models/Product";
 import {useImageFunctions} from '@/composables/useImageFunctions';
 import ImageManager from "@/components/dynamics/ImageManager.vue";
 import ShadcnProgress from "@/components/dynamics/ShadcnProgress.vue";
+import {toast} from "vue-sonner";
 
 const {uploadImage, getImages, deleteImage} = useImageFunctions();
 const renderListImage = ref(1)
 
-const emits = defineEmits(['uploaded'])
+const emits = defineEmits(['uploaded', 'saveImage']);
 
 const isUploading = ref(false);
 const uploadProgress = ref(50)
@@ -57,13 +52,18 @@ const fetchImages = async () => {
 };
 
 
-const uploadToServer = async () => {
+const saveImage = async () => {
 
 
   props.item.images = images.value;
+  emits("saveImage", images.value);
+  toast.success('Фото варианта сохронены')
+
 
   console.log(images.value)
   console.log(props.item?.images)
+
+
   return
   emits('uploaded');
   // console.log(props.item)

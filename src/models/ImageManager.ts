@@ -63,6 +63,13 @@ export class ImageManager {
     });
   }
 
+
+  setImages(newImages: ImageModel[]): void {
+    this.images = [...newImages];
+    this.normalizePositions();
+  }
+
+
   // Get image by ID
   getImageById(id: number): ImageModel | undefined {
     return this.images.find(img => img.id === id);

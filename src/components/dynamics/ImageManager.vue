@@ -19,10 +19,10 @@
         />
       </div>
 
-      {{ sortedImages }}
+      <!--      {{ sortedImages }}-->
       <div v-if="sortedImages.length > 0" class="space-y-2 flex-1 flex-col">
         <Label>Список изображений</Label>
-        <div class="space-y-2" :key="renderListImg">
+        <div class="space-y-2">
           <div
               v-for="(element, index) in sortedImages"
               :key="`${element.id}`"
@@ -41,18 +41,23 @@
           >
             <div class="flex items-center gap-4">
               <div class="flex-shrink-0">
-                <div class="h-20 w-20" v-if="getPreviewUrl(element)">
-                  <img
-                      :src="getPreviewUrl(element)"
-                      :alt="element.path || element.file?.name || 'Uploaded image'"
-                      class="object-cover rounded-md border m-1"
-                      draggable="false"
-                  />
-                </div>
                 <div
-                    v-else
-                    class="h-16 w-16 bg-muted flex items-center justify-center rounded-md"
+                    class="h-20 w-20 cursor-pointer"
+                    v-if="getPreviewUrl(element)"
+                    @click="openImagePreview(element.position)"
                 >
+
+                  <ImagePreviewModal
+                      :images="sortedImages"
+                      :initialIndex="currentPreviewIndex"
+                      :imageSize="imageSize"
+                      :element="element"
+                  >
+
+                  </ImagePreviewModal>
+
+                </div>
+                <div v-else class="h-16 w-16 bg-muted flex items-center justify-center rounded-md">
                   <UploadIcon class="h-6 w-6 text-muted-foreground"/>
                 </div>
               </div>
@@ -116,28 +121,36 @@
         {{ sortedImages.length }} image{{ sortedImages.length !== 1 ? 's' : '' }} uploaded
       </p>
 
-      <Button variant="outline" @click="emit('upload')">Сохранить</Button>
+      <Button variant="outline" @click="emit('saveImage')">Сохранить</Button>
     </div>
   </div>
+
+
 </template>
 
 <script setup lang="ts">
 import {ref, watch, computed} from 'vue'
 import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
 import {TrashIcon, ArrowUpIcon, ArrowDownIcon, UploadIcon} from 'lucide-vue-next'
 import {ImageModel} from "@/models/ImageModel";
 import {ImageManager} from "@/models/ImageManager";
+import ImagePreviewModal from "@/components/dynamics/ImagePreviewModal.vue";
 
 const props = defineProps<{
   modelValue: ImageModel[],
   imageSize?: { value: string }
 }>()
 
-const renderListImg = ref(1)
+const showPreviewModal = ref(false)
+const currentPreviewIndex = ref(0)
 
-const emit = defineEmits(['update:modelValue', 'upload', 'changeListImage']);
+const openImagePreview = (index: number) => {
+  currentPreviewIndex.value = index
+  showPreviewModal.value = true
+}
+
+const emit = defineEmits(['update:modelValue', 'upload', 'saveImage']);
 
 const fileInput = ref<HTMLInputElement | null>(null)
 const images = ref<ImageModel[]>(props.modelValue || [])
@@ -251,19 +264,17 @@ const handleDrop = (event: DragEvent, dropIndex: number) => {
 
   if (isNaN(dragIndex) || dragIndex === dropIndex) return;
 
+  // Создаем копию отсортированного массива
   const newItems = [...sortedImages.value];
   const [movedItem] = newItems.splice(dragIndex, 1);
   newItems.splice(dropIndex, 0, movedItem);
 
-  // Обновляем позиции
-  newItems.forEach((item, index) => {
-    item.position = index;
-  });
+  // Обновляем основной массив через ImageManager
+  imageManager.setImages(newItems);
+  images.value = imageManager.getAllImages();
 
-  sortedImages.value = newItems;
   resetDragState();
 }
-
 
 const handleDragEnd = () => {
   resetDragState();
@@ -275,9 +286,6 @@ const resetDragState = () => {
   document.querySelectorAll('.dragging, .drag-over').forEach(el => {
     el.classList.remove('dragging', 'drag-over');
   });
-  emit('changeListImage')
-  // imageManager.moveUp()
-  // images.value = imageManager.getAllImages()
 }
 
 </script>

@@ -27,12 +27,15 @@
             </Button>
           </div>
 
-          <ProductVariantTable
-              class="w-full"
-              :key="renderTable"
-              :product="product"
-              @deleted="renderTable++"
-          />
+          <div class="flex flex-col justify-between items-end">
+            <ProductVariantTable
+                class="w-full"
+                :key="renderTable"
+                :product="product"
+                @deleted="renderTable++"
+            />
+            <Button v-if="product.variants?.length" class="mt-2">Завершить</Button>
+          </div>
 
         </div>
       </DrawerContent>
