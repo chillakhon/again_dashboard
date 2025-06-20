@@ -22,7 +22,13 @@
                 <AccordionContent>
 
                   <div class="p-2">
-                    <UploadImages/>
+                    <ImageManager
+                        v-model="product.images"
+                        :show-button-save="false"
+                        :horizontal="true"
+                    />
+
+                    <!--                    <UploadImages/>-->
                   </div>
 
                   <div class="grid w-full items-center gap-2 p-2">
@@ -95,6 +101,7 @@ import Button from "@/components/ui/button/Button.vue";
 import {toast} from 'vue-sonner'
 import axios from "axios";
 import {useRouter} from "vue-router";
+import ImageManager from "@/components/dynamics/ImageManager.vue";
 
 const router = useRouter()
 const product = ref<Product>(Product.fromJSON({}))
@@ -128,28 +135,18 @@ async function createProduct() {
 
   const p = product.value.toJSONForCreate()
 
-
   console.log(p)
-  return
+  // return
   await axios.post("products", product.value)
       .then(res => {
-        toast("Успех!", {
-          description: "Товар успешно создан.",
-          action: {
-            label: "Ок",
-          },
-        });
 
-        router.push("/products");
+        console.log(res.data)
+        // router.push("/products");
       })
       .catch(err => {
-        toast("Ошибка!", {
-          description: `${err.message}`,
-          action: {
-            label: "Отмена",
-          },
-        });
+
       });
+
 }
 
 </script>

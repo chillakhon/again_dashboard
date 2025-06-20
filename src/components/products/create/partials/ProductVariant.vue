@@ -9,7 +9,7 @@
     </div>
 
 
-    <Drawer>
+    <Drawer v-model:open="open">
       <DrawerTrigger class="w-full flex justify-start">
         <Button type="button" variant="outline">Посмотреть</Button>
       </DrawerTrigger>
@@ -34,7 +34,10 @@
                 :product="product"
                 @deleted="renderTable++"
             />
-            <Button v-if="product.variants?.length" class="mt-2">Завершить</Button>
+            <ArrowDown v-if="product.variants?.length"
+                       @click="open = false"
+                       class="mt-2 cursor-pointer text-gray-600  hover:text-gray-800"
+            />
           </div>
 
         </div>
@@ -46,19 +49,19 @@
 </template>
 
 <script setup lang="ts">
-import {Plus} from 'lucide-vue-next'
+import {Plus, ArrowDown} from 'lucide-vue-next'
 import {
   Drawer,
   DrawerContent,
   DrawerTrigger,
 } from '@/components/ui/drawer'
 import {Button} from "@/components/ui/button";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
-import axios from "axios";
 import {ref, watch} from "vue";
 import {Product} from "@/models/Product";
 import ProductVariantTable from "@/components/products/create/ProductVariantTable.vue";
+
+
+const open = ref(false);
 
 const props = defineProps({
   product: {
@@ -67,13 +70,9 @@ const props = defineProps({
   }
 })
 
+const emits = defineEmits(['finishUpdated']);
 
 const renderTable = ref(1)
 
-// watch(() => props.product?.variants, () => {
-//   renderTable.value++
-// }, {
-//   deep: true
-// })
 
 </script>

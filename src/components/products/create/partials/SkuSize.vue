@@ -14,7 +14,6 @@
               <Input
                   id="sku"
                   type="text"
-                  required
                   placeholder="Артикул"
                   v-model="product.sku"
               />
@@ -24,7 +23,6 @@
               <Input
                   id="barcode"
                   type="text"
-                  required
                   placeholder="Штрих-код"
                   v-model="product.barcode"
               />

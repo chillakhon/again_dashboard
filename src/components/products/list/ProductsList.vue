@@ -2,7 +2,6 @@
   <Loader v-if="isLoading"/>
   <div v-else class="">
 
-
     <div class="flex max-md:flex-col justify-between">
 
       <ProductSearch
