@@ -23,7 +23,7 @@
             <Button variant="outline"
                     @click="product.variants?.push(Product.fromJSONForVariantCreate({})); renderTable++">
               <Plus/>
-              Добавить
+              Новый вариант
             </Button>
           </div>
 
@@ -34,10 +34,17 @@
                 :product="product"
                 @deleted="renderTable++"
             />
-            <ArrowDown v-if="product.variants?.length"
-                       @click="open = false"
-                       class="mt-2 cursor-pointer text-gray-600  hover:text-gray-800"
-            />
+
+            <Button v-if="product.variants?.length"
+                    @click="open = false"
+                    class="mt-2"
+            >
+              Добавить
+            </Button>
+            <!--            <ArrowDown v-if="product.variants?.length"-->
+            <!--                       @click="open = false"-->
+            <!--                       class="mt-2 cursor-pointer text-gray-600  hover:text-gray-800"-->
+            <!--            />-->
           </div>
 
         </div>

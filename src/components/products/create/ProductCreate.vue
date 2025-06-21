@@ -102,51 +102,65 @@ import {toast} from 'vue-sonner'
 import axios from "axios";
 import {useRouter} from "vue-router";
 import ImageManager from "@/components/dynamics/ImageManager.vue";
+import {useRandom} from "@/composables/useRandom";
+import {useProductImageUploader} from "@/composables/useProductImageUploader";
+
+
+const {getRandomInt} = useRandom()
 
 const router = useRouter()
-const product = ref<Product>(Product.fromJSON({}))
+
+const product = ref<Product>(Product.fromJSON({
+  name: `New Product${getRandomInt(100, 1000)}`,
+  description: '',
+  price: getRandomInt(10, 100),
+  cost_price: getRandomInt(10, 100),
+  weight: getRandomInt(10, 100),
+  length: getRandomInt(10, 100),
+  width: getRandomInt(10, 100),
+  height: getRandomInt(10, 100),
+  barcode: getRandomInt(100, 1000),
+  sku: getRandomInt(100, 1000),
+
+}))
+
+
+const {setImagesWithProduct} = useProductImageUploader()
 
 const handleCreate = async () => {
-  if (!product.value.name) {
-    toast('Ошибка!', {
-      description: 'Пожалуйста, укажите наименование товара.',
-      action: {
-        label: 'Отмена',
-      },
-    })
-    return
-  }
-  if (!product.value.price) {
-    toast('Ошибка!', {
-      description: 'Пожалуйста, укажите цена товара.',
-      action: {
-        label: 'Отмена',
-      },
-    })
-    return
-  }
+  // await createProduct()
 
-  await createProduct()
-
-}
-
-
-async function createProduct() {
-
-  const p = product.value.toJSONForCreate()
-
-  console.log(p)
+  // console.log(product.value)
   // return
-  await axios.post("products", product.value)
-      .then(res => {
 
-        console.log(res.data)
-        // router.push("/products");
-      })
-      .catch(err => {
-
-      });
+  await setImagesWithProduct(product.value)
 
 }
+
+
+// async function createProduct() {
+//
+//   // const p = product.value.toJSONForCreate()
+//
+//
+//   // p.variants.forEach((variant: Product) => {
+//   //   const uuidLocalWithImageVariant = `variant_images_${variant.local_uuid}`
+//   //   p[uuidLocalWithImageVariant] = variant.images
+//   //   delete variant.images
+//   // })
+//
+//   console.log(p)
+//   return
+//   await axios.post("products", p)
+//       .then(res => {
+//
+//         console.log(res.data)
+//         // router.push("/products");
+//       })
+//       .catch(err => {
+//
+//       });
+//
+// }
 
 </script>

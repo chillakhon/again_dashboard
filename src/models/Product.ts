@@ -1,4 +1,7 @@
 export class Product {
+
+    // [key: string]: any;
+
     id: number | null;
     uuid: string | null;
     name: string;
@@ -25,7 +28,7 @@ export class Product {
     length: string;
     width: string;
     height: string;
-    images: any[];
+    images?: any[];
     categories: number[] | null;
     options: any[] | null;
     variants: Product[];
@@ -104,9 +107,12 @@ export class Product {
 
     static fromJSONForVariantCreate(json: any): Product {
         const product = new Product();
+
+        const uuidGenerate = `variant_generated_${Math.round(Math.random() * 1000)}`;
+
         product.id = json.id ?? null;
         product.name = json.name ?? null;
-        product.uuid = json.uuid ?? `variant_generated_${Math.round(Math.random() * 1000)}`;
+        product.uuid = json.uuid ?? uuidGenerate;
         product.barcode = json.barcode ?? null;
         product.cost_price = json.cost_price ?? 0;
         product.price = json.price ?? 0;
@@ -114,6 +120,7 @@ export class Product {
         product.unit_id = json.unit_id ?? '1';
         product.is_active = json.is_active ?? false;
         product.colors = json.colors ?? [];
+        // product[`variant_images_generated_${uuidGenerate}`] = json[uuidGenerate];
 
         return product;
     }
@@ -156,7 +163,7 @@ export class Product {
             description: this.description,
             type: this.type,
             default_unit_id: this.default_unit_id,
-            is_active: this.is_active,
+            is_active: !!this.is_active,
             has_variants: this.variants.length ? 1 : 0,
             price: this.price,
             cost_price: this.cost_price,
@@ -166,18 +173,19 @@ export class Product {
             length: this.length,
             width: this.width,
             height: this.height,
-            colors: this.colors,
-            product_image: this.images,
+            colors: this.colors ?? [],
+            // images: this.images,
 
-            variants: this.variants.length ? this.variants.map(v => v.toJSONForVariantCreate()) : [],
+            variants: this.variants.length ? this.variants.map((v: Product) => v.toJSONForVariantCreate()) : [],
 
+            // variants: this.variants,
         };
     }
 
     toJSONForVariantCreate(): Record<string, any> {
         return {
             id: this.id || null,
-            local_uuid: this.uuid || null,
+            uuid: this.uuid || null,
             name: this.name || null,
             barcode: this.barcode || null,
             price: this.price,
@@ -185,8 +193,10 @@ export class Product {
             type: this.type,
             unit_id: this.default_unit_id,
             description: this.description,
-            is_active: this.is_active ? 1 : 0,
-            colors: this.colors,
+            is_active: !!this.is_active,
+            colors: this.colors ?? [],
+            // images: this.images,
+
             // has_variants: this.variants.length ? 1 : 0,
             // is_new: this.is_new,
             // weight: this.weight,
