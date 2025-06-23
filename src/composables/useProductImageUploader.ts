@@ -1,24 +1,28 @@
-import {Product} from "@/models/Product";
 import {ref} from 'vue'
-import axios from "axios";
+import axios from 'axios'
+import {Product} from '@/models/Product'
+import {useErrorHandler} from "@/composables/useErrorHandler";
+import {useSuccessHandler} from "@/composables/useSuccessHandler";
 
 export function useProductImageUploader() {
     const sending = ref(false)
+    const progress = ref(0)
 
     const setImagesWithProduct = async (product: Product) => {
         if (sending.value) return
 
         sending.value = true
+        progress.value = 0
 
         try {
             const formData = new FormData()
 
-            // Добавляем изображения товара
             for (const image of product.images ?? []) {
                 if (image.file) {
                     formData.append('product_images[]', image.file, image.file.name)
                 }
             }
+
             for (const variant of product.variants) {
                 for (const image of variant.images ?? []) {
                     if (image.file) {
@@ -31,34 +35,56 @@ export function useProductImageUploader() {
                 }
             }
 
-            // Добавляем остальные поля
             const payload = product.toJSONForCreate() || {}
 
-            for (const [key, value] of Object.entries(payload)) {
-                if (value === undefined || value === null) continue
 
-                if (Array.isArray(value) || typeof value === 'object') {
-                    // Для массивов и объектов добавляем как JSON строку
-                    formData.append(key, JSON.stringify(value))
+
+            for (const [key, value] of Object.entries(payload)) {
+                if (key === 'variants' && Array.isArray(value)) {
+                    // Handle variants array separately
+                    value.forEach((variant, index) => {
+                        for (const [vKey, vValue] of Object.entries(variant)) {
+                            const formattedKey = `variants[${index}][${vKey}]`;
+
+                            if (Array.isArray(vValue)) {
+                                vValue.forEach(item => {
+                                    formData.append(`${formattedKey}[]`, String(item)); // Convert to string
+                                });
+                            } else if (typeof vValue === 'object' && vValue !== null) {
+                                formData.append(formattedKey, JSON.stringify(vValue));
+                            } else {
+                                formData.append(formattedKey, String(vValue)); // Convert to string
+                            }
+                        }
+                    });
+                } else if (Array.isArray(value)) {
+                    value.forEach((item, index) => {
+                        formData.append(`${key}[${index}]`, String(item)); // Convert to string
+                    });
+                } else if (typeof value === 'object' && value !== null) {
+                    formData.append(key, JSON.stringify(value));
                 } else {
-                    // Для простых значений добавляем как есть
-                    formData.append(key, value.toString())
+                    formData.append(key, String(value)); // Convert to string
                 }
             }
 
-            const response = await axios.post(`/products`, formData, {
+            const response = await axios.post('/products', formData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data'
-                }
+                    'Content-Type': 'multipart/form-data',
+                },
+                onUploadProgress: (e) => {
+                    if (e.total) {
+                        progress.value = Math.round((e.loaded * 100) / e.total)
+                    }
+                },
             })
 
-            console.debug('response:', response.data)
+            useSuccessHandler().showSuccess(response)
+
+            return response.data
+
         } catch (error: any) {
-            if (axios.isAxiosError(error)) {
-                console.error('Axios error:', error.response)
-            } else {
-                console.error('Unexpected error:', error)
-            }
+            useErrorHandler().showError(error)
             throw error
         } finally {
             sending.value = false
@@ -67,6 +93,7 @@ export function useProductImageUploader() {
 
     return {
         sending,
+        progress,
         setImagesWithProduct,
     }
 }

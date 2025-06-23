@@ -1,12 +1,15 @@
 <template>
-  <Dialog :open="dialogOpen" @update:open="emits('close')">
+  <Dialog
+      :open="dialogOpen"
+      @update:open="value => handleOpenChange(value)"
+  >
     <DialogTrigger as-child>
-      <!--      <Pencil-->
-      <!--        class="text-gray-400 hover:text-gray-500 transition cursor-pointer"-->
-      <!--        :size="17"-->
-      <!--      />-->
+      <!-- Trigger: например кнопка/иконка -->
     </DialogTrigger>
-    <DialogContent :class="dynamicStyle" class="w-full h-[75vh] overflow-y-auto flex flex-col items-start">
+    <DialogContent
+        :class="dynamicStyle"
+        class="w-full h-[75vh] overflow-y-auto flex flex-col items-start"
+    >
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
         <DialogDescription v-if="description">
@@ -15,17 +18,17 @@
       </DialogHeader>
 
       <div class="w-full">
-        <slot name="content"/>
+        <slot name="content" />
       </div>
 
       <DialogFooter>
-        <slot name="footer"/>
+        <slot name="footer" />
       </DialogFooter>
     </DialogContent>
   </Dialog>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import {
   Dialog,
   DialogContent,
@@ -43,9 +46,19 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  dynamicStyle: String
-});
-const emits = defineEmits(["close"]);
+  dynamicStyle: String,
+})
+
+const emits = defineEmits(['update:dialogOpen', 'close'])
+
+function handleOpenChange(value: boolean) {
+  // Обновляем привязанный v-model
+  // emits('update:dialogOpen', value)
+  // Дополнительно кидаем событие close при закрытии
+  if (!value) {
+    emits('close')
+  }
+}
 </script>
 
 <style scoped></style>

@@ -80,24 +80,6 @@
                   </div>
                 </TableCell>
               </TableRow>
-
-
-<!--              <template v-if="row.getIsExpanded()">-->
-<!--                <TableRow-->
-<!--                    v-for="subRow in row.subRows"-->
-<!--                    :key="subRow.id"-->
-<!--                    class="bg-gray-50"-->
-<!--                >-->
-<!--                  &lt;!&ndash; для вариантов рендерим только колонки данных без действий &ndash;&gt;-->
-<!--                  <TableCell v-for="cell in subRow.getVisibleCells()" :key="cell.id">-->
-<!--                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()"/>-->
-<!--                  </TableCell>-->
-<!--                  &lt;!&ndash; одна пустая ячейка, чтобы сохранить кол-во колонок &ndash;&gt;-->
-<!--                  <TableCell class="no-print"></TableCell>-->
-<!--                </TableRow>-->
-<!--              </template>-->
-
-
             </template>
           </template>
 
@@ -123,7 +105,6 @@ import {
   getCoreRowModel,
   getFilteredRowModel,
   getSortedRowModel,
-  getExpandedRowModel,
   useVueTable,
 } from "@tanstack/vue-table";
 import {Trash2, ArchiveRestore, PrinterIcon} from "lucide-vue-next";
@@ -162,7 +143,7 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
-  subRowsField: String,
+
 });
 const emits = defineEmits([
   "deleted",
@@ -177,7 +158,6 @@ const emits = defineEmits([
 let data = props.data;
 let columns = props.columns;
 
-const subRowsField = props.subRowsField || 'variants'
 
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
@@ -189,9 +169,6 @@ const table = useVueTable({
   getCoreRowModel: getCoreRowModel(),
   getSortedRowModel: getSortedRowModel(),
   getFilteredRowModel: getFilteredRowModel(),
-  getExpandedRowModel: getExpandedRowModel(),
-  getSubRows: row => (row as any)[subRowsField] || [],
-
   onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
   onColumnFiltersChange: (updaterOrValue) =>
       valueUpdater(updaterOrValue, columnFilters),

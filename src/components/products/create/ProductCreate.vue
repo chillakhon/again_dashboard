@@ -27,29 +27,46 @@
                         :show-button-save="false"
                         :horizontal="true"
                     />
-
-                    <!--                    <UploadImages/>-->
                   </div>
 
-                  <div class="grid w-full items-center gap-2 p-2">
-                    <Label for="name">Наименование*</Label>
-                    <Input
-                        id="name"
-                        type="text"
-                        required
-                        placeholder="Наименование"
-                        v-model="product.name"
-                    />
-                  </div>
-                  <div class="grid w-full items-center gap-2 p-2">
-                    <Label for="description">Описание</Label>
-                    <Textarea
-                        class="min-h-[100px]"
-                        id="description"
-                        type="text"
-                        placeholder="Укажите главные особенности, характеристики и ключевые слова, чтобы сгенерировать более качественное описание."
-                        v-model="product.description"
-                    />
+                  <div class="grid md:grid-cols-2 w-full gap-2">
+
+                    <div class="flex md:flex-col justify-between">
+
+                      <div class="">
+                        <Label for="name">Наименование*</Label>
+                        <Input
+                            id="name"
+                            type="text"
+                            required
+                            placeholder="Наименование"
+                            v-model="product.name"
+                        />
+                      </div>
+
+                      <!--                      {{ colors }}-->
+                      <div class="">
+                        <MultiSelect
+                            :options="colors || []"
+                            v-model="product.colors"
+                            option-label="name"
+                            placeholder="Выберите цвет товара"
+                        />
+                      </div>
+                    </div>
+
+
+                    <div class="">
+                      <Label for="description">Описание</Label>
+                      <Textarea
+                          class="min-h-[100px]"
+                          id="description"
+                          type="text"
+                          placeholder="Укажите главные особенности, характеристики и ключевые слова, чтобы сгенерировать более качественное описание."
+                          v-model="product.description"
+                      />
+                    </div>
+
                   </div>
 
                 </AccordionContent>
@@ -74,6 +91,12 @@
         </div>
       </div>
 
+      <ModalWithProgressBar
+          :sending="sending"
+          :target-progress="progress"
+          @closeModal="sending = false"
+      />
+
       <div class="flex justify-end py-2">
         <Button type="submit" class="">
           Создать
@@ -85,82 +108,53 @@
 </template>
 
 <script setup lang="ts">
-import {ref} from 'vue';
+import {onMounted, ref} from 'vue';
 import BackButton from "@/components/BackButton.vue";
 import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from '@/components/ui/accordion'
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
 import {Textarea} from '@/components/ui/textarea'
-import UploadImages from "@/components/products/create/partials/UploadImages.vue";
 import PriceStock from "@/components/products/create/partials/PriceStock.vue";
 import SkuSize from "@/components/products/create/partials/SkuSize.vue";
 import ProductVariant from "@/components/products/create/partials/ProductVariant.vue";
 import PositionSelect from "@/components/products/create/partials/PositionSelect.vue";
 import {Product} from "@/models/Product";
 import Button from "@/components/ui/button/Button.vue";
-import {toast} from 'vue-sonner'
-import axios from "axios";
 import {useRouter} from "vue-router";
 import ImageManager from "@/components/dynamics/ImageManager.vue";
 import {useRandom} from "@/composables/useRandom";
 import {useProductImageUploader} from "@/composables/useProductImageUploader";
+import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue";
+import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue";
+import {useColorsFunctions} from "@/composables/useColorFunctions";
 
 
 const {getRandomInt} = useRandom()
 
+const {getColors} = useColorsFunctions()
+
+const colors = ref([]);
+
 const router = useRouter()
 
-const product = ref<Product>(Product.fromJSON({
-  name: `New Product${getRandomInt(100, 1000)}`,
-  description: '',
-  price: getRandomInt(10, 100),
-  cost_price: getRandomInt(10, 100),
-  weight: getRandomInt(10, 100),
-  length: getRandomInt(10, 100),
-  width: getRandomInt(10, 100),
-  height: getRandomInt(10, 100),
-  barcode: getRandomInt(100, 1000),
-  sku: getRandomInt(100, 1000),
-
-}))
+const product = ref<Product>(Product.fromJSON({}))
 
 
-const {setImagesWithProduct} = useProductImageUploader()
+const {setImagesWithProduct, sending, progress} = useProductImageUploader()
 
 const handleCreate = async () => {
-  // await createProduct()
 
-  // console.log(product.value)
-  // return
+  const result = await setImagesWithProduct(product.value)
 
-  await setImagesWithProduct(product.value)
+  if (result) {
+    await router.push("/products");
+  }
 
 }
 
 
-// async function createProduct() {
-//
-//   // const p = product.value.toJSONForCreate()
-//
-//
-//   // p.variants.forEach((variant: Product) => {
-//   //   const uuidLocalWithImageVariant = `variant_images_${variant.local_uuid}`
-//   //   p[uuidLocalWithImageVariant] = variant.images
-//   //   delete variant.images
-//   // })
-//
-//   console.log(p)
-//   return
-//   await axios.post("products", p)
-//       .then(res => {
-//
-//         console.log(res.data)
-//         // router.push("/products");
-//       })
-//       .catch(err => {
-//
-//       });
-//
-// }
+onMounted(async () => {
+  colors.value = await getColors();
+})
 
 </script>

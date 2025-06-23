@@ -28,12 +28,12 @@ export class Product {
     length: string;
     width: string;
     height: string;
-    images?: any[];
+    images: any[];
     categories: number[] | null;
     options: any[] | null;
     variants: Product[];
     imageFiles: File[] | null;
-    colors: any[] | null;
+    colors: any[];
 
     constructor() {
         this.id = null;
@@ -163,7 +163,7 @@ export class Product {
             description: this.description,
             type: this.type,
             default_unit_id: this.default_unit_id,
-            is_active: !!this.is_active,
+            is_active: this.is_active ? 1 : 0,
             has_variants: this.variants.length ? 1 : 0,
             price: this.price,
             cost_price: this.cost_price,
@@ -185,7 +185,7 @@ export class Product {
     toJSONForVariantCreate(): Record<string, any> {
         return {
             id: this.id || null,
-            uuid: this.uuid || null,
+            local_uuid: this.uuid || null,
             name: this.name || null,
             barcode: this.barcode || null,
             price: this.price,
@@ -193,7 +193,7 @@ export class Product {
             type: this.type,
             unit_id: this.default_unit_id,
             description: this.description,
-            is_active: !!this.is_active,
+            is_active: this.is_active ? 1 : 0,
             colors: this.colors ?? [],
             // images: this.images,
 
