@@ -1,19 +1,20 @@
 <template>
   <AlertDialog>
     <!--    <AlertDialogTrigger>-->
+    <!--    {{ disabledButton }}-->
     <Button variant="outline" v-if="!icon" :disabled="disabledButton" :class="buttonStyle">
       <AlertDialogTrigger>{{ buttonName }}</AlertDialogTrigger>
     </Button>
-    <AlertDialogTrigger v-else>
-      <div class="">
-        <component
-            v-if="showIcon"
-            :is="icon"
-            :size="17"
-            class="text-gray-400 hover:text-gray-500 transition"
-        />
-      </div>
+    <!--    <button v-else :disabled="true" class="">-->
+    <AlertDialogTrigger :disabled="disabledButton">
+      <component
+          v-if="showIcon"
+          :is="icon"
+          :size="17"
+          class="text-gray-400 hover:text-gray-500 transition"
+      />
     </AlertDialogTrigger>
+    <!--    </button>-->
 
     <AlertDialogContent>
       <AlertDialogHeader>

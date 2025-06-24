@@ -1,11 +1,20 @@
 <template>
   <Dialog v-model:open="dialogOpen">
-    <DialogTrigger as-child>
-      <Pencil
-          class="text-gray-400 hover:text-gray-500 transition cursor-pointer"
-          :size="17"
-          @click="openDialog"
-      />
+    <DialogTrigger as-child :disabled="true">
+
+      <button
+          :disabled="disabled"
+          aria-disabled="true"
+          class="inline-flex items-center justify-center cursor-pointer text-gray-400 hover:text-gray-500"
+      >
+        <Pencil size="17"/>
+      </button>
+
+      <!--      <Pencil-->
+      <!--          class="text-gray-400 hover:text-gray-500 transition cursor-pointer"-->
+      <!--          :size="17"-->
+      <!--          @click="openDialog"-->
+      <!--      />-->
     </DialogTrigger>
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
@@ -55,6 +64,10 @@ import {Button} from "@/components/ui/button";
 const props = defineProps({
   edit: Object,
   item: Object,
+  disabled: {
+    type: Boolean,
+    default: false
+  },
 });
 
 const emits = defineEmits(["save_changes"]);

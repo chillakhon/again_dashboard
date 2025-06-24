@@ -37,36 +37,40 @@ export function useProductImageUploader() {
 
             const payload = product.toJSONForCreate() || {}
 
-
-
             for (const [key, value] of Object.entries(payload)) {
                 if (key === 'variants' && Array.isArray(value)) {
-                    // Handle variants array separately
                     value.forEach((variant, index) => {
                         for (const [vKey, vValue] of Object.entries(variant)) {
                             const formattedKey = `variants[${index}][${vKey}]`;
 
                             if (Array.isArray(vValue)) {
                                 vValue.forEach(item => {
-                                    formData.append(`${formattedKey}[]`, String(item)); // Convert to string
+                                    formData.append(`${formattedKey}[]`, String(item));
                                 });
                             } else if (typeof vValue === 'object' && vValue !== null) {
                                 formData.append(formattedKey, JSON.stringify(vValue));
                             } else {
-                                formData.append(formattedKey, String(vValue)); // Convert to string
+                                formData.append(formattedKey, String(vValue));
                             }
+                        }
+                    });
+                } else if (key === 'colors' && Array.isArray(value)) {
+                    value.forEach((color, index) => {
+                        for (const [colorKey, colorValue] of Object.entries(color)) {
+                            formData.append(`colors[${index}][${colorKey}]`, String(colorValue));
                         }
                     });
                 } else if (Array.isArray(value)) {
                     value.forEach((item, index) => {
-                        formData.append(`${key}[${index}]`, String(item)); // Convert to string
+                        formData.append(`${key}[${index}]`, String(item));
                     });
                 } else if (typeof value === 'object' && value !== null) {
                     formData.append(key, JSON.stringify(value));
                 } else {
-                    formData.append(key, String(value)); // Convert to string
+                    formData.append(key, String(value));
                 }
             }
+
 
             const response = await axios.post('/products', formData, {
                 headers: {
@@ -91,9 +95,14 @@ export function useProductImageUploader() {
         }
     }
 
+    const getImageByName = async (name: string) => {
+        const response = await axios.get('/products/image' + name);
+    }
+
     return {
         sending,
         progress,
         setImagesWithProduct,
+        getImageByName
     }
 }

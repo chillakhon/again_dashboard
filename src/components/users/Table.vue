@@ -47,12 +47,6 @@ const edit = ref({
 });
 
 
-//
-// onMounted(() => {
-//   console.log(props.users)
-// })
-
-
 const columns = [
 
   {

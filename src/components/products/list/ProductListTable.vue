@@ -5,8 +5,11 @@
       :columns="columns"
       :custom-actions="true"
   >
-    <template #actions>
-
+    <template #actions="{row}">
+      <!--      {{  row.original }}-->
+      <Pencil size="17" class="cursor-pointer text-gray-400 hover:text-gray-500"
+              @click="router.push(`/product/update/${row.original.id}`)"
+      />
     </template>
   </DynamicsDataTable>
 </template>
@@ -16,7 +19,8 @@ import {h, onMounted, PropType, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import usePermission from "@/composables/usePermission";
 import {Product} from "@/models/Product";
-import {ChevronRight, ChevronDown} from 'lucide-vue-next'
+import {ChevronRight, ChevronDown, Pencil} from 'lucide-vue-next'
+import {useRouter} from "vue-router";
 
 
 const props = defineProps({
@@ -28,6 +32,10 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["deleted", "updated"]);
+
+const router = useRouter();
+
+const appUrl = process.env.VUE_APP_BASE_URL;
 
 
 const columns = [
@@ -56,16 +64,23 @@ const columns = [
   {
     accessorKey: "id",
     header: "№",
-
   },
 
   {
     accessorKey: "image",
     header: "Фото",
     cell: ({row}: any) => {
-      // console.log(row.original)
+      const imageName = row.original?.main_image?.path; // например: "product123.jpg"
+      const imageUrl = `${appUrl}/products/image/${imageName}`; // путь к API
+
+      return h('img', {
+        src: imageUrl,
+        alt: imageName,
+        class: 'w-10 h-10 object-cover rounded', // можно настроить
+      });
     }
   },
+
   {
     accessorKey: "name",
     header: "Название",

@@ -45,14 +45,14 @@
                       </div>
 
                       <!--                      {{ colors }}-->
-                      <div class="">
-                        <MultiSelect
-                            :options="colors || []"
-                            v-model="product.colors"
-                            option-label="name"
-                            placeholder="Выберите цвет товара"
-                        />
-                      </div>
+                      <!--                      <div class="">-->
+                      <MultiSelect
+                          :options="colors || []"
+                          v-model="product.colors"
+                          option-label="name"
+                          placeholder="Выберите цвет товара"
+                      />
+                      <!--                      </div>-->
                     </div>
 
 

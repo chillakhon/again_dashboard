@@ -69,16 +69,6 @@ const paramsSearch = {
 
 const {getProducts} = useProductFunctions()
 
-const back_url = process.env.VUE_APP_BASE_URL
-
-
-const autoGroupColumnDef = ref({
-  headerName: "Артикул",
-  field: "variants",
-  cellRendererParams: {
-    innerRenderer: () => `<span class="text-blue-400">Вариантов:</span>`
-  },
-})
 
 // async function deleteProduct(id) {
 //   await axios.delete(`products/${id}`)
@@ -115,7 +105,6 @@ async function fetchData() {
     admin: true
   })
       .then(res => {
-        console.log(res)
         totalItems.value = res.meta.total;
         return res.data;
       })

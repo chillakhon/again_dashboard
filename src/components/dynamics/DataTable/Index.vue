@@ -31,14 +31,13 @@
           </TableRow>
         </TableHeader>
         <TableBody class="text-xs">
-          <template v-if="table.getRowModel().rows?.length">
+          <template v-if="table.getRowModel().rows.length">
             <template v-for="row in table.getRowModel().rows" :key="row.id">
-              <TableRow :data-state="row.getIsSelected() && 'selected'">
+
+              <!-- ПРЕДСТАВЛЕНИЕ КОРНЕВОЙ СТРОКИ (depth === 0) -->
+              <TableRow v-if="row.depth === 0" :data-state="row.getIsSelected() && 'selected'">
                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-                  <FlexRender
-                      :render="cell.column.columnDef.cell"
-                      :props="cell.getContext()"
-                  />
+                  <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()"/>
                 </TableCell>
                 <TableCell>
                   <div class="flex space-x-3 justify-end">
@@ -61,14 +60,21 @@
                       />
                     </template>
                     <template v-else>
+
+                      <!--                      {{ hasPermission(PermissionsData.USERS_EDIT, false) }}-->
+
+                      <!--                      <PermissionGuard :permission="PermissionsData.USERS_EDIT">-->
                       <Edit
-                          v-if="editPermission"
+                          :disabled="!canEdit"
                           :item="JSON.parse(JSON.stringify(row.original))"
                           :edit="edit"
                           @save_changes="emits('save_changes', $event)"
                       />
+                      <!--                      </PermissionGuard>-->
+
                       <AlertDialog
-                          :show-icon="deletePermission"
+                          :show-icon="true"
+                          :disabled-button="!hasPermission(PermissionsData.USERS_DELETE, false)"
                           title="Подтверждение удаления"
                           description="Вы уверены что хотите удалить этот элемент?"
                           button-name="Удалить"
@@ -76,27 +82,24 @@
                           :icon="Trash2"
                           @continue="emits('deleted', row.original)"
                       />
+
                     </template>
                   </div>
+
                 </TableCell>
               </TableRow>
 
-
-<!--              <template v-if="row.getIsExpanded()">-->
-<!--                <TableRow-->
-<!--                    v-for="subRow in row.subRows"-->
-<!--                    :key="subRow.id"-->
-<!--                    class="bg-gray-50"-->
-<!--                >-->
-<!--                  &lt;!&ndash; для вариантов рендерим только колонки данных без действий &ndash;&gt;-->
-<!--                  <TableCell v-for="cell in subRow.getVisibleCells()" :key="cell.id">-->
-<!--                    <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()"/>-->
-<!--                  </TableCell>-->
-<!--                  &lt;!&ndash; одна пустая ячейка, чтобы сохранить кол-во колонок &ndash;&gt;-->
-<!--                  <TableCell class="no-print"></TableCell>-->
-<!--                </TableRow>-->
-<!--              </template>-->
-
+              <!-- ПРЕДСТАВЛЕНИЕ ДОЧЕРНЕЙ СТРОКИ (depth > 0) -->
+              <TableRow
+                  v-else-if="row.depth > 0"
+                  class="bg-gray-50"
+              >
+                <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+                  <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()"/>
+                </TableCell>
+                <!-- пустая ячейка вместо действий -->
+                <TableCell class="no-print"></TableCell>
+              </TableRow>
 
             </template>
           </template>
@@ -108,7 +111,6 @@
               </TableCell>
             </TableRow>
           </template>
-
         </TableBody>
       </Table>
     </div>
@@ -131,7 +133,11 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import Edit from "@/components/dynamics/DataTable/Edit.vue";
 import AlertDialog from "@/components/dynamics/AlertDialog.vue";
 import Loader from "@/components/common/Loader.vue";
-import {ref} from "vue";
+import {computed, ref} from "vue";
+import usePermission from "@/composables/usePermission";
+import PermissionGuard from "@/components/PermissionGuard.vue";
+import {PermissionsData} from "@/constants/PermissionsData";
+import {toast} from "vue-sonner";
 
 
 const props = defineProps({
@@ -164,6 +170,18 @@ const props = defineProps({
   },
   subRowsField: String,
 });
+
+
+const {hasPermission} = usePermission()
+
+function onClick() {
+  console.log(23)
+}
+
+
+const canEdit = computed(() => hasPermission(PermissionsData.USERS_EDIT, false));
+const canDelete = computed(() => hasPermission(PermissionsData.USERS_DELETE, false));
+
 const emits = defineEmits([
   "deleted",
   "save_changes",
