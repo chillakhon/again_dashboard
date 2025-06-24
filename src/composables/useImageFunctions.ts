@@ -137,8 +137,8 @@ export function useImageFunctions() {
     };
 
 
-    function getImageByName(name: string, imageSize = '') {
-        return `${process.env.VUE_APP_BASE_URL}/api/get/image/byname/${imageSize ? imageSize + '_' : ''}${name}`;
+    function getImageByNameProduct(name: string, imageSize = 'md') {
+        return `${process.env.VUE_APP_BASE_URL}/product/image/${imageSize}_${name}`;
     }
 
     function showImage(image: ImageModel) {
@@ -166,7 +166,7 @@ export function useImageFunctions() {
         uploadImage,
         getImages,
         deleteImage,
-        getImageByName,
+        getImageByNameProduct,
         showImage
     };
 }

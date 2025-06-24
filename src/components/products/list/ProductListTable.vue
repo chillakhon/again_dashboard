@@ -21,6 +21,7 @@ import usePermission from "@/composables/usePermission";
 import {Product} from "@/models/Product";
 import {ChevronRight, ChevronDown, Pencil} from 'lucide-vue-next'
 import {useRouter} from "vue-router";
+import {useImageFunctions} from "@/composables/useImageFunctions";
 
 
 const props = defineProps({
@@ -35,12 +36,9 @@ const emits = defineEmits(["deleted", "updated"]);
 
 const router = useRouter();
 
-const appUrl = process.env.VUE_APP_BASE_URL;
-
+const {getImageByNameProduct} = useImageFunctions()
 
 const columns = [
-
-
   {
     id: 'expander',
     header: '',
@@ -70,11 +68,10 @@ const columns = [
     accessorKey: "image",
     header: "Фото",
     cell: ({row}: any) => {
-      const imageName = row.original?.main_image?.path; // например: "product123.jpg"
-      const imageUrl = `${appUrl}/products/image/${imageName}`; // путь к API
+      const imageName = row.original?.main_image?.path;
 
       return h('img', {
-        src: imageUrl,
+        src: getImageByNameProduct(imageName, 'md'),
         alt: imageName,
         class: 'w-10 h-10 object-cover rounded', // можно настроить
       });
