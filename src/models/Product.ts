@@ -164,14 +164,14 @@ export class Product {
     toJSONForCreate(): Record<string, any> {
         return {
             name: this.name,
-            description: this.description,
+            description: this.description || '',
             type: this.type,
             default_unit_id: this.default_unit_id,
             is_active: this.is_active ? 1 : 0,
             has_variants: this.variants.length ? 1 : 0,
             price: this.price,
             cost_price: this.cost_price,
-            barcode: this.barcode || null,
+            barcode: this.barcode || '',
             // is_new: this.is_new,
             weight: this.weight,
             length: this.length,

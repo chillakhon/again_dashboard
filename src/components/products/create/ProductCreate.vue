@@ -127,6 +127,7 @@ import {useProductImageUploader} from "@/composables/useProductImageUploader";
 import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue";
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue";
 import {useColorsFunctions} from "@/composables/useColorFunctions";
+import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
 
 
 const {getRandomInt} = useRandom()
@@ -141,10 +142,14 @@ const product = ref<Product>(Product.fromJSON({}))
 
 
 const {setImagesWithProduct, sending, progress} = useProductImageUploader()
+const {productsSync} = useMoySkladFunctions()
 
 const handleCreate = async () => {
 
   const result = await setImagesWithProduct(product.value)
+
+  await productsSync({})
+
 
   if (result) {
     await router.push("/products");
