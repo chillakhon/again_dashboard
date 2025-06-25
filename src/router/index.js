@@ -138,7 +138,7 @@ const routes = [
                     {
                         path: '/product/update/:id',
                         name: 'products-update',
-                        component: () => import('../components/products/update/ProductUpdate.vue'),
+                        component: () => import('../components/products/edit/ProductEdit.vue'),
                     },
                     {
                         path: '/products/import',

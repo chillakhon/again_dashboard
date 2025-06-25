@@ -30,7 +30,7 @@
         >
           <div class="w-full h-full flex items-center justify-center">
             <img
-                :src="showImage(image)"
+                :src="showImage(image, ImageSize.ORIGINAL)"
                 :alt="image.file?.name || image.path || 'Image'"
                 class="h-full max-w-full object-contain"
             />
@@ -52,6 +52,7 @@ import 'swiper/css/pagination'
 import {useImageFunctions} from '@/composables/useImageFunctions'
 import {ImageModel} from '@/models/ImageModel'
 import DynamicsModal from '@/components/dynamics/Modal.vue'
+import {ImageSize} from "@/constants/ImageSize";
 
 const dialogOpen = ref(false)
 const modules = [Navigation, Pagination]

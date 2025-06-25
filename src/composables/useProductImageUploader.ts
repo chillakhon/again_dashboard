@@ -95,14 +95,119 @@ export function useProductImageUploader() {
         }
     }
 
+
+
+    const updateImagesWithProduct = async (product: Product) => {
+        if (!product || sending.value) return
+
+        sending.value = true
+        progress.value = 0
+
+        try {
+            const formData = new FormData()
+            const mapPosition: Record<string, number> = {}
+
+            const productImageFiles: File[] = []
+            const productImagePaths: string[] = []
+
+            // Product images
+            product.images?.forEach((img, index) => {
+                if (img.file) {
+                    formData.append('product_images[]', img.file, img.file.name)
+                    productImageFiles.push(img.file)
+                    mapPosition[`product_image_file_${productImageFiles.length - 1}`] = index
+                }
+                if (img.path) {
+                    formData.append('images[]', img.path)
+                    productImagePaths.push(img.path)
+                    mapPosition[`product_image_path_${img.path}`] = index
+                }
+            })
+
+            // Variant images
+            for (const variant of product.variants || []) {
+                const variantImageFiles: File[] = []
+                const variantImagePaths: string[] = []
+
+                for (let i = 0; i < (variant.images?.length || 0); i++) {
+                    const img = variant.images![i]
+                    if (img.file) {
+                        formData.append(`variant_images_${variant.uuid}[]`, img.file, img.file.name)
+                        variantImageFiles.push(img.file)
+                        mapPosition[`variant_${variant.uuid}_image_file_${variantImageFiles.length - 1}`] = i
+                    }
+                    if (img.path) {
+                        formData.append(`variant_name_images_${variant.uuid}[]`, img.path)
+                        variantImagePaths.push(img.path)
+                        mapPosition[`variant_${variant.uuid}_image_path_${img.path}`] = i
+                    }
+                }
+            }
+
+            // Add product payload
+            const payload = product.toJSONForCreate()
+            for (const [key, value] of Object.entries(payload)) {
+                if (value === null || value === undefined) continue;
+
+                if (Array.isArray(value)) {
+                    value.forEach((item, index) => {
+                        if (item === null || item === undefined) return;
+                        if (typeof item === 'object') {
+                            for (const [k, v] of Object.entries(item)) {
+                                if (v === null || v === undefined) continue;
+                                formData.append(`${key}[${index}][${k}]`, String(v))
+                            }
+                        } else {
+                            formData.append(`${key}[${index}]`, String(item))
+                        }
+                    })
+                } else if (typeof value === 'object') {
+                    formData.append(key, JSON.stringify(value))
+                } else {
+                    formData.append(key, String(value))
+                }
+            }
+
+
+            // Add image positions
+            for (const [key, val] of Object.entries(mapPosition)) {
+                formData.append(key, val.toString())
+            }
+
+            // Upload
+            const response = await axios.post(`/products/update/${product.id}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                onUploadProgress: (e) => {
+                    if (e.total) {
+                        progress.value = Math.round((e.loaded * 100) / e.total)
+                    }
+                }
+            })
+
+            useSuccessHandler().showSuccess(response)
+            return response.data
+
+        } catch (error: any) {
+            useErrorHandler().showError(error)
+            throw error
+        } finally {
+            sending.value = false
+        }
+    }
+
+
     const getImageByName = async (name: string) => {
         const response = await axios.get('/products/image' + name);
     }
+
+
+
 
     return {
         sending,
         progress,
         setImagesWithProduct,
+        updateImagesWithProduct,
         getImageByName
     }
 }

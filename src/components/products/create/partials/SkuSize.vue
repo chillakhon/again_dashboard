@@ -19,14 +19,17 @@
               />
             </div>
             <div class="grid w-full items-center gap-2 p-2">
-              <Label for="barcode">Штрих-код *</Label>
+              <p class="text-xs text-gray-500">Штрих-код создаётся автоматически в МойСклад</p>
               <Input
                   id="barcode"
                   type="text"
                   placeholder="Штрих-код"
                   v-model="product.barcode"
+                  readonly
+                  class="bg-gray-100 cursor-not-allowed"
               />
             </div>
+
           </div>
 
           <div class="grid md:grid-cols-2 grid-cols-1 mt-3">

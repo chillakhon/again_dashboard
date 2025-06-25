@@ -35,7 +35,6 @@ const dialogOpen = ref(false);
 
 const emit = defineEmits(['uploaded'])
 
-
 const {showImage} = useImageFunctions()
 
 defineProps({

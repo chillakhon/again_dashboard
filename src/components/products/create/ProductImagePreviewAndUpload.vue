@@ -26,7 +26,6 @@ import ShadcnProgress from "@/components/dynamics/ShadcnProgress.vue";
 import {toast} from "vue-sonner";
 
 const {uploadImage, getImages, deleteImage} = useImageFunctions();
-const renderListImage = ref(1)
 
 const emits = defineEmits(['uploaded', 'saveImage']);
 
@@ -42,60 +41,28 @@ const props = defineProps({
   },
 })
 
-const images = ref<ImageModel[]>(props.item?.images || []);
-
-const fetchImages = async () => {
-
-  if (!props.item.id) return
-
-  images.value = await getImages('Product', props.item.id);
-};
+const images = ref<ImageModel[]>([]);
 
 
 const saveImage = async () => {
-
 
   props.item.images = images.value;
   emits("saveImage", images.value);
   toast.success('Фото варианта сохронены')
 
-
-  console.log(images.value)
-  console.log(props.item?.images)
-
-
-  return
-  emits('uploaded');
-  // console.log(props.item)
-  // console.log(images.value)
-  return
-
-  const imagesToUpload = images.value.map(img => ({
-    file: img.file,
-    name: img.path
-  }));
-
-  if (!props.item?.id) return
-
-  isUploading.value = true;
-
-  try {
-    await uploadImage(
-        'Product',
-        props.item?.id,
-        imagesToUpload,
-        (progress) => {
-          uploadProgress.value = progress;
-        }
-    );
-  } finally {
-    isUploading.value = false;
-    emits('uploaded')
-  }
 };
 
 onMounted(async () => {
   // await fetchImages();
+
+  let arrImg: ImageModel[] = []
+  props.item?.images.forEach((image) => {
+    arrImg.push(ImageModel.fromJSON(image))
+
+  })
+
+  images.value = arrImg;
+  console.log(images.value);
   isLoading.value = false
 });
 </script>

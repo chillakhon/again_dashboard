@@ -72,6 +72,8 @@ export class Product {
 
     static fromJSON(json: any): Product {
         const product = new Product();
+        const uuidGenerate = `variant_generated_${Math.round(Math.random() * 1000)}`;
+
         product.id = json.id ?? null;
         product.name = json.name ?? null;
         product.description = json.description ?? null;
@@ -99,7 +101,9 @@ export class Product {
         product.images = json.images ?? [];
         product.categories = json.categories ?? [1];
         product.options = json.options ?? null;
-        product.variants = json.variants ?? [];
+        product.uuid = json.uuid ?? uuidGenerate;
+        product.colors = json.colors ?? [];
+        product.variants = json.variants?.length ? json.variants.map((item: any) => Product.fromJSON(item)) : [];
         // product.imageFiles = json.imageFiles ?? [];
 
         return product;

@@ -6,8 +6,7 @@
       :custom-actions="true"
   >
     <template #actions="{row}">
-      <!--      {{  row.original }}-->
-      <Pencil size="17" class="cursor-pointer text-gray-400 hover:text-gray-500"
+      <Pencil :size="17" class="cursor-pointer text-gray-400 hover:text-gray-500"
               @click="router.push(`/product/update/${row.original.id}`)"
       />
     </template>

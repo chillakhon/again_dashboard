@@ -79,18 +79,22 @@ const columns = [
   {
     accessorKey: 'barcode',
     header: 'Штрих код',
-    cell: ({row}: any) => {
-      return h(Input, {
-        modelValue: row.original.barcode,
-        'onUpdate:modelValue': (val: any) => {
-          row.original.barcode = val
-        },
-        class: 'w-full text-center',
-        type: 'text',
-        placeholder: "Штрих код",
-      })
+    cell: ({ row }: any) => {
+      return h('div', { class: 'flex flex-col items-center' }, [
+        h(Input, {
+          modelValue: row.original.barcode,
+          readonly: true,
+          class: 'w-full text-center bg-gray-100 text-gray-500 cursor-not-allowed',
+          type: 'text',
+          placeholder: "Создаётся в МойСклад",
+        }),
+        // h('p', {
+        //   class: 'text-xs text-gray-400 mt-1',
+        // }, 'Создаётся в МойСклад')
+      ])
     },
   },
+
 
   {
     accessorKey: 'price',

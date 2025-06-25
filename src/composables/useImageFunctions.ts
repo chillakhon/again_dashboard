@@ -141,11 +141,11 @@ export function useImageFunctions() {
         return `${process.env.VUE_APP_BASE_URL}/product/image/${imageSize}_${name}`;
     }
 
-    function showImage(image: ImageModel) {
+    function showImage(image: ImageModel, imageSize = 'md') {
         if (image.file) {
             return URL.createObjectURL(image.file);
         }
-        return '';
+        return getImageByNameProduct(image.path ?? '', imageSize);
     }
 
 

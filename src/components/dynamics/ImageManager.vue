@@ -1,5 +1,6 @@
 <template>
   <div class="space-y-4">
+
     <div class="grid flex-1 items-center gap-4">
       <div class="flex flex-col space-y-1.5 p-2 cursor-pointer">
         <input
@@ -224,6 +225,8 @@ const getPreviewUrl = (image: ImageModel) => {
   if (image.file) {
     return URL.createObjectURL(image.file);
   }
+
+
   if (image.path) {
     return props.imageSize
         ? image.imageURL(props.imageSize)
