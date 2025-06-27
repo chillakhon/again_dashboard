@@ -82,7 +82,7 @@ const columns = [
   },
   {
     accessorKey: 'cost_price',
-    header: 'Себестоимость',
+    header: 'Цена закупны',
     cell: ({row}) => {
       return h(Input, {
         modelValue: row.original.cost_price,
@@ -156,7 +156,7 @@ const columns = [
 
   {
     accessorKey: 'barcode',
-    header: 'Штрихкод',
+    header: 'Штрих-код',
     cell: ({row}) => h('span', {class: 'text-gray-600 text-xs whitespace-nowrap'}, row.original.barcode)
   },
 

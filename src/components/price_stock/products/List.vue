@@ -1,59 +1,103 @@
 <template>
-  <div class="flex items-center mb-4">
-    <div class="flex justify-between space-x-2 w-full">
-      <div class="flex space-x-2 w-full">
-        <Input
-            class="max-w-sm"
-            placeholder="Поиск..."
-            v-model="searchProduct"
-        />
-        <Button @click="handleSearch">Найти</Button>
-      </div>
+  <Loader v-if="isLoading"/>
+  <div v-else class="">
 
-      <!--        <div class="flex space-x-2">-->
-      <!--          <Button v-if="paginationType == 'check' || paginationType == 'filterByName'"-->
-      <!--                  @click="paginationType = 'serverSide'"-->
-      <!--                  class="bg-red-500 hover:bg-red-400">Все товары-->
-      <!--          </Button>-->
-      <!--          <Button @click="paginationType = 'check'" class="">Чек</Button>-->
-      <!--        </div>-->
+    <ProductSearch
+        class="md:w-[400px] mb-2"
+        :filter="paramsSearch"
+        @search="fetchData()"
+    />
+
+    <ProductTableAll
+        v-if="tab == 'all'"
+        :key="renderTable"
+        :items="data"
+        @deleted="fetchData()"
+    />
+
+    <ProductTablePrice
+        v-else-if="tab == 'price'"
+        :key="renderTable + 1"
+        :items="data"
+        @deleted="fetchData()"
+    />
+
+    <ProductTableStock
+        v-else-if="tab == 'stock'"
+        :key="renderTable + 2"
+        :items="data"
+        @deleted="fetchData()"
+    />
+
+    <div class="flex items-center justify-end space-x-2 py-4">
+      <PaginationTable
+          :total="totalItems"
+          :default-page="currentPage"
+          :items-per-page="itemsPerPage"
+          :sibling-count="1"
+          :show-edges="true"
+          @current-page="currentPage = $event; fetchData()"
+      />
     </div>
+
   </div>
-
-  <Price
-      v-if="paginationType == 'price'"
-  />
-
-  <AllProducts
-      v-if="paginationType == 'all'"
-  />
-
-  <Stock
-      v-if="paginationType == 'stock'"
-  />
 
 </template>
 
 <script setup lang="ts">
-import {Button} from '@/components/ui/button'
-import {Input} from '@/components/ui/input'
-import {computed, ref} from 'vue'
-import AllProducts from "@/components/price_stock/tab/AllProducts.vue";
-import Price from "@/components/price_stock/tab/Price.vue";
-import Stock from "@/components/price_stock/tab/Stock.vue";
+import {ref, onMounted} from 'vue';
+import PaginationTable from "@/components/PaginationTable.vue";
+import Loader from "@/components/common/Loader.vue";
+import ProductSearch from "@/components/products/list/ProductSearch.vue";
+import {useProductFunctions} from "@/composables/useProductFunctions";
+import ProductTableAll from "@/components/price_stock/tab/all_product/ProductTableAll.vue";
+import {Product} from "@/models/Product";
+import ProductTablePrice from "@/components/price_stock/tab/price_product/ProductTablePrice.vue";
+import ProductTableStock from "@/components/price_stock/tab/stock_product/ProductTableStock.vue";
 
 
 const props = defineProps({
-  tab: String,
+  tab: {
+    type: String,
+    default: "all",
+  }
 })
 
-const searchProduct = ref<string>('')
+const data = ref([]);
+const totalItems = ref(0);
+const currentPage = ref(1);
+const itemsPerPage = ref(15);
+const isLoading = ref(true)
+const renderTable = ref(1)
 
-let paginationType = computed(() => props.tab)
 
-async function handleSearch() {
-  if (!searchProduct.value) return
-  // paginationType = 'filterByName'
+const paramsSearch = ref({
+  search: '',
+})
+
+const {getProducts} = useProductFunctions()
+
+onMounted(async () => {
+  await fetchData()
+  console.log(data.value)
+})
+
+async function fetchData() {
+  isLoading.value = true
+  data.value = await getProducts({
+    per_page: itemsPerPage.value,
+    page: currentPage.value,
+    paginate: true,
+    admin: true,
+    search: paramsSearch.value.search
+  })
+      .then(res => {
+        totalItems.value = res.meta.total;
+        return res.data.map((item: any) => Product.fromJSON(item));
+      })
+
+  isLoading.value = false
+  renderTable.value++
 }
 
 

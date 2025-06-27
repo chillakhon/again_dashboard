@@ -8,8 +8,8 @@ export function useProductFunctions() {
     const progress = ref(0)
 
     const getProducts = async (params: {
-        per_page: number,
-        page: number,
+        per_page?: number,
+        page?: number,
         paginate?: boolean,
         admin?: boolean,
         search?: string,

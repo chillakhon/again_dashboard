@@ -4,7 +4,7 @@
       <div class="flex items-center gap-2 w-full">
         <Input
             type="text"
-            placeholder="Введите штрихкод вручную"
+            placeholder="Введите Штрих-код вручную"
             v-model="barcodeValue"
             @input="handleInput"
             class="flex-1"
@@ -65,9 +65,9 @@ const validateBarcode = () => {
 
   const barcodeStr = barcodeValue.value.toString()
   if (barcodeStr.length < minBarcodeLength) {
-    error.value = `Штрихкод должен содержать минимум ${minBarcodeLength} символа`
+    error.value = `Штрих-код должен содержать минимум ${minBarcodeLength} символа`
   } else if (barcodeStr.length > maxBarcodeLength) {
-    error.value = `Штрихкод должен содержать максимум ${maxBarcodeLength} символов`
+    error.value = `Штрих-код должен содержать максимум ${maxBarcodeLength} символов`
   } else {
     error.value = ""
   }

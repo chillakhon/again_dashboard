@@ -34,9 +34,7 @@
         </TabsList>
 
         <TabsContent value="all" class="mt-2">
-          <div class="border border-gray-200 rounded-md p-2 space-y-2 bg-white">
-            <List :tab="currentTabValue"/>
-          </div>
+          <List :tab="currentTabValue"/>
         </TabsContent>
 
         <TabsContent value="price" class="mt-2">

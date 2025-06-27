@@ -120,7 +120,7 @@ const columns = [
   },
   {
     accessorKey: "cost_price",
-    header: "Себестоимость",
+    header: "Цена закупны",
   },
   {
     accessorKey: "barcode",
