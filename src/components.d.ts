@@ -14,7 +14,6 @@ declare module 'vue' {
     AccordionContent: typeof import('./components/ui/accordion/AccordionContent.vue')['default']
     AccordionItem: typeof import('./components/ui/accordion/AccordionItem.vue')['default']
     AccordionTrigger: typeof import('./components/ui/accordion/AccordionTrigger.vue')['default']
-    AgGridTable: typeof import('./components/AgGridTable.vue')['default']
     Alert: typeof import('./components/dynamics/Alert.vue')['default']
     AlertDialog: typeof import('./components/dynamics/AlertDialog.vue')['default']
     AlertDialogAction: typeof import('./components/ui/alert-dialog/AlertDialogAction.vue')['default']

@@ -40,7 +40,6 @@ import {ref, onMounted} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import axios from "axios";
 import Loader from "@/components/common/Loader.vue";
-import AgGridTable from "@/components/AgGridTable.vue";
 import {toast} from 'vue-sonner'
 import {useRouter, useRoute} from "vue-router";
 import Order from "@/models/Order"

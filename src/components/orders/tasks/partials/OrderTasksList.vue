@@ -59,7 +59,6 @@ import { toast } from 'vue-sonner'
 import { useRouter, useRoute } from "vue-router"
 import { Button } from '@/components/ui/button'
 import Loader from "@/components/common/Loader.vue"
-import AgGridTable from "@/components/AgGridTable.vue"
 import PaginationTable from "@/components/PaginationTable.vue"
 import OrderTask from "@/models/OrderTask"
 import { useDateFormat } from "@/composables/useDateFormat"
