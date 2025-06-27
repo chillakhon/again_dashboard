@@ -17,6 +17,7 @@
             :key="index"
             :value="getOptionValue(option)"
             :disabled="option.disabled"
+            :required="required"
         >
           <div class="flex items-center gap-2">
             <span
@@ -26,7 +27,7 @@
                 'border-border': !isSelected(option),
               }"
             >
-              <Check v-if="isSelected(option)" class="h-3 w-3 text-primary-foreground" />
+              <Check v-if="isSelected(option)" class="h-3 w-3 text-primary-foreground"/>
             </span>
             {{ getOptionLabel(option) }}
           </div>
@@ -38,7 +39,7 @@
 
 
 <script setup lang="ts">
-import { Check } from 'lucide-vue-next'
+import {Check} from 'lucide-vue-next'
 import {
   Select,
   SelectContent,
@@ -47,14 +48,21 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-const props = defineProps<{
-  options: any[]
-  modelValue: any[]
-  placeholder?: string
-  optionLabel?: string // Поле для отображения текста
-  optionValue?: string // Поле для значения
-  disabled?: boolean
-}>()
+
+const props = withDefaults(
+    defineProps<{
+      options: any[]
+      modelValue: any[]
+      placeholder?: string
+      optionLabel?: string // Поле для отображения текста
+      optionValue?: string // Поле для значения
+      disabled?: boolean,
+      required?: boolean,
+    }>(),
+    {
+      required: false,
+    }
+)
 
 const emit = defineEmits(['update:modelValue'])
 

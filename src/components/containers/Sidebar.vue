@@ -395,8 +395,10 @@ import {
   PhUserList,
   PhWarehouse,
   PhX,
-  PhUsers
+  PhUsers,
+  PhCodesandboxLogo
 } from '@phosphor-icons/vue';
+
 
 
 const logo = '/logo.svg'
@@ -426,6 +428,9 @@ const navigation = [
       {name: 'Скидки и промокоды', href: '/clients/discounts', icon: PhUnite},
     ]
   },
+
+  {name: 'Категории', href: '/category', icon: PhCodesandboxLogo},
+
   {
     name: 'Интеграции', href: '/integrations', icon: PhUnite,
     children: [

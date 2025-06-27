@@ -2,30 +2,31 @@ import {ref} from 'vue'
 import axios from 'axios'
 import {useErrorHandler} from "@/composables/useErrorHandler";
 import {useSuccessHandler} from "@/composables/useSuccessHandler";
+import {Category} from "@/models/Category";
 
-export function useProductFunctions() {
+export function useCategoryFunctions() {
     const sending = ref(false)
     const progress = ref(0)
 
-    const getProducts = async (params: {
+    const getCategories = async (params: {
+        id?: number | string,
         per_page?: number,
         page?: number,
         paginate?: boolean,
-        admin?: boolean,
-        search?: string,
-    }) => {
-        if (sending.value) return
+        name?: string,
+        slug?: string,
+        get_children?: boolean,
+    }): Promise<Category[]> => {
 
         sending.value = true
         progress.value = 0
 
-        return await axios.get('products', {
+        return await axios.get('categories', {
             params: params
         })
             .then(res => {
-                return res.data
+                return res.data.map((item: any) => Category.fromJSON(item))
             })
-
             .catch(e => {
                 sending.value = false
                 useErrorHandler().showError(e)
@@ -33,7 +34,7 @@ export function useProductFunctions() {
             .finally(() => sending.value = false)
     }
 
-    const getProductsById = async (productId: any, params: {
+    const getCategoryById = async (categoryId: any, params: {
         per_page?: number,
         page?: number,
         paginate?: boolean,
@@ -44,13 +45,12 @@ export function useProductFunctions() {
         sending.value = true
         progress.value = 0
 
-        return await axios.get(`products/${productId}`, {
+        return await axios.get(`categories/${categoryId}`, {
             params: params
         })
             .then(res => {
                 return res.data
             })
-
             .catch(e => {
                 sending.value = false
                 useErrorHandler().showError(e)
@@ -58,7 +58,7 @@ export function useProductFunctions() {
             .finally(() => sending.value = false)
     }
 
-    const deleteProduct = async (productId: any, params: {
+    const deleteCategory = async (categoryId: any, params: {
         per_page?: number,
         page?: number,
         paginate?: boolean,
@@ -69,14 +69,36 @@ export function useProductFunctions() {
         sending.value = true
         progress.value = 0
 
-        return await axios.delete(`products/${productId}`, {
+        return await axios.delete(`categories/${categoryId}`, {
             params: params
         })
             .then(res => {
                 useSuccessHandler().showSuccess(res)
                 return res.data
             })
+            .catch(e => {
+                sending.value = false
+                useErrorHandler().showError(e)
+            })
+            .finally(() => sending.value = false)
+    }
 
+    const createCategory = async (data: {
+        name: string,
+        description?: string,
+        parent_id?: number | null,
+        product_ids?: number[]
+    }) => {
+        if (sending.value) return
+
+        sending.value = true
+        progress.value = 0
+
+        return await axios.post('categories', data)
+            .then(res => {
+                useSuccessHandler().showSuccess(res)
+                return res.data
+            })
             .catch(e => {
                 sending.value = false
                 useErrorHandler().showError(e)
@@ -88,8 +110,9 @@ export function useProductFunctions() {
     return {
         sending,
         progress,
-        getProducts,
-        getProductsById,
-        deleteProduct
+        getCategories,
+        getCategoryById,
+        deleteCategory,
+        createCategory
     }
 }

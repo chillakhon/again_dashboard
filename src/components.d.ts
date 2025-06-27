@@ -168,7 +168,6 @@ declare module 'vue' {
     ProductionList: typeof import('./components/production_test/list/ProductionList.vue')['default']
     ProductionTable: typeof import('./components/production_test/partials/ProductionTable.vue')['default']
     ProductsList: typeof import('./components/products/list/ProductsList.vue')['default']
-    ProductsListTest: typeof import('./components/products/list/ProductsListTest.vue')['default']
     ProductsTable: typeof import('./components/warehouses/recipes/show/ProductsTable.vue')['default']
     ProductsTablePrice: typeof import('./components/price_stock/ProductsTablePrice.vue')['default']
     ProductsTableStock: typeof import('./components/price_stock/ProductsTableStock.vue')['default']

@@ -1,14 +1,12 @@
 <template>
-  <Dialog
-      :open="dialogOpen"
-      @update:open="(value: any) => handleOpenChange(value)"
-  >
+  <Dialog v-model:open="dialogOpen">
     <DialogTrigger as-child>
-      <!-- Trigger: например кнопка/иконка -->
+      <slot name="button"/>
     </DialogTrigger>
+
     <DialogContent
         :class="dynamicStyle"
-        class="w-full h-[75vh] overflow-y-auto flex flex-col items-start"
+        class="w-full max-h-[75vh] overflow-y-auto flex flex-col items-start"
     >
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
@@ -38,27 +36,17 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+import {ref} from "vue";
 
 const props = defineProps({
-  dialogOpen: Boolean,
   title: String,
   description: {
     type: String,
-    default: null,
+    default: '',
   },
   dynamicStyle: String,
 })
 
-const emits = defineEmits(['update:dialogOpen', 'close'])
+const dialogOpen = ref(false)
 
-function handleOpenChange(value: boolean) {
-  // Обновляем привязанный v-model
-  // emits('update:dialogOpen', value)
-  // Дополнительно кидаем событие close при закрытии
-  if (!value) {
-    emits('close')
-  }
-}
 </script>
-
-<style scoped></style>

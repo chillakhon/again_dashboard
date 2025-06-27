@@ -157,6 +157,25 @@ const routes = [
                     },
                 ]
             },
+
+
+
+            {
+                path: '/category',
+                name: 'category',
+                component: () => import('../views/category/CategoryView.vue'),
+                redirect: '/category/list',
+                children: [
+                    {
+                        path: '/category/list',
+                        name: 'category-list',
+                        component: () => import('../components/category/CategoryList.vue'),
+                    },
+                ]
+            },
+
+
+
             {
                 path: '/deliveries',
                 name: 'Deliveries',
