@@ -16,9 +16,6 @@
               />
             </TableHead>
 
-            <!--            <TableHead class="text-end">-->
-            <!--              Действия-->
-            <!--            </TableHead>-->
             <TableHead class="w-2 no-print">
               <div class="w-full flex justify-end">
                 <div>
@@ -34,16 +31,17 @@
           <template v-if="table.getRowModel().rows.length">
             <template v-for="row in table.getRowModel().rows" :key="row.id">
 
-              <!-- ПРЕДСТАВЛЕНИЕ КОРНЕВОЙ СТРОКИ (depth === 0) -->
               <TableRow v-if="row.depth === 0" :data-state="row.getIsSelected() && 'selected'">
                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                   <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()"/>
                 </TableCell>
                 <TableCell>
                   <div class="flex space-x-3 justify-end">
+
                     <template v-if="customActions">
                       <slot name="actions" :row="row"/>
                     </template>
+
                     <template v-else-if="restoreActions">
                       <ArchiveRestore
                           class="text-gray-500 hover:text-blue-600 transition cursor-pointer"
@@ -74,7 +72,7 @@
 
                       <AlertDialog
                           :show-icon="true"
-                          :disabled-button="!hasPermission(PermissionsData.USERS_DELETE, false)"
+                          :disabled-button="!canDelete"
                           title="Подтверждение удаления"
                           description="Вы уверены что хотите удалить этот элемент?"
                           button-name="Удалить"
@@ -90,6 +88,7 @@
               </TableRow>
 
               <!-- ПРЕДСТАВЛЕНИЕ ДОЧЕРНЕЙ СТРОКИ (depth > 0) -->
+              <!-- дочерние строки -->
               <TableRow
                   v-else-if="row.depth > 0"
                   class="bg-gray-50"
@@ -97,10 +96,13 @@
                 <TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
                   <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()"/>
                 </TableCell>
-                <!-- пустая ячейка вместо действий -->
-                <TableCell class="no-print"></TableCell>
+                <!-- теперь — тот же слот actions -->
+                <TableCell>
+                  <div class="flex space-x-3 justify-end">
+                    <slot name="actionsVariant" :row="row"/>
+                  </div>
+                </TableCell>
               </TableRow>
-
             </template>
           </template>
 
@@ -135,9 +137,7 @@ import AlertDialog from "@/components/dynamics/AlertDialog.vue";
 import Loader from "@/components/common/Loader.vue";
 import {computed, ref} from "vue";
 import usePermission from "@/composables/usePermission";
-import PermissionGuard from "@/components/PermissionGuard.vue";
 import {PermissionsData} from "@/constants/PermissionsData";
-import {toast} from "vue-sonner";
 
 
 const props = defineProps({
@@ -173,10 +173,6 @@ const props = defineProps({
 
 
 const {hasPermission} = usePermission()
-
-function onClick() {
-  console.log(23)
-}
 
 
 const canEdit = computed(() => hasPermission(PermissionsData.USERS_EDIT, false));

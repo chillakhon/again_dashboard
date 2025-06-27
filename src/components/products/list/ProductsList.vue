@@ -2,39 +2,40 @@
   <Loader v-if="isLoading"/>
   <div v-else class="">
 
-    <div class="flex max-md:flex-col justify-between">
+    <div class="flex max-md:flex-col justify-between mb-2 max-md:space-y-2">
 
       <ProductSearch
           class="md:w-[400px]"
           :filter="paramsSearch"
+          @search="fetchData()"
       />
 
-      <router-link to="/products/create">
-        <Button variant="outline">Добавить</Button>
-      </router-link>
-
-    </div>
-
-    <div class="flex items-center pb-2 justify-between">
-
-    </div>
-    <div v-if="data.length && data.length > 0">
-
-      <ProductListTable
-          :key="renderTable"
-          :items="data"
-      />
-
-      <div class="flex items-center justify-end space-x-2 py-4">
-        <PaginationTable
-            :total="totalItems"
-            :default-page="currentPage"
-            :items-per-page="itemsPerPage"
-            :sibling-count="1"
-            :show-edges="true"
-            @current-page="currentPage = $event; fetchData()"
-        />
+      <div class="md:flex md:space-x-2">
+        <Button @click="syncMoysklad" variant="secondary" class="max-md:w-full max-md:my-2">Синхронизировать с мой
+          склад
+        </Button>
+        <router-link to="/products/create">
+          <Button variant="outline" class="max-md:w-full">Добавить</Button>
+        </router-link>
       </div>
+
+    </div>
+
+    <ProductListTable
+        :key="renderTable"
+        :items="data"
+        @deleted="fetchData()"
+    />
+
+    <div class="flex items-center justify-end space-x-2 py-4">
+      <PaginationTable
+          :total="totalItems"
+          :default-page="currentPage"
+          :items-per-page="itemsPerPage"
+          :sibling-count="1"
+          :show-edges="true"
+          @current-page="currentPage = $event; fetchData()"
+      />
     </div>
 
 
@@ -47,50 +48,25 @@ import {ref, onMounted} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import Loader from "@/components/common/Loader.vue";
 import Button from "@/components/ui/button/Button.vue";
-import {useRouter} from "vue-router";
 import ProductSearch from "@/components/products/list/ProductSearch.vue";
 import ProductListTable from "@/components/products/list/ProductListTable.vue";
 import {useProductFunctions} from "@/composables/useProductFunctions";
-
-const router = useRouter()
+import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
 
 const data = ref([]);
 const totalItems = ref(0);
 const currentPage = ref(1);
 const itemsPerPage = ref(15);
 const isLoading = ref(true)
-const renderTable = ref(0)
+const renderTable = ref(1)
 
 
-const paramsSearch = {
+const paramsSearch = ref({
   search: '',
-}
-
+})
 
 const {getProducts} = useProductFunctions()
-
-
-// async function deleteProduct(id) {
-//   await axios.delete(`products/${id}`)
-//       .then(res => {
-//         toast("Удалено!", {
-//           description: "Товар был успешно удалён.",
-//           action: {
-//             label: "Ок",
-//           },
-//         });
-//         fetchData(currentPage.value)
-//       })
-//       .catch(err => {
-//         toast("Ошибка!", {
-//           description: `Не удалось удалить товар: ${err.message}`,
-//           action: {
-//             label: "Ок",
-//           },
-//         });
-//       });
-// }
-
+const {productsSync} = useMoySkladFunctions()
 
 onMounted(async () => {
   await fetchData()
@@ -102,13 +78,24 @@ async function fetchData() {
     per_page: itemsPerPage.value,
     page: currentPage.value,
     paginate: true,
-    admin: true
+    admin: true,
+    search: paramsSearch.value.search
   })
       .then(res => {
         totalItems.value = res.meta.total;
         return res.data;
       })
-      .finally(() => isLoading.value = false);
+
+
+  isLoading.value = false
+  renderTable.value++
+}
+
+async function syncMoysklad() {
+  isLoading.value = true
+  await productsSync({})
+  isLoading.value = false
+  renderTable.value++
 }
 
 </script>

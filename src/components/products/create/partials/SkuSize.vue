@@ -98,14 +98,13 @@ import {Accordion, AccordionContent, AccordionItem, AccordionTrigger} from "@/co
 import {Label} from "@/components/ui/label";
 import {Product} from "@/models/Product";
 
-const props = defineProps({
+defineProps({
   product: {
     type: Product,
     required: true,
   }
 })
 
-// const product = defineModel<Product>('product')
 
 </script>
 

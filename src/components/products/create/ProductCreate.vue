@@ -33,7 +33,7 @@
 
                     <div class="flex md:flex-col justify-between">
 
-                      <div class="">
+                      <div class="pl-1">
                         <Label for="name">Наименование*</Label>
                         <Input
                             id="name"
@@ -44,15 +44,12 @@
                         />
                       </div>
 
-                      <!--                      {{ colors }}-->
-                      <!--                      <div class="">-->
                       <MultiSelect
                           :options="colors || []"
                           v-model="product.colors"
                           option-label="name"
                           placeholder="Выберите цвет товара"
                       />
-                      <!--                      </div>-->
                     </div>
 
 

@@ -1,26 +1,43 @@
 <template>
   <DynamicsDataTable
-      v-if="items?.length"
       :data="items"
       :columns="columns"
       :custom-actions="true"
   >
     <template #actions="{row}">
-      <Pencil :size="17" class="cursor-pointer text-gray-400 hover:text-gray-500"
-              @click="router.push(`/product/update/${row.original.id}`)"
+      <IconButtons
+          :buttons="[
+              { type: 'edit', onClick: editProduct },
+              { type: 'delete', onClick: deleteProductHandle }
+              ]"
+          :context="row.original"
       />
+
     </template>
+
+    <template #actionsVariant="{row}">
+
+      <!--      <IconButtons-->
+      <!--          :buttons="[-->
+      <!--              { type: 'delete', onClick: deleteProductHandle }-->
+      <!--              ]"-->
+      <!--          :context="row.original"-->
+      <!--      />-->
+    </template>
+
   </DynamicsDataTable>
 </template>
 
 <script setup lang="ts">
-import {h, onMounted, PropType, ref} from "vue";
+import {h, PropType} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import usePermission from "@/composables/usePermission";
 import {Product} from "@/models/Product";
-import {ChevronRight, ChevronDown, Pencil} from 'lucide-vue-next'
+import {ChevronRight, ChevronDown} from 'lucide-vue-next'
 import {useRouter} from "vue-router";
 import {useImageFunctions} from "@/composables/useImageFunctions";
+import IconButtons from "@/components/dynamics/IconButtons.vue";
+import {useProductFunctions} from "@/composables/useProductFunctions";
 
 
 const props = defineProps({
@@ -34,6 +51,18 @@ const props = defineProps({
 const emits = defineEmits(["deleted", "updated"]);
 
 const router = useRouter();
+
+
+const {deleteProduct} = useProductFunctions()
+
+const editProduct = (product: Product) => {
+  router.push(`/product/update/${product.id}`)
+};
+const deleteProductHandle = async (product: Product) => {
+  await deleteProduct(product.id, {})
+  emits('deleted')
+};
+
 
 const {getImageByNameProduct} = useImageFunctions()
 
