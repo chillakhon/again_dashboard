@@ -4,7 +4,7 @@
       :columns="columns"
       :custom-actions="true"
   >
-    <template #actions="{row}">
+    <template v-if="showActionButton" #actions="{row}">
       <IconButtons
           :buttons="[
               { type: 'edit', onClick: editProduct },
@@ -46,6 +46,12 @@ const props = defineProps({
     default: () => []
   },
   loading: Boolean,
+
+  showActionButton: {
+    type: Boolean,
+    default: true
+  },
+
 });
 
 const emits = defineEmits(["deleted", "updated"]);

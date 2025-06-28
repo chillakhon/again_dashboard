@@ -51,8 +51,10 @@ const dialogOpen = ref(false)
 
 const emit = defineEmits(['dialogOpen'])
 
-watch(() => dialogOpen.value, () => {
-  emit('dialogOpen', dialogOpen.value)
+watch(() => dialogOpen.value, (newValue) => {
+  if (newValue) {
+    emit('dialogOpen', dialogOpen.value)
+  }
 })
 
 </script>

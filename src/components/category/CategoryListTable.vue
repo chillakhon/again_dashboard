@@ -7,6 +7,11 @@
   >
     <template #actions="{row}">
 
+      <ProductShowModal
+          :products="products"
+          @dialog-open="getProducts(row.original)"
+      />
+
       <CategoryEditModal
           :item="row.original"
           @update="emits('updated')"
@@ -14,7 +19,6 @@
 
       <IconButtons
           :buttons="[
-              // { type: 'edit', onClick: editProduct },
               { type: 'delete', onClick: deleteCategoryHandle }
               ]"
           :context="row.original"
@@ -23,8 +27,14 @@
     </template>
 
     <template #actionsVariant="{row}">
+
+      <ProductShowModal
+          :products="products"
+          @dialog-open="getProducts(row.original)"
+      />
+
       <CategoryEditModal
-          :item="prepareItem(row.original)"
+          :item="row.original"
           @update="emits('updated')"
       />
 
@@ -41,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import {h, PropType} from "vue";
+import {h, PropType, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import usePermission from "@/composables/usePermission";
 import {Category} from "@/models/Category";
@@ -50,6 +60,8 @@ import {useRouter} from "vue-router";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
 import CategoryEditModal from "@/components/category/CategoryEditModal.vue";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
+import ProductShowModal from "@/components/products/ProductShowModal.vue";
+import {Product} from "@/models/Product";
 
 
 const props = defineProps({
@@ -62,8 +74,9 @@ const props = defineProps({
 
 const emits = defineEmits(["deleted", "updated"]);
 
+const products = ref<Product[]>([]);
 
-const {deleteCategory} = useCategoryFunctions()
+const {deleteCategory, getProductsByCategory} = useCategoryFunctions()
 
 const router = useRouter();
 
@@ -119,9 +132,11 @@ const columns = [
 const {hasPermission} = usePermission()
 
 
-const prepareItem = (item: Category) => {
-
-  return item
+const getProducts = async (item: Category) => {
+  products.value = await getProductsByCategory({category_id: item.id})
+      .then(res => {
+        return res.products.map(product => Product.fromJSON(product));
+      })
 }
 
 </script>
