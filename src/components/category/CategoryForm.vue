@@ -5,7 +5,7 @@
       :fields="formFields"
       :errors="errors"
       :show-submit-button="true"
-      submit-button-text="Создать"
+      :submit-button-text="submitButtonName"
       @submit-form="emit('submitForm')"
   />
 </template>
@@ -23,6 +23,10 @@ const props = defineProps({
   formData: {
     type: Object as () => Category,
     required: true,
+  },
+  submitButtonName: {
+    type: String,
+    default: 'Создать'
   }
 })
 

@@ -24,7 +24,8 @@ import {Category} from "@/models/Category";
 import {ref} from "vue";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
 
-const emit = defineEmits(["created", "update"]);
+const emit = defineEmits(["created"]);
+
 
 const category = ref<Category>(Category.fromJSON({}));
 
@@ -32,12 +33,9 @@ const {createCategory, sending} = useCategoryFunctions()
 
 const handleSaveToServe = async () => {
 
-
   await createCategory(category.value.toJSON())
 
   emit('created')
-
-  // console.log(category.value);
 
 }
 

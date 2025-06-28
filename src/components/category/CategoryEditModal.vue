@@ -1,7 +1,11 @@
 <template>
-  <DialogModal>
+  <DialogModal
+      @dialog-open="dialogOpen"
+  >
     <template #button>
-      <Button variant="outline" class="max-md:w-full">Добавить</Button>
+      <IconButtons :buttons="[
+          {type: 'edit'}
+      ]"/>
     </template>
 
     <template #content>
@@ -9,6 +13,7 @@
       <CategoryForm
           v-else
           :formData="category"
+          submit-button-name="Сохранить"
           @submit-form="handleSaveToServe"
       />
     </template>
@@ -17,33 +22,46 @@
 </template>
 
 <script setup lang="ts">
-import {Button} from "@/components/ui/button";
 import DialogModal from "@/components/dynamics/shadcn/DialogModal.vue";
 import CategoryForm from "@/components/category/CategoryForm.vue";
 import {Category} from "@/models/Category";
 import {ref} from "vue";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
+import IconButtons from "@/components/dynamics/IconButtons.vue";
 
-const emit = defineEmits(["created", "update"]);
+const emit = defineEmits(["update"]);
 
 const props = defineProps({
   item: {
     type: Category,
-    default: undefined,
+    required: true
   }
 })
 
-const category = ref<Category>(Category.fromJSON({}));
+const category = ref<Category>(Category.fromJSON({...props.item}));
+let products: Product[] = [];
 
-const {createCategory, sending} = useCategoryFunctions()
+const {sending, updateCategory, getProductsByCategory} = useCategoryFunctions()
+
+
+const dialogOpen = async (param: boolean) => {
+  if (param) {
+    category.value.productIds = await getProductsByCategory({category_id: category.value.id})
+        .then(res => {
+          return res.products?.map(product => product.id);
+        })
+  }
+}
+
 
 const handleSaveToServe = async () => {
 
-  await createCategory(category.value.toJSON())
 
-  emit('created')
+  const result = await updateCategory(category.value.id, category.value.toJSON())
 
-  // console.log(category.value);
+  if (result) {
+    emit('update')
+  }
 
 }
 

@@ -36,7 +36,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
-import {ref} from "vue";
+import {ref, watch} from "vue";
 
 const props = defineProps({
   title: String,
@@ -48,5 +48,11 @@ const props = defineProps({
 })
 
 const dialogOpen = ref(false)
+
+const emit = defineEmits(['dialogOpen'])
+
+watch(() => dialogOpen.value, () => {
+  emit('dialogOpen', dialogOpen.value)
+})
 
 </script>

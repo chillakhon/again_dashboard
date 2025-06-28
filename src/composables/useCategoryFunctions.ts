@@ -34,18 +34,17 @@ export function useCategoryFunctions() {
             .finally(() => sending.value = false)
     }
 
-    const getCategoryById = async (categoryId: any, params: {
+    const getProductsByCategory = async (params: {
+        category_id: number | string,
         per_page?: number,
         page?: number,
-        paginate?: boolean,
-        admin?: boolean,
     }) => {
         if (sending.value) return
 
         sending.value = true
         progress.value = 0
 
-        return await axios.get(`categories/${categoryId}`, {
+        return await axios.get(`categories/products`, {
             params: params
         })
             .then(res => {
@@ -106,13 +105,36 @@ export function useCategoryFunctions() {
             .finally(() => sending.value = false)
     }
 
+    const updateCategory = async (categoryId: number | string, data: {
+        name: string,
+        description?: string,
+        parent_id?: number | null,
+        product_ids?: number[]
+    }) => {
+        if (sending.value) return
+
+        sending.value = true
+        progress.value = 0
+
+        return await axios.put(`categories/${categoryId}`, data)
+            .then(res => {
+                useSuccessHandler().showSuccess(res)
+                return res.data
+            })
+            .catch(e => {
+                useErrorHandler().showError(e)
+            })
+            .finally(() => sending.value = false)
+    }
+
 
     return {
         sending,
         progress,
         getCategories,
-        getCategoryById,
+        getProductsByCategory,
         deleteCategory,
-        createCategory
+        createCategory,
+        updateCategory,
     }
 }
