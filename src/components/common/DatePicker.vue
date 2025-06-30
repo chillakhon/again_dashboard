@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
-import { Button } from '@/components/ui/button'
-import { Calendar } from '@/components/ui/calendar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {cn} from '@/lib/utils'
+import {Button} from '@/components/ui/button'
+import {Calendar} from '@/components/ui/calendar'
+import {Popover, PopoverContent, PopoverTrigger} from '@/components/ui/popover'
 import {
   DateFormatter,
   type DateValue,
@@ -12,8 +12,8 @@ import {
   toCalendarDate,
   toDate
 } from '@internationalized/date'
-import { CalendarIcon } from 'lucide-vue-next'
-import { computed, PropType } from 'vue'
+import {CalendarIcon} from 'lucide-vue-next'
+import {computed, PropType} from 'vue'
 
 const props = defineProps({
   modelValue: {
@@ -27,7 +27,7 @@ const props = defineProps({
   locale: {
     type: String,
     default: 'ru-RU'
-  }
+  },
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -122,12 +122,12 @@ const displayValue = computed(() => {
           !internalValue && 'text-muted-foreground'
         )"
       >
-        <CalendarIcon class="mr-2 h-4 w-4" />
+        <CalendarIcon class="mr-2 h-4 w-4"/>
         {{ displayValue }}
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0">
-      <Calendar v-model="internalValue" initial-focus />
+      <Calendar v-model="internalValue" initial-focus/>
     </PopoverContent>
   </Popover>
 </template>

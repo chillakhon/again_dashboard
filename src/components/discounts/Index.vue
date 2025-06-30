@@ -14,9 +14,7 @@
         @updated="fetchData"
         :key="discounts.length"
     />
-    <div
-        class="mt-2 flex justify-end"
-    >
+    <div class="mt-2 flex justify-end">
       <PaginationTable
           :items-per-page="itemsPerPage"
           :total="totalItems"

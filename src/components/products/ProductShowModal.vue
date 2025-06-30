@@ -15,6 +15,7 @@
           :key="renderTable"
           :items="products"
           :show-action-button="false"
+          :showPrint="false"
       />
     </template>
 

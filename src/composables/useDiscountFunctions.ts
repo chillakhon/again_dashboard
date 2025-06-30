@@ -1,38 +1,49 @@
 import axios from "axios";
 import {toast} from "vue-sonner";
 import {Discount} from "@/models/Discount";
+import {useErrorHandler} from "@/composables/useErrorHandler";
+import {useSuccessHandler} from "@/composables/useSuccessHandler";
+import {Category} from "@/models/Category";
+import {ref} from "vue";
+import {DiscountValueType} from "@/constants/DiscountType";
 
 interface DiscountFormData {
-    id?: number;
-    code?: string;
-    percentage?: number;
-    valid_from?: string;
-    valid_to?: string;
-    max_uses?: number | null;
-    current_uses?: number;
+    name?: string;
+    type?: DiscountValueType;
+    value?: number;
+    discount_type?: DiscountValueType;
+    starts_at?: string;
+    ends_at?: string;
+    priority?: number | null;
     is_active?: boolean;
-
-    [key: string]: any;
+    categories?: number[] | null;
+    products?: number[] | null;
 }
 
 export function useDiscountFunctions() {
-    const addDiscount = async (discount: DiscountFormData): Promise<void> => {
-        try {
-            const response = await axios.post('/discounts', discount);
-            if (response.data.status) {
-                toast.success(response.data.message);
-            } else {
-                toast.error(response.data.message);
-            }
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                toast.error(error.response?.data?.message || "Что-то пошло не так");
-            } else {
-                toast.error("Неизвестная ошибка");
-                console.error("Error adding discount:", error);
-            }
-        }
-    };
+
+    const sending = ref(false)
+
+    const createDiscount = async (params: DiscountFormData): Promise<boolean | undefined> => {
+
+        sending.value = true
+
+        return await axios.post('discounts', {
+            ...params
+        })
+            .then(res => {
+
+
+                useSuccessHandler().showSuccess(res)
+                return true
+            })
+            .catch(e => {
+                useErrorHandler().showError(e)
+                return undefined
+            })
+            .finally(() => sending.value = false)
+    }
+
 
     const updateDiscount = async (discount: Discount): Promise<Discount | null> => {
         try {
@@ -70,58 +81,43 @@ export function useDiscountFunctions() {
         }
     };
 
-    // const getDiscount = async (discountId: number): Promise<Discount | null> => {
-    //     try {
-    //         const response = await axios.get(`/discounts/${discountId}`);
-    //         return Discount.fromJSON(response.data.data);
-    //     } catch (error) {
-    //         if (axios.isAxiosError(error)) {
-    //             toast.error(error.response?.data?.message || "Ошибка при загрузке");
-    //         } else {
-    //             toast.error("Ошибка сети");
-    //             console.error("Error fetching discount:", error);
-    //         }
-    //         return null;
-    //     }
-    // };
+    const getDiscounts = async (params: {
+        id?: number | string,
+        per_page?: number,
+        page?: number,
+        paginate?: boolean,
+        name?: string,
+    }): Promise<{
+        data: Discount[];
+        meta: object;
+    } | undefined> => {
 
-    // const getDiscounts = async (page: number = 1, perPage: number = 10): Promise<{
-    //     discounts: Discount[],
-    //     total: number
-    // } | null> => {
-    //     try {
-    //         const response = await axios.get(`/discounts?page=${page}&per_page=${perPage}`);
-    //         return {
-    //             discounts: response.data.data.map((item: any) => Discount.fromJSON(item)),
-    //             total: response.data.total
-    //         };
-    //     } catch (error) {
-    //         if (axios.isAxiosError(error)) {
-    //             toast.error(error.response?.data?.message || "Ошибка при загрузке списка");
-    //         } else {
-    //             toast.error("Ошибка сети");
-    //             console.error("Error fetching discounts:", error);
-    //         }
-    //         return null;
-    //     }
-    // };
+        sending.value = true
 
-    // function prepareDiscountDataForValidation(discount: Discount) {
-    //     return {
-    //         code: discount.code,
-    //         percentage: discount.percentage,
-    //         valid_from: discount.valid_from,
-    //         valid_to: discount.valid_to,
-    //         max_uses: discount.max_uses,
-    //         is_active: discount.is_active
-    //     };
-    // }
+        return await axios.get('discounts', {
+            params: params
+        })
+            .then(res => {
+                return {
+                    data: res.data.data.map((item: any) => Discount.fromJSON(item)),
+                    meta: res.data.meta
+                }
+            })
+            .catch(e => {
+                sending.value = false
+                useErrorHandler().showError(e)
+                return undefined
+            })
+            .finally(() => sending.value = false)
+    }
+
 
     return {
-        addDiscount,
+        createDiscount,
         updateDiscount,
         deleteDiscount,
+        getDiscounts,
+        sending
         // getDiscount,
-        // getDiscounts
     };
 }

@@ -3,7 +3,7 @@
     <div v-for="(row, rowIndex) in groupedFields" :key="rowIndex" class="grid gap-3" :class="`grid-cols-${row.length}`">
       <div v-for="field in row" :key="field.name" class="space-y-2">
         <Label :for="field.name">
-          {{ field.label }}
+          {{ field.component != 'checkbox' ? field.label : '' }}
           <span v-if="field.required" class="text-red-500">*</span>
         </Label>
 
@@ -30,6 +30,7 @@
 
         <Select
             v-else-if="field.component == 'select'"
+            :key="field.name"
             v-model="formData[field.name]"
             :options="field.options"
             :option-label="field.optionLabel"
@@ -42,6 +43,7 @@
 
         <MultiSelect
             v-else-if="field.component == 'multiSelect'"
+            :key="field.name"
             v-model="formData[field.name]"
             :options="field.options"
             :option-label="field.optionLabel"
@@ -52,8 +54,31 @@
             title=""
         />
 
+        <DatePicker
+            v-else-if="field.component == 'date'"
+            :key="field.name"
+            v-model="formData[field.name]"
+            :placeholder="field.placeholder"
+        />
+
+        <div class="flex items-center space-x-2"
+             v-else-if="field.component == 'checkbox'"
+        >
+          <Checkbox :id="field.name" v-model="formData[field.name]"/>
+          <label
+              for="terms"
+              class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            {{ field.label }}
+          </label>
+        </div>
+
+
         <p v-if="errors[field.name]" class="text-sm text-red-500">
           {{ errors[field.name] }}
+        </p>
+        <p v-if="field.description" class="text-sm text-gray-400">
+          {{ field.description }}
         </p>
       </div>
     </div>
@@ -80,6 +105,8 @@ import Select from "@/components/dynamics/Dropdown/Select.vue";
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue";
 import {FormDynamicFieldType} from "@/types/form";
 import {Button} from "@/components/ui/button";
+import DatePicker from "@/components/dynamics/DatePicker.vue";
+import {Checkbox} from '@/components/ui/checkbox'
 
 
 interface Props {

@@ -1,5 +1,4 @@
 <template>
-<!--  {{discounts}}-->
   <DynamicsDataTable
       :data="discounts"
       :columns="columns"

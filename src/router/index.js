@@ -159,7 +159,6 @@ const routes = [
             },
 
 
-
             {
                 path: '/category',
                 name: 'category',
@@ -173,7 +172,6 @@ const routes = [
                     },
                 ]
             },
-
 
 
             {
@@ -200,7 +198,7 @@ const routes = [
                     {
                         path: '/clients/discounts',
                         name: 'clients-discounts',
-                        component: () => import('../components/discounts/Index.vue'),
+                        component: () => import('../components/discount/DiscountList.vue'),
                     },
                 ]
 

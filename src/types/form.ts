@@ -2,9 +2,10 @@
 export interface FormDynamicFieldType {
     name: string
     label: string
-    component: 'text' | 'textarea' | 'select' | 'multiSelect'
+    component: 'text' | 'textarea' | 'select' | 'multiSelect' | 'checkbox' | 'date'
     type?: string
     placeholder?: string
+    description?: string
     required?: boolean
     disabled?: boolean
     cols?: number

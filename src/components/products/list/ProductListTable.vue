@@ -3,6 +3,7 @@
       :data="items"
       :columns="columns"
       :custom-actions="true"
+      :show-print-button="showPrint"
   >
     <template v-if="showActionButton" #actions="{row}">
       <IconButtons
@@ -17,12 +18,6 @@
 
     <template #actionsVariant="{row}">
 
-      <!--      <IconButtons-->
-      <!--          :buttons="[-->
-      <!--              { type: 'delete', onClick: deleteProductHandle }-->
-      <!--              ]"-->
-      <!--          :context="row.original"-->
-      <!--      />-->
     </template>
 
   </DynamicsDataTable>
@@ -51,6 +46,11 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+
+  showPrint: {
+    type: Boolean,
+    default: true
+  }
 
 });
 
