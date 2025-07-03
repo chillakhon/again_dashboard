@@ -10,12 +10,13 @@
 
     <template #content>
       <Loader v-if="sending"/>
-      <CategoryForm
-          v-else
-          :formData="category"
+
+      <DiscountForm
           submit-button-name="Сохранить"
+          :form-data="discount"
           @submit-form="handleSaveToServe"
       />
+
     </template>
 
   </DialogModal>
@@ -23,44 +24,42 @@
 
 <script setup lang="ts">
 import DialogModal from "@/components/dynamics/shadcn/DialogModal.vue";
-import CategoryForm from "@/components/category/CategoryForm.vue";
-import {Category} from "@/models/Category";
 import {ref} from "vue";
-import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
+import {Product} from "@/models/Product";
+import DiscountForm from "@/components/discount/DiscountForm.vue";
+import {Discount} from "@/models/Discount";
+import {useDiscountFunctions} from "@/composables/useDiscountFunctions";
 
 const emit = defineEmits(["update"]);
 
 const props = defineProps({
-  item: {
-    type: Category,
+  discount: {
+    type: Discount,
     required: true
   }
 })
 
-const category = ref<Category>(Category.fromJSON({...props.item}));
+const discount = ref<Discount>(props.discount?.clone());
+
 let products: Product[] = [];
 
-const {sending, updateCategory, getProductsByCategory} = useCategoryFunctions()
-
+const {sending, updateDiscount} = useDiscountFunctions()
 
 const dialogOpen = async (param: boolean) => {
-  if (param) {
-    category.value.productIds = await getProductsByCategory({category_id: category.value.id})
-        .then(res => {
-          return res.products?.map(product => product.id);
-        })
-  }
+
+  // console.log(props.discount);
+
+
 }
 
 
 const handleSaveToServe = async () => {
 
-
-  const result = await updateCategory(category.value.id, category.value.toJSON())
+  const result = await updateDiscount(discount.value);
 
   if (result) {
-    emit('update')
+    emit('update');
   }
 
 }

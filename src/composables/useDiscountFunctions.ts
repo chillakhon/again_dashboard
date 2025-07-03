@@ -55,29 +55,21 @@ export function useDiscountFunctions() {
             const response = await axios.put(`/discounts/${discount.id}`, discount);
             toast.success(response.data.message || "Данные скидки обновлены");
 
-            return response.data?.data ? Discount.fromJSON(response.data.data) : null;
+            return response.data?.discount ? Discount.fromJSON(response.data.discount) : null;
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                toast.error(error.response?.data?.message || "Ошибка при обновлении");
-            } else {
-                toast.error("Ошибка сети");
-                console.error("Error updating discount:", error);
-            }
+            useErrorHandler().showError(error)
             return null;
         }
     };
 
-    const deleteDiscount = async (discountId: number): Promise<void> => {
+    const deleteDiscount = async (discountId: number): Promise<boolean> => {
         try {
             const response = await axios.delete(`/discounts/${discountId}`);
-            toast.success(response.data.message || "Скидка успешно удалена");
+            useSuccessHandler().showSuccess(response)
+            return true
         } catch (error) {
-            if (axios.isAxiosError(error)) {
-                toast.error(error.response?.data?.message || "Ошибка при удалении");
-            } else {
-                toast.error("Ошибка сети");
-                console.error("Error deleting discount:", error);
-            }
+            useErrorHandler().showError(error)
+            return false
         }
     };
 
@@ -89,7 +81,12 @@ export function useDiscountFunctions() {
         name?: string,
     }): Promise<{
         data: Discount[];
-        meta: object;
+        meta: {
+            current_page: number,
+            last_page: number,
+            per_page: number,
+            total: number,
+        };
     } | undefined> => {
 
         sending.value = true

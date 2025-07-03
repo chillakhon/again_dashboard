@@ -78,6 +78,7 @@ export class Discount {
         discount.updatedAt = json.updated_at;
         discount.categoryIds = undefined;
         discount.productIds = undefined;
+        discount.categoryIds = json.categories?.map((item: any) => item.id);
 
         discount.products = json.products ? json.products.map((p: any) => Product.fromJSON(p)) : null;
 
@@ -97,6 +98,31 @@ export class Discount {
             categories: this.categoryIds ?? null,
             products: this.productIds ?? null,
         };
+    }
+
+
+    clone(): Discount {
+        const cloned = new Discount();
+
+        cloned.id = this.id;
+        cloned.name = this.name;
+        cloned.type = this.type;
+        cloned.value = this.value;
+        cloned.isActive = this.isActive;
+        cloned.startsAt = this.startsAt;
+        cloned.endsAt = this.endsAt;
+        cloned.priority = this.priority;
+        cloned.conditions = this.conditions ? JSON.parse(JSON.stringify(this.conditions)) : null;
+        cloned.discountType = this.discountType;
+        cloned.createdAt = this.createdAt;
+        cloned.updatedAt = this.updatedAt;
+
+        cloned.productIds = this.productIds ? [...this.productIds] : undefined;
+        cloned.categoryIds = this.categoryIds ? [...this.categoryIds] : undefined;
+
+        cloned.products = this.products ? this.products.map(p => p.clone()) : null;
+
+        return cloned;
     }
 
 

@@ -41,7 +41,7 @@ type ButtonAction<T = any> = (context: T) => void;
 
 interface IconButton {
   type: IconType;
-  onClick: ButtonAction;
+  onClick?: ButtonAction;
   size?: number | string;
   class?: string;
 }
@@ -68,6 +68,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 interface Emits {
   (event: 'action', payload: { type: IconType; context?: any }): void;
+
   (event: 'hard_deleted', payload: any): void;
 }
 

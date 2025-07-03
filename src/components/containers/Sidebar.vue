@@ -434,6 +434,7 @@ const navigation = [
   {
     name: 'Интеграции', href: '/integrations', icon: PhUnite,
     children: [
+      {name: 'Мой склад', href: '/integrations/moysklad', icon: PhWarehouse},
       {name: 'Системы платежей', href: '/integrations/payments', icon: PhBag},
       {name: 'Облачные кассы', href: '/integrations/cashboxes', icon: PhComputerTower},
       {name: 'Сервисы доставки', href: '/integrations/delivery', icon: PhTruck},

@@ -1,5 +1,4 @@
 <template>
-  <!--  {{ formData }}-->
   <DynamicForm
       v-if="!isLoading"
       v-model="props.formData"
@@ -15,7 +14,6 @@
 <script setup lang="ts">
 import {ref, onMounted, watch} from 'vue'
 import DynamicForm from '@/components/dynamics/DynamicForm.vue'
-import {FormDynamicFieldType} from "@/types/form";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
 import {useProductFunctions} from "@/composables/useProductFunctions";
 import {Product} from "@/models/Product";
@@ -51,11 +49,9 @@ const {getProducts} = useProductFunctions()
 
 
 onMounted(async () => {
-  categories.value = await getCategories({get_children: false});
-  products.value = await getProducts({per_page: 200, paginate: false})
-      .then(response => {
-        return response.map((item: any) => Product.fromJSON(item));
-      });
+
+
+  await loadOptions()
 
   buildFormFields();
   isLoading.value = false;
@@ -96,15 +92,15 @@ const buildFormFields = () => {
       placeholder: 'Введите название'
     },
 
-    {
-      name: 'priority',
-      component: 'text',
-      type: 'number',
-      label: 'Приоритет',
-      required: true,
-      placeholder: 'Введите число',
-      description: 'Чем меньше значение, тем раньше эта скидка будет применяться при совпадении нескольких акций.'
-    },
+    // {
+    //   name: 'priority',
+    //   component: 'text',
+    //   type: 'number',
+    //   label: 'Приоритет',
+    //   required: true,
+    //   placeholder: 'Введите число',
+    //   description: 'Чем меньше значение, тем раньше эта скидка будет применяться при совпадении нескольких акций.'
+    // },
     [
       {
         name: 'type',
@@ -186,5 +182,32 @@ const buildFormFields = () => {
   ]
 }
 
+
+async function loadOptions() {
+  const type = props.formData?.discountType
+
+  switch (type) {
+    case DiscountTargetType.ALL:
+      categories.value = []
+      products.value = []
+      break
+
+    case DiscountTargetType.CATEGORY:
+      categories.value = await getCategories({get_children: false})
+      products.value = []
+      break
+
+    case DiscountTargetType.SPECIFIC:
+      categories.value = []
+      products.value = await getProducts({per_page: 200, paginate: false})
+          .then(res => res.map((item: any) => Product.fromJSON(item)))
+      break
+
+    default:
+      categories.value = []
+      products.value = []
+      break
+  }
+}
 
 </script>

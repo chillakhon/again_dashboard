@@ -65,7 +65,7 @@ const routes = [
             //         {
             //             path: '/warehouses/production/list',
             //             name: 'production-list',
-            //             component: () => import('../components/warehouses/production/index.vue'),
+            //             component: () => import('../components/warehouses/production/MoySkladForm.vue'),
             //         },
             //         {
             //             path: '/warehouses/production/create',
@@ -75,12 +75,12 @@ const routes = [
             //         {
             //             path: '/warehouses/production/edit/:id',
             //             name: 'production-edit',
-            //             component: () => import('../components/warehouses/production/edit/index.vue'),
+            //             component: () => import('../components/warehouses/production/edit/MoySkladForm.vue'),
             //         },
             //         {
             //             path: '/warehouses/tech_operations',
             //             name: 'tech_operations',
-            //             component: () => import('../components/warehouses/tech_operations/index.vue'),
+            //             component: () => import('../components/warehouses/tech_operations/MoySkladForm.vue'),
             //         },
             //     ]
             // },
@@ -201,7 +201,6 @@ const routes = [
                         component: () => import('../components/discount/DiscountList.vue'),
                     },
                 ]
-
             },
             {
                 path: '/integrations',
@@ -233,6 +232,11 @@ const routes = [
                         path: '/integrations/email',
                         name: 'integrations-email',
                         component: () => import('../components/integrations/email/index.vue'),
+                    },
+                    {
+                        path: '/integrations/moysklad',
+                        name: 'integrations-moysklad',
+                        component: () => import('../components/integrations/moysklad/MoySklad.vue'),
                     },
                 ]
             },

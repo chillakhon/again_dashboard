@@ -220,4 +220,46 @@ export class Product {
         this.variants = this.variants.filter(variant => variant.uuid !== uuid);
     }
 
+
+    clone(): Product {
+        const cloned = new Product();
+
+        cloned.id = this.id;
+        cloned.uuid = this.uuid;
+        cloned.name = this.name;
+        cloned.description = this.description;
+        cloned.type = this.type;
+        cloned.default_unit_id = this.default_unit_id;
+        cloned.unit_id = this.unit_id;
+        cloned.is_active = this.is_active;
+        cloned.has_variants = this.has_variants;
+        cloned.allow_preorder = this.allow_preorder;
+        cloned.after_purchase_processing_time = this.after_purchase_processing_time;
+        cloned.sku = this.sku;
+        cloned.price = this.price;
+        cloned.cost_price = this.cost_price;
+        cloned.stock_quantity = this.stock_quantity;
+        cloned.barcode = this.barcode;
+        cloned.min_order_quantity = this.min_order_quantity;
+        cloned.max_order_quantity = this.max_order_quantity;
+        cloned.is_featured = this.is_featured;
+        cloned.is_new = this.is_new;
+        cloned.discount_price = this.discount_price;
+        cloned.old_price = this.old_price;
+        cloned.weight = this.weight;
+        cloned.length = this.length;
+        cloned.width = this.width;
+        cloned.height = this.height;
+
+        cloned.images = this.images ? JSON.parse(JSON.stringify(this.images)) : [];
+        cloned.categories = this.categories ? [...this.categories] : null;
+        cloned.options = this.options ? JSON.parse(JSON.stringify(this.options)) : null;
+        cloned.variants = this.variants ? this.variants.map(v => v.clone()) : [];
+        cloned.imageFiles = this.imageFiles ? [...this.imageFiles] : null;
+        cloned.colors = this.colors ? JSON.parse(JSON.stringify(this.colors)) : [];
+
+        return cloned;
+    }
+
+
 }

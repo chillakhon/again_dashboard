@@ -18,8 +18,8 @@
 
     <DiscountListTable
         :key="renderTable"
-        :items="data"
-        @deleted="fetchData()"
+        :items="data ?? []"
+        @deleted="handleDeleted"
         @updated="fetchData()"
     />
 
@@ -40,14 +40,13 @@
 import {ref, onMounted} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import Loader from "@/components/common/Loader.vue";
-import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
-import {Category} from "@/models/Category";
 import DiscountSearch from "@/components/discount/DiscountSearch.vue";
 import DiscountAddModal from "@/components/discount/DiscountAddModal.vue";
 import DiscountListTable from "@/components/discount/DiscountListTable.vue";
 import {useDiscountFunctions} from "@/composables/useDiscountFunctions";
+import {Discount} from "@/models/Discount";
 
-const data = ref<Category[]>();
+const data = ref<Discount[]>();
 const totalItems = ref(0);
 const currentPage = ref(1);
 const itemsPerPage = ref(15);
@@ -75,7 +74,7 @@ async function fetchData() {
     name: paramsSearch.value.search,
   })
       .then(res => {
-        totalItems.value = res?.meta.count
+        totalItems.value = res?.meta.total ?? 1
         return res?.data
       })
 
@@ -83,5 +82,10 @@ async function fetchData() {
   renderTable.value++
 }
 
+
+function handleDeleted(discount: Discount) {
+  data.value = data.value?.filter(d => d.id !== discount.id)
+  renderTable.value++
+}
 
 </script>
