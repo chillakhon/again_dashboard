@@ -1,5 +1,5 @@
 <template>
-  {{items}}
+  <!--  {{items}}-->
   <DynamicsDataTable
       :data="items"
       :columns="columns"
@@ -8,7 +8,7 @@
     <template #actions="{row}">
 
       <ProductShowModal
-          :products="products"
+          :products="row.original.products"
           @dialog-open="getProducts(row.original)"
       />
 

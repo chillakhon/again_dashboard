@@ -24,7 +24,7 @@
 
 <script setup lang="ts">
 import DialogModal from "@/components/dynamics/shadcn/DialogModal.vue";
-import {ref} from "vue";
+import {onMounted, ref} from "vue";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
 import {Product} from "@/models/Product";
 import DiscountForm from "@/components/discount/DiscountForm.vue";
@@ -41,6 +41,13 @@ const props = defineProps({
 })
 
 const discount = ref<Discount>(props.discount?.clone());
+
+
+
+onMounted(() => {
+  console.log(props.discount);
+})
+
 
 let products: Product[] = [];
 

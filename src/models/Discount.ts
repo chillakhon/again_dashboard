@@ -77,7 +77,7 @@ export class Discount {
         discount.createdAt = json.created_at;
         discount.updatedAt = json.updated_at;
         discount.categoryIds = undefined;
-        discount.productIds = undefined;
+        discount.productIds = json.products ? json.products?.map((item: any) => item.id) : undefined;
         discount.categoryIds = json.categories?.map((item: any) => item.id);
 
         discount.products = json.products ? json.products.map((p: any) => Product.fromJSON(p)) : null;
