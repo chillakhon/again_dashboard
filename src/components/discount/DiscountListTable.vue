@@ -7,10 +7,10 @@
   >
     <template #actions="{row}">
 
-      <ProductShowModal
-          :products="row.original.products"
-          @dialog-open="getProducts(row.original)"
-      />
+<!--      <ProductShowModal-->
+      <!--          :products="row.original.products"-->
+      <!--          @dialog-open="getProducts(row.original)"-->
+      <!--      />-->
 
       <DiscountEditModal
           :key="row.original.id"

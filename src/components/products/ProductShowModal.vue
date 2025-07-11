@@ -27,19 +27,18 @@ import DialogModal from "@/components/dynamics/shadcn/DialogModal.vue";
 import {PropType, ref, watch} from "vue";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
 import ProductListTable from "@/components/products/list/ProductListTable.vue";
-import {Product} from "@/models/Product";
+import type {Product} from "@/models/Product";
 
 const emit = defineEmits(["dialogOpen"]);
 
 const props = defineProps({
   products: {
-    type: Product as PropType<Product[]>,
+    type: Array as PropType<Product[]>,
     required: true
   }
 })
 
 const renderTable = ref(1)
-
 
 watch(
     () => props.products,
