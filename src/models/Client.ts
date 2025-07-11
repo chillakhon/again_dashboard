@@ -1,5 +1,5 @@
-import { User } from "@/models/user/User";
-import { UserProfile } from "@/models/user/Profile";
+import {User} from "@/models/user/User";
+import {UserProfile} from "@/models/user/Profile";
 
 export class Client {
     id: number;
@@ -11,6 +11,7 @@ export class Client {
     updated_at: string;
     user: User | null;
     profile: UserProfile | null;
+    email: string | undefined;
 
     constructor(data: Partial<Client> = {}) {
         this.id = this.validateNumber(data.id, 'id') ?? 0;
@@ -22,6 +23,7 @@ export class Client {
         this.updated_at = this.validateString(data.updated_at, 'updated_at') ?? new Date().toISOString();
         this.user = data.user ? (data.user instanceof User ? data.user : User.fromJSON(data.user)) : null;
         this.profile = data.profile ? (data.profile instanceof UserProfile ? data.profile : UserProfile.fromJSON(data.profile)) : null;
+        this.email = data.email ?? undefined;
     }
 
     private validateNumber(value: any, fieldName: string): number | undefined {
@@ -58,7 +60,8 @@ export class Client {
                 deleted_at: json.deleted_at,
                 updated_at: json.updated_at,
                 user: json.user,
-                profile: json.profile
+                profile: json.profile,
+                email: json.email,
             });
         } catch (error) {
             console.error('Failed to parse Client from JSON:', error);
@@ -79,7 +82,6 @@ export class Client {
             profile: this.profile?.toJSON?.() ?? null
         };
     }
-
 
 
     get isActive(): boolean {

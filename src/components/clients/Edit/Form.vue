@@ -14,11 +14,13 @@
       </div>
     </div>
 
+    {{clientData}}
+
     <!-- Контактные данные -->
     <div class="grid grid-cols-2 gap-3">
       <div class="space-y-2">
         <Label for="email">Почта <span class="text-red-500">*</span></Label>
-        <Input id="email" type="email" v-model="clientData.user.email" placeholder="example@mail.com"/>
+        <Input id="email" type="email" v-model="clientData.email" placeholder="example@mail.com"/>
 <!--        <p v-if="errors.email" class="text-sm text-red-500">{{ errors.email }}</p>-->
       </div>
       <div class="space-y-2">

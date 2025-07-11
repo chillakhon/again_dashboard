@@ -63,16 +63,13 @@ const columns = [
   {
     accessorKey: "profile.phone",
     header: "Телефон",
-    cell: (row) => {
+    cell: (row: any) => {
       return row.row.original.profile?.phone || '—';
     }
   },
   {
-    accessorKey: "user.email",
+    accessorKey: "email",
     header: "Почта",
-    cell: (row) => {
-      return row.row.original.user?.email || '—';
-    }
   },
   {
     accessorKey: "bonus_balance",
