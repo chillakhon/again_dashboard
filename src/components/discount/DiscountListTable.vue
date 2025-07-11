@@ -12,6 +12,8 @@
       <!--          @dialog-open="getProducts(row.original)"-->
       <!--      />-->
 
+
+
       <DiscountEditModal
           :key="row.original.id"
           :discount="row.original"
