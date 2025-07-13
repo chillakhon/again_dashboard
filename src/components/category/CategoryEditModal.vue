@@ -38,17 +38,19 @@ const props = defineProps({
   }
 })
 
-const category = ref<Category>(Category.fromJSON({...props.item}));
-let products: Product[] = [];
+const category = ref<Category>(props.item);
 
 const {sending, updateCategory, getProductsByCategory} = useCategoryFunctions()
 
 
 const dialogOpen = async (param: boolean) => {
   if (param) {
+
+    console.log(props.item)
+
     category.value.productIds = await getProductsByCategory({category_id: category.value.id})
         .then(res => {
-          return res.products?.map(product => product.id);
+          return res.products?.map((product: any) => product.id);
         })
   }
 }

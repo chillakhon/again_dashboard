@@ -108,7 +108,6 @@ export function useClientFunctions() {
 
 
 
-
     function prepareClientDataForValidation(client: Client) {
         return {
             first_name: client.profile?.first_name ?? null,

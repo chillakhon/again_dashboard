@@ -77,6 +77,7 @@ async function fetchData() {
     name: paramsSearch.value.search,
   })
 
+
   isLoading.value = false
   renderTable.value++
 }
