@@ -37,7 +37,10 @@ export function useClientFunctions() {
                 return null;
             }
 
+            console.log('data',prepareClientDataForValidation(client))
+            // return null
             const response = await axios.put(`/clients/${client.id}`, prepareClientDataForValidation(client));
+
             toast.success(response.data.message || "Данные клиента обновлены");
 
             return response.data?.data || null; // Предполагаем, что данные в response.data.data
@@ -107,10 +110,10 @@ export function useClientFunctions() {
         return {
             first_name: client.profile?.first_name ?? null,
             last_name: client.profile?.last_name ?? null,
-            email: client.user?.email ?? null,
+            email: client.email ?? null,
             phone: client.profile?.phone ?? null,
             address: client.profile?.address ?? null,
-            user_id: client.user?.id ?? null
+            user_id: client?.id ?? null
         };
     }
 

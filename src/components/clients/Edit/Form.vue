@@ -14,7 +14,7 @@
       </div>
     </div>
 
-    {{clientData}}
+<!--    {{clientData}}-->
 
     <!-- Контактные данные -->
     <div class="grid grid-cols-2 gap-3">

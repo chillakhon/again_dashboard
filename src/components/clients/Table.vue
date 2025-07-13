@@ -33,6 +33,9 @@ const emits = defineEmits(["deleted", "updated"]);
 
 
 async function handlingUpdate(data: Client) {
+  console.log(data);
+  // return
+
   await useClientFunctions().updateClient(data)
   emits('updated')
 }
@@ -49,14 +52,14 @@ const columns = [
   {
     accessorKey: "id",
     header: "No",
-    cell: (cell) => {
+    cell: (cell: any) => {
       return (cell.row.index += 1);
     },
   },
   {
     accessorKey: "profile.fullName",
     header: "Клиент",
-    cell: (row) => {
+    cell: (row: any) => {
       return row.row.original.profile?.fullName || '—';
     }
   },
@@ -74,21 +77,21 @@ const columns = [
   {
     accessorKey: "bonus_balance",
     header: "Бонусный баланс",
-    cell: (row) => {
+    cell: (row: any) => {
       return parseFloat(row.getValue()).toFixed(2);
     }
   },
   {
     accessorKey: "created_at",
     header: "Дата регистрации",
-    cell: (row) => {
+    cell: (row: any) => {
       return new Date(row.getValue()).toLocaleDateString();
     }
   },
   {
     accessorKey: "isActive",
     header: "Активен",
-    cell: (row) => {
+    cell: (row: any) => {
       return row.getValue()
           ? h(Check, {class: "h-4 w-4 text-green-500"})
           : h(X, {class: "h-4 w-4 text-red-500"});

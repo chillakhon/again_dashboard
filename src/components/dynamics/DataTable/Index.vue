@@ -62,9 +62,12 @@
                       <!--                      {{ hasPermission(PermissionsData.USERS_EDIT, false) }}-->
 
                       <!--                      <PermissionGuard :permission="PermissionsData.USERS_EDIT">-->
+
+                      <!--                      {{ row.original.email }}-->
+                      <!--                      {{ JSON.parse(JSON.stringify(row.original)).email }}-->
                       <Edit
                           :disabled="!canEdit"
-                          :item="JSON.parse(JSON.stringify(row.original))"
+                          :item="getCloneObj(row.original)"
                           :edit="edit"
                           @save_changes="emits('save_changes', $event)"
                       />
@@ -138,6 +141,7 @@ import Loader from "@/components/common/Loader.vue";
 import {computed, ref} from "vue";
 import usePermission from "@/composables/usePermission";
 import {PermissionsData} from "@/constants/PermissionsData";
+import cloneDeep from 'lodash/cloneDeep';
 
 
 const props = defineProps({
@@ -171,6 +175,10 @@ const props = defineProps({
   subRowsField: String,
 });
 
+
+const getCloneObj = (obj: any) => {
+  return cloneDeep(obj)
+}
 
 const {hasPermission} = usePermission()
 
