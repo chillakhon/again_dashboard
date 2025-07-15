@@ -11,11 +11,15 @@
       </TabsList>
 
       <TabsContent value="activated">
-        <UsersList/>
+        <PermissionGuard :permission="PermissionsData.MANAGE_USERS">
+          <UsersList/>
+        </PermissionGuard>
       </TabsContent>
 
       <TabsContent value="deleted">
-        <UsersDeleted/>
+        <PermissionGuard :permission="PermissionsData.MANAGE_USERS">
+          <UsersDeleted/>
+        </PermissionGuard>
       </TabsContent>
     </Tabs>
   </div>
@@ -28,6 +32,8 @@ import UsersList from "@/components/users/Index.vue";
 import UsersDeleted from "@/components/users/Deleted.vue";
 import {User} from "@/models/user/User";
 import {useStore} from "vuex";
+import {PermissionsData} from "@/constants/PermissionsData";
+import PermissionGuard from "@/components/PermissionGuard.vue";
 
 const currentTab = ref("activated");
 const store = useStore();

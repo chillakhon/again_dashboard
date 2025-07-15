@@ -12,6 +12,7 @@ export class Client {
     user: User | null;
     profile: UserProfile | null;
     email: string | undefined;
+    name: string | undefined;
 
     constructor(data: Partial<Client> = {}) {
         this.id = this.validateNumber(data.id, 'id') ?? 0;
@@ -24,6 +25,7 @@ export class Client {
         this.user = data.user ? (data.user instanceof User ? data.user : User.fromJSON(data.user)) : null;
         this.profile = data.profile ? (data.profile instanceof UserProfile ? data.profile : UserProfile.fromJSON(data.profile)) : null;
         this.email = data.email ?? undefined;
+        this.name = data.name ?? undefined;
     }
 
     private validateNumber(value: any, fieldName: string): number | undefined {
@@ -62,6 +64,7 @@ export class Client {
                 user: json.user,
                 profile: json.profile,
                 email: json.email,
+                name: json.name,
             });
         } catch (error) {
             console.error('Failed to parse Client from JSON:', error);

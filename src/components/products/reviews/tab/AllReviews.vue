@@ -18,18 +18,18 @@
         </Button>
       </div>
 
-      <div class="flex max-md:mt-2 space-x-2">
-        <Button variant="outline" @click="handleExport">
-          Экспорт
-        </Button>
-        <Button variant="outline" @click="handleImport">
-          Импорт
-        </Button>
-      </div>
+      <!--      <div class="flex max-md:mt-2 space-x-2">-->
+      <!--        <Button variant="outline" @click="handleExport">-->
+      <!--          Экспорт-->
+      <!--        </Button>-->
+      <!--        <Button variant="outline" @click="handleImport">-->
+      <!--          Импорт-->
+      <!--        </Button>-->
+      <!--      </div>-->
     </div>
   </div>
 
-  <Loader v-if="isLoading" />
+  <Loader v-if="isLoading"/>
   <div v-else>
     <div class="w-full">
       <ReviewsTable :reviews="reviewsData" @refresh="fetchData()"/>
@@ -50,15 +50,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import {ref, onMounted} from "vue";
 import axios from "axios";
-import { toast } from "vue-sonner";
+import {toast} from "vue-sonner";
 
 import Loader from "@/components/common/Loader.vue";
 import ReviewsTable from "@/components/products/reviews/ReviewsTable.vue";
 import PaginationTable from "@/components/PaginationTable.vue";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
+import {Review} from "@/models/Review";
 
 const searchQuery = ref('');
 const reviewsData = ref([]);
@@ -80,11 +81,15 @@ async function fetchData() {
     const params = {
       page: currentPage.value,
       per_page: itemsPerPage.value,
-      search: searchQuery.value || undefined // Only include search if there's a query
+      search: searchQuery.value || undefined,
+      admin: true
     };
 
-    const res = await axios.get('/reviews', { params });
-    reviewsData.value = res.data.data || [];
+    const res = await axios.get('/reviews', {params});
+
+
+    reviewsData.value = res.data.data.map((i: any) => Review.fromJSON(i)) || [];
+    console.log(reviewsData.value);
     totalItems.value = res.data.total || 0;
   } catch (e: unknown) {
     if (axios.isAxiosError(e) && e.response) {

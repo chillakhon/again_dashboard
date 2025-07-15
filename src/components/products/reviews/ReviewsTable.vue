@@ -51,8 +51,8 @@
 
             <!-- Автор -->
             <TableCell class="px-3 py-3 whitespace-nowrap text-sm">
-              <div class="font-medium">{{ review.client_name || 'Аноним' }}</div>
-              <div class="text-gray-500 text-xs">{{ review.client_email || 'Нет email' }}</div>
+              <div class="font-medium">{{ review.client?.name || 'Аноним' }}</div>
+              <div class="text-gray-500 text-xs">{{ review.client?.email || 'Нет email' }}</div>
             </TableCell>
 
             <!-- Рейтинг -->
@@ -86,12 +86,12 @@
 
             <!-- Дата создания -->
             <TableCell class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
-              {{ formatDate(review.created_at) }}
+              {{ formatDateToRussian(review.created_at!) }}
             </TableCell>
 
             <!-- Дата публикации -->
             <TableCell class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
-              {{ review.published_at ? formatDate(review.published_at) : '-' }}
+              {{ review.published_at ? formatDateToRussian(review.published_at) : '-' }}
             </TableCell>
 
             <!-- Actions -->
@@ -103,7 +103,7 @@
                     variant="ghost"
                     size="sm"
                     class="h-8 w-8 p-0 text-green-600 hover:text-green-700"
-                    @click="publishReview(review.id)"
+                    @click="publishReview(review.id!)"
                     title="Опубликовать"
                 >
                   <CheckIcon class="h-4 w-4" />
@@ -113,7 +113,7 @@
                     variant="ghost"
                     size="sm"
                     class="h-8 w-8 p-0 text-yellow-600 hover:text-yellow-700"
-                    @click="unpublishReview(review.id)"
+                    @click="unpublishReview(review.id!)"
                     title="Снять с публикации"
                 >
                   <XIcon class="h-4 w-4" />
@@ -124,7 +124,7 @@
                     variant="ghost"
                     size="sm"
                     class="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                    @click="confirmDelete(review.id)"
+                    @click="confirmDelete(review.id!)"
                     title="Удалить"
                 >
                   <Trash2Icon class="h-4 w-4" />
@@ -155,6 +155,7 @@ import {Button} from '@/components/ui/button'
 import {Review} from "@/models/Review";
 import axios from "axios";
 import {toast} from "vue-sonner";
+import {useDateFormat} from "@/composables/useDateFormat";
 
 type ReviewStatus = 'new' | 'published' | 'pending' | 'draft' | 'imported' | 'rejected'
 
@@ -164,18 +165,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['refresh'])
 
-const formatDate = (dateString: string) => {
-  if (!dateString) return '-'
-  const options: Intl.DateTimeFormatOptions = {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false
-  }
-  return new Date(dateString).toLocaleString('ru-RU', options)
-}
+const {formatDateToRussian} = useDateFormat()
 
 const getStatusText = (status: ReviewStatus): string => {
   const statusMap: Record<ReviewStatus, string> = {

@@ -1,5 +1,4 @@
 <template>
-  <PermissionGuard :permission="PermissionsData.MANAGE_USERS">
 
     <div class="flex justify-between">
       <UsersSearch
@@ -38,7 +37,6 @@
         "
       />
     </div>
-  </PermissionGuard>
 </template>
 
 <script setup lang="ts">

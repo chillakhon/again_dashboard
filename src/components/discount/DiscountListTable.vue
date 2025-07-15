@@ -7,11 +7,10 @@
   >
     <template #actions="{row}">
 
-<!--      <ProductShowModal-->
+      <!--      <ProductShowModal-->
       <!--          :products="row.original.products"-->
       <!--          @dialog-open="getProducts(row.original)"-->
       <!--      />-->
-
 
 
       <DiscountEditModal
@@ -104,12 +103,12 @@ const columns = [
   {
     accessorKey: "startsAt",
     header: "Начало действия",
-    cell: ({row}: any) => useDateFormat().formatDateToRussian(row.original.startsAt)
+    cell: ({row}: any) => formatDateToRussian(row.original.startsAt)
   },
   {
     accessorKey: "endsAt",
     header: "Окончание",
-    cell: ({row}: any) => useDateFormat().formatDateToRussian(row.original.endsAt)
+    cell: ({row}: any) => formatDateToRussian(row.original.endsAt)
   },
   {
     accessorKey: "isActive",
@@ -133,6 +132,9 @@ const getProducts = async (item: Category) => {
   }
 }
 
+
+
+const {formatDateToRussian} = useDateFormat()
 </script>
 
 <style scoped></style>

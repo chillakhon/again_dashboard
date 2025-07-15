@@ -1,11 +1,12 @@
 <!-- components/products/reviews/tab/ReviewsList.vue -->
 <script setup lang="ts">
-import { ref, onMounted, watch } from "vue";
+import {ref, onMounted, watch} from "vue";
 import axios from "axios";
-import { toast } from "vue-sonner";
+import {toast} from "vue-sonner";
 import ReviewsTable from "@/components/products/reviews/ReviewsTable.vue";
 import PaginationTable from "@/components/PaginationTable.vue";
 import Loader from "@/components/common/Loader.vue";
+import {Review} from "@/models/Review";
 
 const props = defineProps<{
   tab: string;
@@ -28,11 +29,13 @@ async function fetchData() {
       // Tab-specific filters
       published: props.tab === 'unpublished' ? false : undefined,
       manager_replied: props.tab === 'unanswered' ? false : undefined,
-      spam: props.tab === 'spam' ? true : undefined
+      spam: props.tab === 'spam' ? true : undefined,
+      admin: true
     };
 
-    const res = await axios.get('/reviews', { params });
-    reviewsData.value = res.data.data || [];
+    const res = await axios.get('/reviews', {params});
+
+    reviewsData.value = res.data.data.map((item: any) => Review.fromJSON(item));
     totalItems.value = res.data.total || 0;
   } catch (e: unknown) {
     handleError(e);
