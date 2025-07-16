@@ -6,7 +6,7 @@
         class="w-auto px-3"
         @click="dialogOpen = true"
     >
-      <CirclePlus class="w-4 h-4 mr-2" /> Добавить клиента
+      <CirclePlus class="w-4 h-4 mr-2" /> Добавить
     </Button>
 
     <DynamicsModal
