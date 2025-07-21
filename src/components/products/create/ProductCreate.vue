@@ -49,6 +49,7 @@
                           v-model="product.colors"
                           option-label="name"
                           placeholder="Выберите цвет товара"
+                          disabled
                       />
                     </div>
 
@@ -94,6 +95,10 @@
           @closeModal="sending = false"
       />
 
+      <ModalSelectColor
+
+      />
+
       <div class="flex justify-end py-2">
         <Button type="submit" class="">
           Создать
@@ -125,6 +130,7 @@ import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue";
 import {useColorsFunctions} from "@/composables/useColorFunctions";
 import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
+import ModalSelectColor from "@/components/products/create/partials/ModalSelectColor.vue";
 
 
 const {getRandomInt} = useRandom()

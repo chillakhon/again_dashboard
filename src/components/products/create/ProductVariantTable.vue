@@ -21,9 +21,12 @@ import {Trash2} from "lucide-vue-next";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Product} from "@/models/Product";
 import {Input} from '@/components/ui/input'
-import {h} from "vue"
+import {h, onMounted, ref} from "vue"
 import ProductImage from "@/components/products/create/ProductImage.vue";
 import {ImageModel} from "@/models/ImageModel";
+import {useColorsFunctions} from "@/composables/useColorFunctions";
+import Select from "@/components/dynamics/Dropdown/Select.vue";
+import ModalSelectColor from "@/components/products/create/partials/ModalSelectColor.vue";
 
 
 const props = defineProps({
@@ -35,6 +38,15 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["deleted", "updated", 'updatedVariantImage']);
+const {getColors} = useColorsFunctions()
+
+
+const colors = ref([]);
+
+
+onMounted(async () => {
+  colors.value = await getColors();
+})
 
 const columns = [
   {
@@ -54,12 +66,11 @@ const columns = [
         // emits('updatedVariantImage', event);
         // cell.row.original?.images.push(event)
 
-        console.log(cell.row.original);
+        // console.log(cell.row.original);
       },
       class: "text-center",
     })
   },
-
 
   {
     accessorKey: 'name',
@@ -79,8 +90,8 @@ const columns = [
   {
     accessorKey: 'barcode',
     header: 'Штрих код',
-    cell: ({ row }: any) => {
-      return h('div', { class: 'flex flex-col items-center' }, [
+    cell: ({row}: any) => {
+      return h('div', {class: 'flex flex-col items-center'}, [
         h(Input, {
           modelValue: row.original.barcode,
           readonly: true,
@@ -109,6 +120,24 @@ const columns = [
         type: 'number',
         placeholder: "Цена",
         min: 0,
+      })
+    },
+  },
+
+  {
+    accessorKey: 'color_id',
+    header: 'Цвет',
+    cell: ({row}: any) => {
+      console.log(colors);
+      return h(ModalSelectColor, {
+        modelValue: row.original.color_id,
+        'onUpdate:modelValue': (value: any) => {
+          row.original.color_id = value
+        },
+        options: colors || [],
+        optionLabel: 'name',
+        optionValue: 'id',
+        placeholder: 'Выберите цвет',
       })
     },
   },

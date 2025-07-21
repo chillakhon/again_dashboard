@@ -47,11 +47,12 @@
                       </div>
 
 
-                      <MultiSelect
+                      <Select
+                          v-model="product.color_id"
                           :options="colors || []"
-                          v-model="product.colors"
                           option-label="name"
                           placeholder="Выберите цвет товара"
+                          disabled
                       />
                     </div>
 
@@ -125,6 +126,7 @@ import ImageManager from "@/components/dynamics/ImageManager.vue";
 import {useProductImageUploader} from "@/composables/useProductImageUploader";
 import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue";
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue";
+import Select from "@/components/dynamics/Dropdown/Select.vue";
 import {useColorsFunctions} from "@/composables/useColorFunctions";
 import {useProductFunctions} from "@/composables/useProductFunctions";
 import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
@@ -159,12 +161,16 @@ const handleCreate = async () => {
 }
 
 onMounted(async () => {
-  await getProductsById(route.params.id, {})
+  await getProductsById(route.params.id, {
+    admin: true
+  })
       .then(res => {
         product.value = Product.fromJSON(res)
+        console.log(product.value)
       })
       .finally(() => loading.value = false)
   colors.value = await getColors();
+  console.log(colors.value)
 })
 
 </script>

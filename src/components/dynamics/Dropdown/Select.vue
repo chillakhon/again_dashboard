@@ -1,5 +1,6 @@
 <template>
-  <Label v-if="title" class="text-xs">{{title}}</Label>
+  <Label v-if="title" class="text-xs">{{ title }}</Label>
+<!--  {{options}}-->
   <Select
       :required="props.required"
       :disabled="props.disabled"
@@ -17,7 +18,7 @@
           type="button"
           :disabled="disabled"
       >
-        <X class="h-4 w-4" />
+        <X class="h-4 w-4"/>
       </button>
     </SelectTrigger>
     <SelectContent>
@@ -26,9 +27,10 @@
         <SelectItem
             v-for="option in options"
             :key="option.value"
-            :value="option[optionValue ?? 'value']"
+            :value="option[optionValue ?? 'label']"
             :disabled="option.disabled"
         >
+<!--          {{JSON.stringify(option)}}-->
           {{ option[optionLabel ?? 'label'] }}
         </SelectItem>
       </SelectGroup>
@@ -46,7 +48,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { X } from 'lucide-vue-next'
+import {X} from 'lucide-vue-next'
 
 interface SelectOption {
   value: string
@@ -60,7 +62,7 @@ const props = defineProps<{
   placeholder?: string
   label?: string
   optionLabel?: string
-  optionValue?: number | string
+  optionValue?: string
   disabled: boolean,
   required: boolean,
   title: {

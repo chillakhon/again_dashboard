@@ -4,6 +4,7 @@ export class Product {
 
     id: number | null;
     uuid: string | null;
+    color_id: string | undefined;
     name: string;
     description: string;
     type: string | null;
@@ -34,10 +35,12 @@ export class Product {
     variants: Product[];
     imageFiles: File[] | null;
     colors: any[];
+    color: object | undefined;
 
     constructor() {
         this.id = null;
         this.uuid = null;
+        this.color_id = undefined;
         this.name = '';
         this.description = '';
         this.type = "simple";
@@ -68,6 +71,7 @@ export class Product {
         this.variants = [];
         this.imageFiles = [];
         this.colors = [];
+        this.color = undefined;
     }
 
     static fromJSON(json: any): Product {
@@ -102,7 +106,10 @@ export class Product {
         product.categories = json.categories ?? [1];
         product.options = json.options ?? null;
         product.uuid = json.uuid ?? uuidGenerate;
+        product.color_id = json.color_id ?? json.color?.id ?? undefined;
         product.colors = json.colors ?? [];
+        product.color = json.color ?? {};
+        product.color = json.color ?? {};
         product.variants = json.variants?.length ? json.variants.map((item: any) => Product.fromJSON(item)) : [];
         // product.imageFiles = json.imageFiles ?? [];
 
