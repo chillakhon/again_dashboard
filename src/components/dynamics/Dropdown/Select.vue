@@ -1,11 +1,11 @@
 <template>
   <Label v-if="title" class="text-xs">{{ title }}</Label>
-<!--  {{options}}-->
+  <!--  {{options}}-->
   <Select
       :required="props.required"
       :disabled="props.disabled"
       :modelValue="modelValue"
-      @update:modelValue="(value) => emit('update:modelValue', value)"
+      @update:modelValue="(value: any) => emit('update:modelValue', value)"
   >
     <SelectTrigger class="relative">
       <SelectValue :placeholder="placeholder || 'Выберите...'"/>
@@ -30,7 +30,7 @@
             :value="option[optionValue ?? 'label']"
             :disabled="option.disabled"
         >
-<!--          {{JSON.stringify(option)}}-->
+          <!--          {{JSON.stringify(option)}}-->
           {{ option[optionLabel ?? 'label'] }}
         </SelectItem>
       </SelectGroup>
@@ -58,14 +58,14 @@ interface SelectOption {
 
 const props = defineProps<{
   options: SelectOption[]
-  modelValue: string | number
+  modelValue: string | number | undefined
   placeholder?: string
   label?: string
   optionLabel?: string
   optionValue?: string
-  disabled: boolean,
-  required: boolean,
-  title: {
+  disabled?: boolean,
+  required?: boolean,
+  title?: {
     type: string,
     default: ''
   }

@@ -1,5 +1,6 @@
 <template>
   <DynamicsDataTable
+      :key="renderTable"
       :data="product.variants || []"
       :columns="columns"
       :custom-actions="true"
@@ -38,15 +39,9 @@ const props = defineProps({
 });
 
 const emits = defineEmits(["deleted", "updated", 'updatedVariantImage']);
-const {getColors} = useColorsFunctions()
 
 
-const colors = ref([]);
-
-
-onMounted(async () => {
-  colors.value = await getColors();
-})
+const renderTable = ref(1)
 
 const columns = [
   {
@@ -128,16 +123,11 @@ const columns = [
     accessorKey: 'color_id',
     header: 'Цвет',
     cell: ({row}: any) => {
-      console.log(colors);
       return h(ModalSelectColor, {
-        modelValue: row.original.color_id,
-        'onUpdate:modelValue': (value: any) => {
-          row.original.color_id = value
-        },
-        options: colors || [],
-        optionLabel: 'name',
-        optionValue: 'id',
-        placeholder: 'Выберите цвет',
+        item: row.original,
+        onUpdateColor: () => {
+          renderTable.value++
+        }
       })
     },
   },

@@ -185,6 +185,7 @@ export class Product {
             width: this.width,
             height: this.height,
             colors: this.colors ?? [],
+            color_id: this.color_id ?? null,
             // images: this.images,
 
             variants: this.variants.length ? this.variants.map((v: Product) => v.toJSONForVariantCreate()) : [],
@@ -206,6 +207,8 @@ export class Product {
             description: this.description,
             is_active: this.is_active ? 1 : 0,
             colors: this.colors ?? [],
+            color_id: this.color_id ?? null,
+
             // images: this.images,
 
             // has_variants: this.variants.length ? 1 : 0,

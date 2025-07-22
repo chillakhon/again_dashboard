@@ -132,7 +132,7 @@ import {useProductFunctions} from "@/composables/useProductFunctions";
 import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
 
 
-const {getColors} = useColorsFunctions()
+// const {getColors} = useColorsFunctions()
 
 const colors = ref([]);
 
@@ -169,8 +169,8 @@ onMounted(async () => {
         console.log(product.value)
       })
       .finally(() => loading.value = false)
-  colors.value = await getColors();
-  console.log(colors.value)
+  // colors.value = await getColors();
+  // console.log(colors.value)
 })
 
 </script>
