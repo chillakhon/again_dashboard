@@ -1,15 +1,16 @@
 <template>
   <form @submit.prevent="emits('search')" class="flex gap-3 w-full">
-    <div class="flex gap-3 w-full">
-<!--      {{columns}}-->
+    <div class="flex max-md:flex-col gap-3 w-full">
+      <!--      {{columns}}-->
       <DynamicsFilterColumn
           v-for="(column, index) in columns"
           :key="index"
           :column="column"
           :filter="filter"
       />
+      <Button v-if="showButton" type="submit">Найти</Button>
+
     </div>
-    <Button v-if="showButton" type="submit">Найти</Button>
   </form>
 </template>
 

@@ -47,7 +47,7 @@
       </RouterLink>
 
       <!-- Готовы к отправке -->
-      <RouterLink to="/orders?status=ready">
+      <RouterLink to="/orders?status=ready_to_ship">
         <Card class="group hover:shadow-lg transition-all duration-300 hover:border-blue-500 hover:translate-y-[-2px]">
           <CardHeader class="pb-2">
             <CardDescription class="flex items-center gap-2">

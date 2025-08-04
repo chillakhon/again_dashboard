@@ -1,7 +1,8 @@
 <template>
   <form class="space-y-4" @submit.prevent="emit('submitForm')">
-    <div v-for="(row, rowIndex) in groupedFields" :key="rowIndex" class="grid gap-3" :class="`grid-cols-${row.length}`">
-      <div v-for="field in row" :key="field.name" class="space-y-2">
+    <div v-for="(row, rowIndex) in groupedFields" :key="rowIndex" class="grid gap-3"
+         :class="`md:grid-cols-${row.length}`">
+      <div v-for="field in row" :key="field.name" class="space-y-2 ">
         <Label :for="field.name">
           {{ field.component != 'checkbox' ? field.label : '' }}
           <span v-if="field.required" class="text-red-500">*</span>

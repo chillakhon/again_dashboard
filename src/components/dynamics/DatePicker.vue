@@ -53,19 +53,32 @@ const parseInputDate = (date: string | Date | DateValue | null): DateValue | nul
     // String input
     if (typeof date === 'string') {
       let iso = date.trim()
-      // Strip microseconds to milliseconds precision if needed
-      // e.g. "2025-04-29T18:05:31.000000Z" -> "2025-04-29T18:05:31.000Z"
+
+      // ✅ Поддержка формата "30.07.2025 04:21"
+      if (/^\d{2}\.\d{2}\.\d{4}( \d{2}:\d{2})?$/.test(iso)) {
+        const [datePart, timePart = '00:00'] = iso.split(' ')
+        const [day, month, year] = datePart.split('.').map(Number)
+        const [hours, minutes] = timePart.split(':').map(Number)
+        const jsDate = new Date(year, month - 1, day, hours, minutes)
+        if (!isNaN(jsDate.getTime())) {
+          return fromDate(jsDate, getLocalTimeZone())
+        }
+      }
+
+      // Обрезаем микросекунды до миллисекунд (например, ".000000Z" -> ".000Z")
       iso = iso.replace(/\.(\d{3})\d*Z$/, '.$1Z')
 
-      // Try native ISO parsing
+      // ISO формат
       const jsDate = new Date(iso)
       if (!isNaN(jsDate.getTime())) {
         return fromDate(jsDate, getLocalTimeZone())
       }
-      // Fallback: simple YYYY-MM-DD
+
+      // Fallback: "YYYY-MM-DD"
       const datePart = iso.split('T')[0]
       return parseDate(datePart)
     }
+
   } catch (e) {
     console.warn('Could not parse date:', date, e)
   }

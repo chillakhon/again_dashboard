@@ -138,7 +138,6 @@ import DynamicsShadcnTabs from "@/components/dynamics/shadcn/Tabs.vue";
 import {toast} from "vue-sonner";
 import {useRouter} from "vue-router";
 import {User} from "@/models/user/User";
-import {useStatus} from "@/composables/useStatus";
 
 const router = useRouter()
 const props = defineProps({

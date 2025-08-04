@@ -3,50 +3,18 @@
   <Loader v-if="isLoading"/>
   <div v-else>
     <div class="flex items-center space-x-2">
-      <BackButton :title="order.name ?? `Заказ ${order.id}`" class=""/>
-      <span>от {{ order.created_at }}</span>
+      <BackButton :title="`Заказ ${order?.id}`" class=""/>
+      <span>от {{ useDateFormat().formatDateToRussian(order?.created_at ?? new Date(), true) }}</span>
     </div>
-    <form @submit.prevent="handleCreate" class="">
-      <div class="grid md:grid-cols-3 md:space-x-3 max-md:space-y-3 grid-cols-1 my-5 ">
-        <!-- Статус заказа -->
-        <div class="flex items-center">
-          <!--          <Label>Статус заказа:</Label>-->
-          <DynamicSelect
-              v-model="order.status"
-              :options="statusOptions"
-              placeholder="Выберите статус"
-          />
-        </div>
 
-        <!-- Статус платежа -->
-        <div class="flex items-center">
-          <!--          <Label>Статус платежа:</Label>-->
-          <DynamicSelect
-              v-model="order.payment_status"
-              :options="paymentStatusOptions"
-              placeholder="Выберите статус платежа"
-          />
-        </div>
+    <DynamicForm
+        v-model="formData"
+        submit-button-text="Сохронить"
+        :fields="formFields"
+        :show-submit-button="true"
+        @submit-form="handleUpdate"
+    />
 
-        <div class="flex items-center">
-          <DatePicker
-              v-model="selectedDate"
-              placeholder="Выберите дату"
-          />
-
-        </div>
-      </div>
-
-      <ProductsTable
-          :order="order"
-      />
-
-      <Button
-          type="submit"
-          class="mt-2">
-        Сохранить
-      </Button>
-    </form>
   </div>
 </template>
 
@@ -54,55 +22,90 @@
 import {onMounted, ref} from 'vue';
 import BackButton from "@/components/BackButton.vue";
 import Order from "@/models/Order";
-import Button from "@/components/ui/button/Button.vue";
-import {toast} from 'vue-sonner'
-import axios from "axios";
 import {useRoute} from "vue-router";
 import Loader from "@/components/common/Loader.vue";
-import DynamicSelect from "@/components/common/DynamicSelect.vue";
-import DatePicker from "@/components/common/DatePicker.vue";
-import ProductsTable from "@/components/orders/update/partials/ProductsTable.vue";
+import DynamicForm from "@/components/dynamics/DynamicForm.vue";
+import {useOrderFunctions} from "@/composables/useOrderFunctions";
+import {useStatuses} from "@/composables/useStatuses";
+import {useDateFormat} from "@/composables/useDateFormat";
+import {FormDynamicFieldType} from "@/types/form";
 
 const isLoading = ref<boolean>(true);
 const route = useRoute();
-const order = ref<Order>();
-const selectedDate = ref();
+const order = ref<Order | null>(null)
 
+const {getStatuses} = useStatuses()
+const {getOrderById, updateOrder} = useOrderFunctions()
 
-// Опции для селектов
-const statusOptions = Order.getAllStatuses();
-const paymentStatusOptions = Order.getAllPaymentStatuses();
+const formData = ref<any>({})
+
+const formFields = ref<any[]>(
+    [
+      [
+        {
+          name: 'status',
+          component: 'select',
+          label: '',
+          required: false,
+          placeholder: 'Выберите статус',
+          options: getStatuses('order'),
+          optionLabel: 'label',
+          optionValue: 'value'
+        },
+        {
+          name: 'payment_status',
+          component: 'select',
+          label: '',
+          required: false,
+          placeholder: 'Выберите  статус',
+          options: getStatuses('payment'),
+          optionLabel: 'label',
+          optionValue: 'value'
+        },
+        {
+          name: 'created_at',
+          component: 'date',
+          label: '',
+          required: false,
+          placeholder: 'Дата',
+        },
+      ],
+
+      {
+        name: 'notes',
+        component: 'text',
+        label: 'Заметка',
+        required: true,
+        placeholder: 'Заметка',
+      },
+
+    ]
+)
+
 
 onMounted(async () => {
   await getOrder(route.params.id);
 });
 
 async function getOrder(id: any) {
-  await axios.get(`orders/${id}`)
-      .then(res => {
-        order.value = new Order(res.data);
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
+  order.value = await getOrderById(id);
+
+  formData.value = order.value?.toJSONForUpdate();
+
+  isLoading.value = false;
 }
 
-const handleCreate = async () => {
-  try {
-    await axios.put(`orders/${order.value.id}`, {
-      status: order.value.status,
-      payment_status: order.value.payment_status,
-      notes: 'order.value.notes'
-    });
+async function handleUpdate() {
 
-    toast.success('Успешно!', {
-      description: 'Статусы заказа обновлены',
-    });
+  if (!order.value?.id) return
 
-  } catch (error) {
-    toast.error('Ошибка!', {
-      description: 'Не удалось обновить статусы',
-    });
-  }
-};
+  const result = await updateOrder(order.value?.id, formData.value);
+
+
+  console.log(result)
+
+
+  isLoading.value = false;
+}
+
 </script>

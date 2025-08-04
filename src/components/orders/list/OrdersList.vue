@@ -1,54 +1,85 @@
 <template>
-  <Loader v-if="isLoading"/>
-  <div v-else class="">
-    <div class="flex items-center pb-4 justify-between">
-      <!--      <router-link to="/products/create">-->
-      <!--        <Button>Добавить товар</Button>-->
-      <!--      </router-link>-->
+  <div class="flex justify-between mb-2 md:space-x-4 max-md:flex-col">
+    <DynamicTitle
+        title="Заказы"
+        variant="primary"
+    />
+
+    <div class="w-full  flex md:space-x-2 max-md:space-y-2 max-md:flex-col">
+      <OrderSearch
+          :key="renderSearchComp"
+          :filter="searchParams"
+          @search="handleSearch"
+      />
+
+      <Button
+          v-if="hasActiveFilters"
+          variant="outline"
+          @click="resetFilters"
+      >
+        <X/>
+      </Button>
+
     </div>
-    <div>
-      <div class="">
-        <AgGridTable
-            :key="renderTable"
-            :cols-ag="colDefs"
-            :data-ag="orders"
-            title="Заказы"
-        />
-      </div>
-      <div class="flex items-center justify-end space-x-2 py-4">
-        <div class="space-x-2">
-          <PaginationTable
-              :total="totalItems"
-              :default-page="currentPage"
-              :items-per-page="itemsPerPage"
-              :sibling-count="1"
-              :show-edges="true"
-              @current-page="currentPage = $event; fetchData($event)"
-          />
-        </div>
-      </div>
-    </div>
-    <!--    <div v-else class="max-w-2xl mx-auto text-center py-16 px-4 sm:py-20 sm:px-6 lg:px-8">-->
-    <!--      <h3 class="text-3xl font-extrabold text-gray-500 sm:text-4xl">Ничего не найдено</h3>-->
-    <!--    </div>-->
   </div>
+
+  <Loader v-if="isLoading"/>
+  <OrderListTable
+      v-else
+      :key="renderTable"
+      :items="orders"
+      @deleted="fetchData()"
+  />
+
+  <PaginationTable
+      class="flex justify-end"
+      :total="totalItems"
+      :default-page="currentPage"
+      :items-per-page="itemsPerPage"
+      :sibling-count="1"
+      :show-edges="true"
+      @current-page="currentPage = $event; fetchData()"
+  />
+
 
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, computed} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
-import axios from "axios";
 import Loader from "@/components/common/Loader.vue";
-import {toast} from 'vue-sonner'
 import {useRouter, useRoute} from "vue-router";
 import Order from "@/models/Order"
+import OrderListTable from "@/components/orders/list/OrderListTable.vue";
+import {useOrderFunctions} from "@/composables/useOrderFunctions";
+import DynamicTitle from "@/components/dynamics/DynamicTitle.vue";
+import OrderSearch from "@/components/orders/list/OrderSearch.vue";
+import Button from "../../ui/button/Button.vue";
+import {X} from "lucide-vue-next"
 
-const router = useRouter()
+
+const searchParams = ref({
+  datePicker: {
+    start: '',
+    end: ''
+  },
+  search: '',
+  status: '',
+})
+
+
 const route = useRoute()
 
+
+const hasActiveFilters = computed(() => {
+  return !!searchParams.value.search || !!searchParams.value.datePicker.start || !!searchParams.value.datePicker.end || !!searchParams.value.status
+})
+
+const renderTable = ref(1)
+const renderSearchComp = ref(1)
+
+
 const isLoading = ref(true)
-const renderTable = ref(0)
 const orders = ref<Order[]>([])
 
 const totalItems = ref(0);
@@ -56,108 +87,56 @@ const currentPage = ref(1);
 const itemsPerPage = ref(10);
 
 
-const colDefs = ref([
-  {
-    headerName: "No",
-    field: "id",
-    maxWidth: 100,
-    cellStyle: {color: "blue", cursor: "pointer"},
-    onCellClicked: (params) => {
-      console.log(params.data.id);
-      router.push(`/order/update/${params.data.id}`);
-    }
-  },
-  {headerName: "Создан ", field: "created_at"},
-  {headerName: "Доставить", field: "delivery_date"},
-  {headerName: "Сумма", field: "total_amount"},
-  {headerName: "ФИО получателя", field: "clients.full_name"},
-  {
-    headerName: "Статус", field: "status", cellRenderer: params => {
-      const ord = new Order(params.data)
-      const {label, color} = ord.getStatusInfo();
-
-      return `
-      <span style="
-        background: ${color};
-        color: white;
-        padding: 6px;
-        border-radius: 6px;
-        font-size: 12px;
-        font-weight: bold;
-        min-width: 80px;
-      ">
-        ${label}
-      </span>
-    `;
-    }
-  },
-  {
-    headerName: "Оплата", field: "payment_status",
-    cellRenderer: params => {
-      const ord = new Order(params.data)
-      return ord.getPaymentStatusLabel()
-    }
-  },
-  {headerName: "Доставка", field: "delivery_target"},
-  {headerName: "Ответственный", field: ""},
-  // {
-  //   headerName: "Действия",
-  //   field: "actions",
-  //   maxWidth: 120,
-  //   cellRenderer: (params) => {
-  //     const button = document.createElement("button");
-  //     button.innerText = "Удалить";
-  //     button.style.color = "red";
-  //     button.style.cursor = "pointer";
-  //     button.onclick = () => {
-  //       if (confirm("Вы уверены, что хотите удалить этот товар?")) {
-  //         deleteProduct(params.data.id)
-  //       }
-  //     };
-  //     return button;
-  //   },
-  // },
-]);
-
-
 onMounted(async () => {
-  await fetchData(currentPage.value)
+  await fetchData()
 })
 
-async function deleteProduct(id) {
-  await axios.delete(`products/${id}`)
-      .then(() => {
-        toast("Удалено!", {
-          description: "Товар был успешно удалён.",
-          action: {
-            label: "Ок",
-          },
-        });
-        fetchData(currentPage.value)
-      })
-      .catch(err => {
-        toast("Ошибка!", {
-          description: `Не удалось удалить товар: ${err.message}`,
-          action: {
-            label: "Ок",
-          },
-        });
-      });
+const {getOrders} = useOrderFunctions()
+
+async function fetchData() {
+
+  isLoading.value = true
+
+  const status = route.query?.status ? `${route.query?.status}` : searchParams.value.status ? searchParams.value.status : ''
+
+  const result = await getOrders({
+    status: status,
+    paginate: true,
+    page: currentPage.value,
+    per_page: itemsPerPage.value,
+    search: searchParams.value.search,
+    date_from: searchParams.value.datePicker.start,
+    date_to: searchParams.value.datePicker.end
+  })
+
+  orders.value = result?.orders ?? []
+  currentPage.value = result?.meta.page ?? 1
+  itemsPerPage.value = result?.meta.per_page ?? 15
+  totalItems.value = result?.meta.total ?? 0
+
+  isLoading.value = false
+  renderTable.value++
 }
 
 
-async function fetchData(curPage: any) {
-  const status = route.query?.status ? `status=${route.query?.status}&` : ''
+const handleSearch = () => {
+  fetchData()
+}
 
-  await axios.get(`orders?${status}page=${curPage}&per_page=${itemsPerPage.value}`)
-      .then(res => {
-        orders.value = res.data.orders?.map((order: any) => Object.assign(new Order({}), order));
-        totalItems.value = res.data?.total ?? 0
-        renderTable.value++
-      })
-      .finally(() => {
-        isLoading.value = false
-      })
+
+function resetFilters() {
+  searchParams.value = {
+    datePicker: {
+      start: '',
+      end: ''
+    },
+    search: '',
+    status: '',
+  }
+
+  currentPage.value = 1
+  renderSearchComp.value++
+  fetchData()
 }
 
 </script>
