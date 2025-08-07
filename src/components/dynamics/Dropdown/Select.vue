@@ -24,15 +24,41 @@
     <SelectContent>
       <SelectGroup>
         <SelectLabel v-if="label">{{ label }}</SelectLabel>
+        <!--        <SelectItem-->
+        <!--            v-for="option in options"-->
+        <!--            :key="option.value"-->
+        <!--            :value="option[optionValue ?? 'label']"-->
+        <!--            :disabled="option.disabled"-->
+        <!--        >-->
+        <!--          &lt;!&ndash;          {{JSON.stringify(option)}}&ndash;&gt;-->
+        <!--          {{ option[optionLabel ?? 'label'] }}-->
+        <!--        </SelectItem>-->
+
+
         <SelectItem
             v-for="option in options"
             :key="option.value"
             :value="option[optionValue ?? 'label']"
             :disabled="option.disabled"
         >
-          <!--          {{JSON.stringify(option)}}-->
-          {{ option[optionLabel ?? 'label'] }}
+          <span class="flex items-center gap-2 text-xs">
+    <!-- Рендер иконки -->
+          <component
+              v-if="option.icon && typeof option.icon !== 'string'"
+              class="w-4 h-4"
+              :is="option.icon"
+              :class="option.styleIcon"/>
+
+            <span v-else-if="option.icon" class="text-base">{{ option.icon }}</span>
+
+
+            {{ option[optionLabel ?? 'label'] }}
+
+           </span>
+
         </SelectItem>
+
+
       </SelectGroup>
     </SelectContent>
   </Select>
@@ -54,6 +80,8 @@ interface SelectOption {
   value: string
   label: string
   disabled?: boolean
+  icon?: object | string,
+  styleIcon?: string,
 }
 
 const props = defineProps<{

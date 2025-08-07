@@ -5,6 +5,7 @@ export class UserProfile {
     public last_name: string | null;
     public phone: string | null;
     public address: string | null;
+    public image: string | null;
 
     constructor(data: Partial<UserProfile> = {}) {
         this.id = data.id ?? null;
@@ -13,6 +14,7 @@ export class UserProfile {
         this.last_name = data.last_name ?? null;
         this.phone = data.phone ?? null;
         this.address = data.address ?? null;
+        this.image = data.image ?? null;
     }
 
     /**
@@ -27,7 +29,8 @@ export class UserProfile {
             first_name: json.first_name ?? null,
             last_name: json.last_name ?? null,
             phone: json.phone ?? null,
-            address: json.address ?? null
+            address: json.address ?? null,
+            image: json.image ?? null
         });
     }
 

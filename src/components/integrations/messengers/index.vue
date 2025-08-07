@@ -1,4 +1,10 @@
 <template>
+
+  <ModalWithProgressBar
+      :sending="sending"
+      :target-progress="progress"
+  />
+
   <div class="space-y-6 p-6 max-w-4xl mx-auto">
     <!-- Заголовок раздела -->
     <div>
@@ -125,54 +131,8 @@
             />
           </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <Label for="telegram-chat-id">ID чата</Label>
-            <Input
-                id="telegram-chat-id"
-                v-model="integrations.telegram.chatId"
-                placeholder="-100123456789"
-                :disabled="!integrations.telegram.enabled"
-            />
-          </div>
-          <div class="space-y-2">
-            <Label for="telegram-webhook">Webhook URL</Label>
-            <Input
-                id="telegram-webhook"
-                v-model="integrations.telegram.webhookUrl"
-                placeholder="https://ваш-сайт.ru/api/telegram"
-                :disabled="!integrations.telegram.enabled"
-            />
-          </div>
-        </div>
+
         <div class="flex flex-wrap justify-between max-md:space-y-2 pt-4 border-t">
-          <div class="flex flex-wrap max-md:space-y-2 md:space-x-2 ">
-            <Button
-                class="max-md:w-full"
-                variant="outline"
-                :disabled="!integrations.telegram.enabled"
-                @click="testTelegramConnection"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                   stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-              Проверить
-            </Button>
-            <Button
-                class="max-md:w-full"
-                variant="secondary"
-                :disabled="!integrations.telegram.enabled"
-                @click="sendTestMessage"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                   stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                      d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-              </svg>
-              Тест сообщение
-            </Button>
-          </div>
           <Button
               class="max-md:w-full"
               :disabled="!integrations.telegram.enabled || !hasTelegramChanges"
@@ -184,29 +144,6 @@
       </CardContent>
     </Card>
 
-    <!-- Глобальное сохранение -->
-    <div class="flex md:justify-end flex-wrap md:space-x-3 max-md:space-y-2 pt-4 border-t">
-      <Button variant="outline" @click="resetChanges" class="max-md:w-full">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-        </svg>
-        Сбросить изменения
-      </Button>
-      <Button
-          :disabled="!hasChanges"
-          @click="saveAll"
-          class="max-md:w-full"
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-             stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
-        </svg>
-        Сохранить все
-      </Button>
-    </div>
   </div>
 </template>
 
@@ -221,6 +158,9 @@ import {Label} from '@/components/ui/label'
 import {Switch} from '@/components/ui/switch'
 import {Separator} from '@/components/ui/separator'
 import {Button} from '@/components/ui/button'
+import {useTelegramFunctions} from "@/composables/useTelegramFunctions";
+import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue";
+import {encryptToken} from '@/utils/crypto';
 
 // Состояния интеграций
 const initialData = {
@@ -254,6 +194,22 @@ const hasTelegramChanges = computed(() => {
 const hasChanges = computed(() => {
   return hasWhatsAppChanges.value || hasTelegramChanges.value
 })
+
+
+const {updateTelegramSettings, sending, progress} = useTelegramFunctions()
+
+const saveTelegram = async () => {
+
+  const telega = integrations.value.telegram
+
+  const encryptedToken = encryptToken(telega.apiToken);
+  const result = await updateTelegramSettings({
+    bot_name: telega.botName,
+    token: encryptedToken,
+  })
+
+}
+
 
 // Методы для WhatsApp
 const testWhatsAppConnection = async () => {
@@ -326,23 +282,6 @@ const sendTestMessage = async () => {
   }
 }
 
-const saveTelegram = async () => {
-  try {
-    // Здесь будет API запрос для сохранения
-    savedData.value.telegram = JSON.parse(JSON.stringify(integrations.value.telegram))
-    toast({
-      title: 'Telegram сохранен',
-      description: 'Настройки успешно обновлены',
-      variant: 'success'
-    })
-  } catch (error) {
-    toast({
-      title: 'Ошибка сохранения',
-      description: error.message || 'Не удалось сохранить настройки Telegram',
-      variant: 'destructive'
-    })
-  }
-}
 
 // Общие методы
 const saveAll = async () => {

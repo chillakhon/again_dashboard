@@ -1,167 +1,146 @@
 <template>
-  <Card class="w-full h-full shadow-none border-0 md:border-l rounded-none">
-    <CardHeader class="border-b p-">
+  <Card class="w-full h-full shadow-none border-0 md:border-l rounded-none flex flex-col">
+    <!-- Header -->
+    <CardHeader class="border-b p-2">
       <div class="flex items-center justify-between space-x-2">
         <div class="flex items-center space-x-2">
           <Avatar class="h-8 w-8">
-            <AvatarImage :src="chatData.customer.avatar"/>
-            <AvatarFallback>{{ chatData.customer.name.charAt(0) }}</AvatarFallback>
+            <AvatarImage :src="clientImage || '/icons/client.png'"/>
+            <AvatarFallback>{{ clientName.charAt(0) }}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle class="text-sm font-medium">{{ chatData.customer.name }}</CardTitle>
+            <CardTitle class="text-sm font-medium">{{ clientName }}</CardTitle>
             <CardDescription class="flex items-center gap-1 text-xs">
-              <span>{{ chatData.customer.phone }}</span>
+              <span>{{ clientPhone }}</span>
               <Badge variant="outline" class="h-4 px-1 text-[0.6rem] capitalize">
-                {{ chatData.customer.channel }}
+                {{ sourceName }}
               </Badge>
             </CardDescription>
           </div>
         </div>
         <div class="text-right text-xs">
-          <div class="font-medium">Заказ {{ chatData.customer.order.id }}</div>
-          <div class="text-muted-foreground">{{ chatData.customer.order.date }}</div>
+          <div class="font-medium">ID {{ conversation.id }}</div>
+          <div class="text-muted-foreground">{{ lastMessageTime }}</div>
         </div>
       </div>
     </CardHeader>
 
-    <CardContent class="p-0 h-[50%]">
-      <div class="p-2 border-b text-xs space-y-1">
-        <div class="grid grid-cols-2 gap-2">
-          <div>
-            <p class="text-muted-foreground">Доставка:</p>
-            <p class="truncate">{{ chatData.customer.order.delivery.method }}</p>
-          </div>
-          <div>
-            <p class="text-muted-foreground">Оплата:</p>
-            <p>{{ chatData.customer.order.payment }}</p>
-          </div>
-        </div>
+    <!-- Messages -->
+    <CardContent class="flex-1 p-2 overflow-auto flex flex-col">
+      <div v-if="clientAddress" class="mb-2 text-xs border-b pb-2">
         <p class="text-muted-foreground">Адрес:</p>
-        <p class="truncate">{{ chatData.customer.order.delivery.address }}</p>
+        <p class="truncate">{{ clientAddress }}</p>
       </div>
-
-      <div class="p-2 space-y-1 h-[50vh] overflow-y-auto">
+      <div class="flex-1 overflow-y-auto space-y-1">
         <div
-            v-for="message in chatData.messages"
+            v-for="message in conversation.messages"
             :key="message.id"
-            :class="`flex ${message.sender === 'customer' ? 'justify-start' : 'justify-end'}`"
+            :class="['flex', message.direction === 'incoming' ? 'justify-start' : 'justify-end']"
         >
           <div
-              :class="`max-w-[80%] px-2 py-1 rounded-lg text-xs ${
-              message.sender === 'customer'
+              :class="[
+              'max-w-[80%] px-2 py-1 rounded-lg text-xs relative',
+              message.direction === 'incoming'
                 ? 'bg-muted'
                 : 'bg-primary text-primary-foreground'
-            }`"
+            ]"
           >
-            <p>{{ message.text }}</p>
-            <p class="text-[0.6rem] opacity-70 text-right mt-0.5">{{ message.time }}</p>
+            <p v-html="linkify(message.content)"></p>
+
+            <div class="flex items-center justify-end space-x-1 mt-0.5">
+              <!-- Time -->
+              <span class="text-[0.6rem] opacity-70">{{ formatTime(message.created_at) }}</span>
+              <!-- Status Icon for outgoing -->
+              <component
+                  v-if="message.direction === 'outgoing'"
+                  :is="getStatusIcon(message.status)"
+                  class="w-4 h-4 opacity-70"
+              />
+            </div>
           </div>
         </div>
         <div ref="messagesEndRef"/>
       </div>
-
-      <div class="p-2 border-t">
-        <div class="flex space-x-1">
-          <Input
-              v-model="newMessage"
-              placeholder="Сообщение..."
-              class="h-8 text-xs"
-              @keyup.enter="sendMessage"
-          />
-          <Button
-              size="sm"
-              class="h-8 px-2 text-xs"
-              @click="sendMessage"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="22" y1="2" x2="11" y2="13"></line>
-              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-            </svg>
-          </Button>
-        </div>
-        <p class="mt-1 text-[0.6rem] text-muted-foreground">
-          Через {{ chatData.customer.channel === 'whatsapp' ? 'WhatsApp' : 'Telegram' }}
-        </p>
-      </div>
     </CardContent>
+
+    <!-- Input -->
+    <div class="p-2 border-t">
+      <div class="flex space-x-1">
+        <Input
+            v-model="newMessage"
+            placeholder="Сообщение..."
+            class="h-8 text-xs flex-1"
+            @keyup.enter="sendMessage"
+        />
+        <Button size="sm" class="h-8 px-2 text-xs" @click="sendMessage">
+          <Send/>
+        </Button>
+      </div>
+      <p class="mt-1 text-[0.6rem] text-muted-foreground">Через {{ sourceName }}</p>
+    </div>
   </Card>
 </template>
 
-
 <script setup lang="ts">
-import {ref, nextTick, onMounted, watch} from 'vue'
-import {Card, CardHeader, CardTitle, CardDescription, CardContent} from '@/components/ui/card'
+import {ref, nextTick, onMounted, watch, computed} from 'vue'
+import axios from 'axios'
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from '@/components/ui/card'
 import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar'
 import {Badge} from '@/components/ui/badge'
 import {Input} from '@/components/ui/input'
 import {Button} from '@/components/ui/button'
+import type {Conversation} from '@/models/Conversation'
+import type {Message} from '@/models/Message'
+import {
+  Clock,
+  Check,
+  MessageSquare,
+  Eye,
+  AlertCircle,
+  Send,
+} from 'lucide-vue-next'
+import {useChatsFunctions} from '@/composables/useChatsFunctions'
 
-interface Message {
-  id: number
-  sender: 'customer' | 'system'
-  text: string
-  time: string
-}
+const props = defineProps<{ conversation: Conversation }>()
+const conversation = props.conversation
 
-interface OrderItem {
-  name: string
-  size: string
-  color: string
-  price: string
-  qty: number
-}
-
-interface DeliveryInfo {
-  method: string
-  address: string
-}
-
-interface Order {
-  id: string
-  date: string
-  items: OrderItem[]
-  total: string
-  payment: string
-  delivery: DeliveryInfo
-}
-
-interface Customer {
-  name: string
-  phone: string
-  avatar: string
-  channel: 'telegram' | 'whatsapp'
-  order: Order
-}
+const {conversationReplyById} = useChatsFunctions()
 
 const newMessage = ref('')
 const messagesEndRef = ref<HTMLDivElement | null>(null)
 
-const chatData = ref({
-  customer: {
-    name: "Ольга А.",
-    phone: "+7 (925) 198-99-71",
-    avatar: "",
-    channel: "whatsapp",
-    order: {
-      id: "#14866",
-      date: "28.03.2025",
-      items: [
-        {name: "Passion AGAIN", size: "XXL", color: "Черный", price: "2 490 ₽", qty: 1},
-        {name: "Save AGAIN", size: "XXXL", color: "Черный", price: "2 490 ₽", qty: 1}
-      ],
-      total: "7 470 ₽",
-      payment: "Яндекс СПЛИТ",
-      delivery: {
-        method: "Почта России",
-        address: "г. Истра, ул. Центральная, 16"
-      }
-    }
-  },
-  messages: [
-    {id: 1, sender: "customer", text: "Как отследить доставку?", time: "23:57"},
-    {id: 2, sender: "system", text: "Заказ №14866", time: "23:58"},
-    {id: 3, sender: "customer", text: "Когда доставка?", time: "23:58"}
-  ]
+const clientName = computed(
+    () => conversation.client?.profile?.fullName || conversation.client?.name || 'Клиент'
+)
+const clientPhone = computed(
+    () => conversation.client?.profile?.phone || 'Телефон не указан'
+)
+const clientImage = computed(
+    () => conversation.client?.profile?.image || ''
+)
+const clientAddress = computed(
+    () => conversation.client?.profile?.address || ''
+)
+const lastMessageTime = computed(
+    () => (conversation.last_message_at ? formatTime(conversation.last_message_at) : '')
+)
+const sourceName = computed(() => {
+  switch (conversation.source) {
+    case 'telegram':
+      return 'Telegram'
+    case 'whatsapp':
+      return 'WhatsApp'
+    case 'web_chat':
+      return 'Веб-чат'
+    default:
+      return conversation.source || ''
+  }
 })
 
 function scrollToBottom(behavior: ScrollBehavior = 'smooth') {
@@ -170,37 +149,60 @@ function scrollToBottom(behavior: ScrollBehavior = 'smooth') {
   })
 }
 
-function sendMessage() {
-  if (!newMessage.value.trim()) return
+function formatTime(datetime: string | undefined): string {
+  if (!datetime) return ''
+  const date = new Date(datetime)
+  return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+}
 
-  const newMsg: Message = {
-    id: Date.now(),
-    sender: 'system',
-    text: newMessage.value,
-    time: new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
+// Выбираем иконку в зависимости от статуса
+function getStatusIcon(status: string | undefined) {
+  switch (status) {
+    case 'sending':
+      return Clock
+    case 'sent':
+      return Check
+    case 'delivered':
+      return MessageSquare
+    case 'read':
+      return Eye
+    case 'failed':
+      return AlertCircle
+    default:
+      return null
   }
-
-  chatData.value.messages.push(newMsg)
-  newMessage.value = ''
-  scrollToBottom()
-  sendToMessenger(newMsg.text)
 }
 
-function sendToMessenger(text: string) {
-  console.log(`Отправка через ${chatData.value.customer.channel}:`, text)
-  // Реальная интеграция:
-  // if (chatData.value.customer.channel === 'whatsapp') {
-  //   sendWhatsAppMessage(chatData.value.customer.phone, text)
-  // } else {
-  //   sendTelegramMessage(chatData.value.customer.phone, text)
-  // }
+async function sendMessage() {
+  const text = newMessage.value.trim()
+  if (!text || conversation.id === undefined) return
+
+  try {
+    const conv = await conversationReplyById(Number(conversation.id), {
+      content: text,
+      attachments: [],
+    })
+    if (conv) {
+      conversation.messages = conversation.messages || []
+      conversation.messages.push(conv)
+      newMessage.value = ''
+      scrollToBottom()
+    }
+  } catch (e) {
+    console.error('Ошибка отправки:', e)
+  }
 }
 
-onMounted(() => {
-  scrollToBottom('auto')
-})
+onMounted(() => scrollToBottom('auto'))
 
-watch(() => chatData.value.messages.length, () => {
-  scrollToBottom()
-})
+watch(() => conversation.messages?.length, () => scrollToBottom())
+
+
+const urlPattern = /(\bhttps?:\/\/[^\s<>]+[^\s<.,:;"')\]\s])/g
+
+function linkify(text = ''): string {
+  return text
+      .replace(urlPattern, url => `<a href="${url}" target="_blank" class="text-blue-600 underline">${url}</a>`)
+}
+
 </script>

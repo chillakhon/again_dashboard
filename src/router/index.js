@@ -265,17 +265,17 @@ const routes = [
                         name: 'dialogs-chats',
                         component: () => import('../components/dialogs/chats/index.vue'),
                     },
-                    {
-                        path: '/dialogs/whatsapp',
-                        name: 'dialogs-whatsapp',
-                        component: () => import('../components/dialogs/whatsapp/index.vue'),
-                    },
-                    {
-                        path: '/dialogs/telegram',
-                        name: 'dialogs-telegram',
-                        component: () => import('../components/dialogs/telegram/index.vue'),
-
-                    }
+                    // {
+                    //     path: '/dialogs/whatsapp',
+                    //     name: 'dialogs-whatsapp',
+                    //     component: () => import('../components/dialogs/whatsapp/index.vue'),
+                    // },
+                    // {
+                    //     path: '/dialogs/telegram',
+                    //     name: 'dialogs-telegram',
+                    //     component: () => import('../components/dialogs/telegram/index.vue'),
+                    //
+                    // }
                 ]
             },
             {
