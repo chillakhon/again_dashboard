@@ -55,7 +55,7 @@
 
     <div class="my-4" v-if="selectedTechCart">
 
-      <DynamicsShadcnTabs
+      <DynamicsShadcnDynamicTabs
           :key="renderRecipe"
           v-model="activeTab"
           :tabs="tabs"
@@ -74,7 +74,7 @@
               :planned_quantity="form.quantity"
           />
         </template>
-      </DynamicsShadcnTabs>
+      </DynamicsShadcnDynamicTabs>
 
     </div>
 
@@ -112,7 +112,7 @@ import DatePicker from "@/components/common/DatePicker.vue";
 import BackButton from "@/components/BackButton.vue";
 import ProductsTable from "@/components/warehouses/recipes/show/ProductsTable.vue";
 import ComponentsTable from "@/components/warehouses/recipes/show//ComponentsTable.vue";import DynamicSelect from "@/components/dynamics/Dropdown/Select.vue";
-import DynamicsShadcnTabs from "@/components/dynamics/shadcn/Tabs.vue";
+import DynamicsShadcnDynamicTabs from "@/components/dynamics/shadcn/DynamicTabs.vue";
 import {User} from "@/models/user/User";
 import {toast} from "vue-sonner";
 import {useRouter} from "vue-router";

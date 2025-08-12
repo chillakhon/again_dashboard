@@ -2,7 +2,7 @@
   <Dialog v-model:open="internalOpen">
 
     <DialogTrigger as-child>
-      <div @click="open()" class="cursor-pointer" >
+      <div @click="open()" class="cursor-pointer">
         <slot name="trigger"/>
       </div>
     </DialogTrigger>
@@ -10,9 +10,10 @@
 
     <DialogContent
         :class="dynamicStyle"
+        class="max-h-full overflow-y-auto overflow-x-auto flex flex-col items-start"
     >
       <DialogHeader>
-        <DialogTitle>{{ title }}</DialogTitle>
+        <DialogTitle class="text-gray-800">{{ title }}</DialogTitle>
         <DialogDescription v-if="description">
           {{ description }}
         </DialogDescription>

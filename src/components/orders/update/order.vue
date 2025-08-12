@@ -9,7 +9,7 @@
 
     <DynamicForm
         v-model="formData"
-        submit-button-text="Сохронить"
+        submit-button-text="Сохранить"
         :fields="formFields"
         :show-submit-button="true"
         @submit-form="handleUpdate"
@@ -22,17 +22,19 @@
 import {onMounted, ref} from 'vue';
 import BackButton from "@/components/BackButton.vue";
 import Order from "@/models/Order";
-import {useRoute} from "vue-router";
+import {useRoute, useRouter} from "vue-router";
 import Loader from "@/components/common/Loader.vue";
 import DynamicForm from "@/components/dynamics/DynamicForm.vue";
 import {useOrderFunctions} from "@/composables/useOrderFunctions";
 import {useStatuses} from "@/composables/useStatuses";
 import {useDateFormat} from "@/composables/useDateFormat";
-import {FormDynamicFieldType} from "@/types/form";
 
 const isLoading = ref<boolean>(true);
 const route = useRoute();
 const order = ref<Order | null>(null)
+
+
+const router = useRouter();
 
 const {getStatuses} = useStatuses()
 const {getOrderById, updateOrder} = useOrderFunctions()
@@ -101,6 +103,9 @@ async function handleUpdate() {
 
   const result = await updateOrder(order.value?.id, formData.value);
 
+  if (result?.success) {
+    await router.push('/orders/list');
+  }
 
   console.log(result)
 

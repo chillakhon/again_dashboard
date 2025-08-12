@@ -53,7 +53,7 @@
                       />
                       <AlertDialog
                           title="Подтверждение удаления"
-                          description="Вы уверены что хотите навсегда удалить? Действие безвозвратно!"
+                          description="Вы уверены что хотите навсегда?"
                           button-name="Удалить"
                           button-style="bg-red-500 hover:bg-red-600"
                           :icon="Trash2"

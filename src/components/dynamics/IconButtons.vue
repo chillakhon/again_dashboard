@@ -61,7 +61,7 @@ const props = withDefaults(defineProps<Props>(), {
   size: 17,
   disabled: false,
   deleteDialogTitle: 'Подтверждение удаления',
-  deleteDialogDescription: 'Вы уверены что хотите навсегда удалить? Действие безвозвратно!',
+  deleteDialogDescription: 'Вы уверены что хотите удалить?',
   deleteButtonText: 'Удалить',
   deleteButtonStyle: 'bg-red-500 hover:bg-red-600'
 });

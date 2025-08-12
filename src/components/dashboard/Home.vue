@@ -47,21 +47,21 @@
       </RouterLink>
 
       <!-- Готовы к отправке -->
-      <RouterLink to="/orders?status=ready_to_ship">
-        <Card class="group hover:shadow-lg transition-all duration-300 hover:border-blue-500 hover:translate-y-[-2px]">
+      <RouterLink to="/orders?status=approved">
+        <Card class="group hover:shadow-lg transition-all duration-300 hover:border-[#00ba13] hover:translate-y-[-2px]">
           <CardHeader class="pb-2">
             <CardDescription class="flex items-center gap-2">
               <span>Готовы к отправке</span>
-              <div class="h-2 w-2 rounded-full bg-blue-500"/>
+              <div class="h-2 w-2 rounded-full bg-[#00ba13]"/>
             </CardDescription>
-            <CardTitle class="text-4xl text-blue-500 group-hover:text-blue-500/90 transition-colors">
+            <CardTitle class="text-4xl text-[#00ba13] group-hover:text-[#00ba13]/90 transition-colors">
               {{ data?.approved?.count ?? 0 }}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between">
               <span class="text-sm text-muted-foreground">{{ data?.approved?.total_amount ?? 0 }} ₽</span>
-              <ChevronRight class="h-4 w-4 text-muted-foreground group-hover:text-blue-500 transition-colors"/>
+              <ChevronRight class="h-4 w-4 text-muted-foreground group-hover:text-[#00ba13] transition-colors"/>
             </div>
           </CardContent>
         </Card>

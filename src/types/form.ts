@@ -2,7 +2,7 @@
 export interface FormDynamicFieldType {
     name: string
     label: string
-    component: 'text' | 'textarea' | 'select' | 'multiSelect' | 'checkbox' | 'date'
+    component: 'text' | 'textarea' | 'select' | 'multiSelect' | 'checkbox' | 'date' | 'file'
     type?: string
     placeholder?: string
     description?: string
@@ -10,6 +10,10 @@ export interface FormDynamicFieldType {
     disabled?: boolean
     cols?: number
     rows?: number
+    accept?: string
+    cropperAspectRatio?: Number //forFileImage
+    cropperShow?: boolean //forFileImage
+    imagePreview?: boolean //forFileImage
 
     options?: any[]
     optionLabel?: string

@@ -399,7 +399,7 @@ import {
   PhCodesandboxLogo
 } from '@phosphor-icons/vue';
 
-
+import {BookMinus} from 'lucide-vue-next'
 
 const logo = '/logo.svg'
 
@@ -409,6 +409,7 @@ const navigation = [
     name: 'Заказы', href: '/orders/list', icon: PhBag,
     children: [
       {name: 'Все заказы', href: '/orders/list', icon: PhList, notification: 100,},
+      {name: 'Заявки', href: '/contact-requests', icon: BookMinus},
       {name: 'Задачи', href: '/orders/tasks', icon: PhList},
     ],
   },
@@ -464,7 +465,7 @@ const navigation = [
   //     {name: 'Производственные задания', href: '/warehouses/production/list', icon: PhFactory},
   //   ],
   // },
-  {name: 'Доставка', href: '/deliveries', icon: PhTruck},
+  // {name: 'Доставка', href: '/deliveries', icon: PhTruck},
   {name: 'Пользователи', href: '/users', icon: PhUsers},
 ]
 

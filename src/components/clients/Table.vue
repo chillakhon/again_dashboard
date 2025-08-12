@@ -9,17 +9,25 @@
       @deleted="
       useClientFunctions().deleteClient($event.id);
       emits('deleted', $event);
-    "
-  />
+    ">
+
+    <template #addActions="{item}">
+      <PromoCodeClientModal
+          :client="item"
+      />
+    </template>
+
+  </DynamicsDataTable>
 </template>
 
 <script setup lang="ts">
 import ClientsEdit from '@/components/clients/Edit/Index.vue'
-import {Check, X} from "lucide-vue-next";
+import {Check, X, Tickets} from "lucide-vue-next";
 import {h, PropType, ref} from "vue";
 import {useClientFunctions} from "@/composables/useClientFunctions";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Client} from "@/models/Client";
+import PromoCodeClientModal from "@/components/clients/Promo/PromoCodeClientModal.vue";
 
 const props = defineProps({
   clients: {

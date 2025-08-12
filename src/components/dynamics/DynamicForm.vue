@@ -1,22 +1,68 @@
 <template>
   <form class="space-y-4" @submit.prevent="emit('submitForm')">
-    <div v-for="(row, rowIndex) in groupedFields" :key="rowIndex" class="grid gap-3"
+    <div v-for="(row, rowIndex) in groupedFields" :key="rowIndex" class="grid gap-2"
          :class="`md:grid-cols-${row.length}`">
-      <div v-for="field in row" :key="field.name" class="space-y-2 ">
+      <div v-for="field in row" :key="field.name" class="space-y-1 max-w-full overflow-hidden p-1">
         <Label :for="field.name">
           {{ field.component != 'checkbox' ? field.label : '' }}
           <span v-if="field.required" class="text-red-500">*</span>
         </Label>
 
         <!-- Текстовое поле -->
+
         <Input
-            v-if="field.component === 'text'"
+            v-if="field.component === 'text' && field.type !== 'file'"
             :id="field.name"
             :type="field.type || 'text'"
             v-model="formData[field.name]"
             :placeholder="field.placeholder || ''"
             :required="field.required"
         />
+
+        <!-- Поле загрузки файла -->
+
+
+        <div
+            v-else-if="field.component === 'text' && field.type === 'file'"
+            class="max-w-full max-h-full overflow-hidden"
+        >
+          <Input
+              :id="field.name"
+              type="file"
+              :accept="field.accept || '*/*'"
+              :required="field.required"
+              @change="onFileChange($event, field.name)"
+              class="cursor-pointer"
+          />
+
+          <div class="max-w-full max-h-full overflow-hidden mt-3 rounded" v-if="field.cropperShow">
+
+            <ImageCropper
+                class="max-w-full max-h-full object-contain"
+                :src="getImageForCropper(field.name)"
+                :aspect-ratio="field.cropperAspectRatio"
+                @update:file="onCroppedFile(field.name, $event)"
+            />
+          </div>
+
+          <div class="relative max-w-full max-h-full overflow-hidden mt-3 rounded border border-gray-300"
+               v-if="field.imagePreview && formData[field.name]">
+            <ImagePreview :file="formData[field.name]"/>
+
+            <button
+
+                type="button"
+                @click="removeImage(field.name)"
+                class="absolute top-1 right-1 bg-white bg-opacity-70 rounded-full p-1 hover:bg-opacity-100 transition"
+                aria-label="Удалить изображение"
+            >
+              <X class="w-5 h-5 text-red-600"/>
+            </button>
+
+          </div>
+
+
+        </div>
 
         <!-- Текстовая область -->
         <Textarea
@@ -39,12 +85,11 @@
             :placeholder="field.placeholder"
             :required="field.required"
             :disabled="field.disabled"
-            title=""
         />
 
         <MultiSelect
             v-else-if="field.component == 'multiSelect'"
-            :key="field.name"
+            :key="field?.name"
             v-model="formData[field.name]"
             :options="field.options"
             :option-label="field.optionLabel"
@@ -57,7 +102,7 @@
 
         <DatePicker
             v-else-if="field.component == 'date'"
-            :key="field.name"
+            :key="field.name ?? 0"
             v-model="formData[field.name]"
             :placeholder="field.placeholder"
         />
@@ -101,13 +146,18 @@
 import {Input} from '@/components/ui/input'
 import {Textarea} from '@/components/ui/textarea'
 import {Label} from '@/components/ui/label'
-import {computed} from 'vue'
+import {computed, ref, watch} from 'vue'
 import Select from "@/components/dynamics/Dropdown/Select.vue";
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue";
 import {FormDynamicFieldType} from "@/types/form";
 import {Button} from "@/components/ui/button";
 import DatePicker from "@/components/dynamics/DatePicker.vue";
 import {Checkbox} from '@/components/ui/checkbox'
+import ImageSlideCropper from "@/components/settings/home_slider/image/ImageSlideCropper.vue";
+import ImageCropper from "@/components/dynamics/ImageCropper.vue";
+import aspectRatio from "@tailwindcss/aspect-ratio";
+import ImagePreview from "@/components/dynamics/ImagePreview.vue";
+import {X} from 'lucide-vue-next';
 
 
 interface Props {
@@ -125,6 +175,7 @@ const props = withDefaults(
 
 const emit = defineEmits(['update:modelValue', 'submitForm'])
 
+
 const formData = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value),
@@ -134,4 +185,47 @@ const formData = computed({
 const groupedFields = computed(() => {
   return props.fields.map(field => Array.isArray(field) ? field : [field])
 })
+
+
+const previewImage = ref<string | null>(null)
+
+
+const onFileChange = (event: Event, fieldName: string) => {
+  const target = event.target as HTMLInputElement
+  const file = target.files?.[0] || null
+  if (file) {
+    formData.value[fieldName] = file
+    previewImage.value = URL.createObjectURL(file)
+  }
+}
+
+
+const onCroppedFile = (fieldName: string, file: File) => {
+  // Обновляем модель, как будто пользователь выбрал новый файл
+  formData.value[fieldName] = file
+
+}
+
+
+const getImageForCropper = (fieldName: string) => {
+  if (previewImage.value) {
+    return previewImage.value
+  }
+  // if (typeof formData.value[fieldName] === 'string') {
+  //   return formData.value[fieldName]
+  // } else if (formData.value[fieldName] instanceof File) {
+  //   previewImage.value = URL.createObjectURL(formData.value[fieldName])
+  // }
+  return null
+}
+
+const removeImage = (fieldName: string) => {
+  formData.value[fieldName] = null;
+  // Если используешь previewImage, нужно обнулять и его, если нужно
+  if (previewImage.value) {
+    previewImage.value = null;
+  }
+};
+
+
 </script>

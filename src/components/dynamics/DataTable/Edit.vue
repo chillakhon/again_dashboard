@@ -10,15 +10,10 @@
         <Pencil size="17"/>
       </button>
 
-      <!--      <Pencil-->
-      <!--          class="text-gray-400 hover:text-gray-500 transition cursor-pointer"-->
-      <!--          :size="17"-->
-      <!--          @click="openDialog"-->
-      <!--      />-->
     </DialogTrigger>
-    <DialogContent class="sm:max-w-[425px]">
+    <DialogContent class="sm:max-w-[425px] max-h-full overflow-y-auto" :class="edit?.dynamicStyle">
       <DialogHeader>
-        <DialogTitle>{{ edit.title }}</DialogTitle>
+        <DialogTitle>{{ edit?.title }}</DialogTitle>
         <DialogDescription>
           {{ edit.description }}
         </DialogDescription>
@@ -26,7 +21,7 @@
 
       <component
           :is="edit.component"
-          :item="item"
+          :item="editItem"
           :key="renderContent"
       />
 
@@ -60,6 +55,8 @@ import {
   DialogTrigger
 } from "@/components/ui/dialog";
 import {Button} from "@/components/ui/button";
+import cloneDeep from 'lodash/cloneDeep'
+
 
 const props = defineProps({
   edit: Object,
@@ -70,21 +67,22 @@ const props = defineProps({
   },
 });
 
+
+const editItem = ref(cloneDeep(props.item))
+
+
 const emits = defineEmits(["save_changes"]);
 
 const dialogOpen = ref(false);
 const renderContent = ref(1);
 
-const openDialog = () => {
-  dialogOpen.value = true;
-};
 
 const closeDialog = () => {
   dialogOpen.value = false;
 };
 
 const saveChanges = () => {
-  emits('save_changes', props.item);
+  emits('save_changes', editItem.value);
   closeDialog();
   renderContent.value++;
 };

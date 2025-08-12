@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/tabs'
 
 interface Tab {
-  value: string
+  tab: string
   title: string
   content: string | any // Можете указать более конкретный тип для content
 }
@@ -22,8 +22,8 @@ const props = defineProps<{
 const emit = defineEmits(['update:modelValue'])
 
 const activeTab = computed({
-  get: () => props.modelValue || props.tabs[0]?.value,
-  set: (value) => emit('update:modelValue', value)
+  get: () => props.modelValue || props.tabs[0]?.tab,
+  set: (tab) => emit('update:modelValue', tab)
 })
 </script>
 
@@ -32,8 +32,8 @@ const activeTab = computed({
     <TabsList class="grid w-full" :style="`grid-template-columns: repeat(${tabs.length}, 1fr)`">
       <TabsTrigger
           v-for="tab in tabs"
-          :key="tab.value"
-          :value="tab.value"
+          :key="tab.tab"
+          :value="tab.tab"
       >
         {{ tab.title }}
       </TabsTrigger>
@@ -41,11 +41,12 @@ const activeTab = computed({
 
     <TabsContent
         v-for="tab in tabs"
-        :key="`content-${tab.value}`"
-        :value="tab.value"
+        :key="`content-${tab.tab}`"
+        :value="tab.tab"
+        class="w-full"
     >
       <!-- Слот для контента таба -->
-      <slot :name="`tab-${tab.value}`" :tab="tab">
+      <slot :name="`${tab.tab}`" :tab="tab">
         {{ tab.content }}
       </slot>
     </TabsContent>

@@ -1,16 +1,12 @@
 export const orderStatuses = {
-    new: {value: 'new', label: 'Новый', color: '#ef0000'},
-    processing: {value: 'processing', label: 'В обработке', color: '#ffad00'},
-    completed: {value: 'completed', label: 'В обработке', color: '#00ff21'},
-    ready_to_ship: {value: 'ready_to_ship', label: 'Готов к отправке', color: '#0014fd'},
-    assembling: {value: 'assembling', label: 'На сборке', color: '#FFD700'},
-    shipped: {value: 'shipped', label: 'Отправка', color: '#4169E1'},
-    in_transit: {value: 'in_transit', label: 'В пути', color: '#00c8cf'},
-    delivered: {value: 'delivered', label: 'Доставлен', color: '#32CD32'},
-    received: {value: 'received', label: 'Получен', color: '#228B22'},
-    cancelled: {value: 'cancelled', label: 'Отменён', color: '#B22222'},
-    return_in_progress: {value: 'return_in_progress', label: 'В процессе возврата', color: '#FF69B4'},
-    returned: {value: 'returned', label: 'Возвращён', color: '#A9A9A9'},
+    new: { value: 'new', label: 'Новый', color: '#ef0000' },
+    processing: { value: 'processing', label: 'В обработке', color: '#ffad00' },
+    approved: { value: 'approved', label: 'Согласован', color: '#00ba13' },
+    shipped: { value: 'shipped', label: 'Отгружен', color: '#4169E1' },
+    completed: { value: 'completed', label: 'Доставлен', color: '#02d8d8' },
+    return_in_progress: { value: 'return_in_progress', label: 'В процессе возврата', color: '#FF69B4' },
+    cancelled: { value: 'cancelled', label: 'Отменён', color: '#B22222' },
+    returned: { value: 'returned', label: 'Возврат', color: '#A9A9A9' },
 } as const
 
 export const paymentStatuses = {
@@ -41,6 +37,16 @@ export const paymentStatuses = {
 } as const
 
 
+
+export const contactRequestStatuses = {
+    new: { value: 'new', label: 'Новая', color: '#ff3d3d' },
+    viewed: { value: 'viewed', label: 'Просмотрена', color: '#ffb126' },
+    processed: { value: 'processed', label: 'Обработана', color: '#00ba15' },
+} as const;
+
+
+
+
 type StatusObj = Record<string, { value: string; label: string; color: string }>
 
 function buildLookup<T extends StatusObj>(dict: T): Record<string, T[keyof T]> {
@@ -56,39 +62,52 @@ function buildLookup<T extends StatusObj>(dict: T): Record<string, T[keyof T]> {
 
 export function useStatuses() {
     // быстрый доступ по value
-    const orderLookup = buildLookup(orderStatuses)
-    const paymentLookup = buildLookup(paymentStatuses)
+    const orderLookup = buildLookup(orderStatuses);
+    const paymentLookup = buildLookup(paymentStatuses);
+    const contactRequestLookup = buildLookup(contactRequestStatuses);
 
-    // общий геттер: по типу ('order' | 'payment') и value
-    function getLabel(type: 'order' | 'payment', value: string): string {
-        const dict = type === 'order' ? orderLookup : paymentLookup
-        return dict[value]?.label ?? value
+    // общий геттер: по типу ('order' | 'payment' | 'contactRequest') и value
+    function getLabel(type: 'order' | 'payment' | 'contactRequest', value: string): string {
+        let dict;
+        if (type === 'order') dict = orderLookup;
+        else if (type === 'payment') dict = paymentLookup;
+        else dict = contactRequestLookup;
+
+        return dict[value]?.label ?? value;
     }
 
-    function getColor(type: 'order' | 'payment', value: string): string {
-        const dict = type === 'order' ? orderLookup : paymentLookup
-        return dict[value]?.color ?? ''
+    function getColor(type: 'order' | 'payment' | 'contactRequest', value: string): string {
+        let dict;
+        if (type === 'order') dict = orderLookup;
+        else if (type === 'payment') dict = paymentLookup;
+        else dict = contactRequestLookup;
+
+        return dict[value]?.color ?? '';
     }
 
-    function getStatus(type: 'order' | 'payment', value: string) {
-        const dict = type === 'order' ? orderLookup : paymentLookup
-        return dict[value]
+    function getStatus(type: 'order' | 'payment' | 'contactRequest', value: string) {
+        let dict;
+        if (type === 'order') dict = orderLookup;
+        else if (type === 'payment') dict = paymentLookup;
+        else dict = contactRequestLookup;
+
+        return dict[value];
     }
 
-    function getStatuses(type: 'order' | 'payment') {
-        const dict = type === 'order' ? orderStatuses : paymentStatuses
-        return Object.values(dict)
+    function getStatuses(type: 'order' | 'payment' | 'contactRequest') {
+        if (type === 'order') return Object.values(orderStatuses);
+        else if (type === 'payment') return Object.values(paymentStatuses);
+        else return Object.values(contactRequestStatuses);
     }
-
 
     return {
-        // объекты целиком для перебора в селектах и списках
         orderStatuses,
         paymentStatuses,
-        // утилиты
+        contactRequestStatuses,
         getLabel,
         getColor,
         getStatus,
         getStatuses,
-    }
+    };
 }
+

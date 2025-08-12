@@ -72,7 +72,7 @@
     </div>
 
     <div class="my-4" v-if="form.batches[0].recipe">
-      <DynamicsShadcnTabs
+      <DynamicsShadcnDynamicTabs
           v-model="activeTab"
           :tabs="tabs"
           class="w-full"
@@ -97,7 +97,7 @@
               :planned_quantity="form.planned_quantity"
           />
         </template>
-      </DynamicsShadcnTabs>
+      </DynamicsShadcnDynamicTabs>
     </div>
 
     <div class="mb-8">
@@ -134,7 +134,7 @@ import ProductsTable from "@/components/warehouses/recipes/show/ProductsTable.vu
 import ComponentsTable from "@/components/warehouses/recipes/show//ComponentsTable.vue";
 import CompletedTable from "@/components/warehouses/recipes/show/CompletedTable.vue";
 import DynamicSelect from "@/components/dynamics/Dropdown/Select.vue";
-import DynamicsShadcnTabs from "@/components/dynamics/shadcn/Tabs.vue";
+import DynamicsShadcnDynamicTabs from "@/components/dynamics/shadcn/DynamicTabs.vue";
 import {toast} from "vue-sonner";
 import {useRouter} from "vue-router";
 import {User} from "@/models/user/User";

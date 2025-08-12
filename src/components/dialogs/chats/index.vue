@@ -21,7 +21,6 @@
             class="h-[85vh]"
         />
 
-
         <div v-else class="flex flex-col items-center justify-center gap-3 bg-muted/20 p-6 border h-[85vh]"
         >
           <MessagesSquare class="h-10 w-10 text-muted-foreground"/>

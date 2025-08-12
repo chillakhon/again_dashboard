@@ -23,7 +23,7 @@
       </div>
       <div class="space-y-2">
         <Label for="phone">Телефон</Label>
-        <Input type="text" placeholder="Телефон" v-model="form.phone" />
+        <Input type="text" placeholder="Телефон" v-model="form.phone"/>
         <p v-if="errors.phone" class="text-sm text-red-500">{{ errors.phone }}</p>
       </div>
     </div>
@@ -41,7 +41,7 @@
         <Label for="level_id">Уровень клиента</Label>
         <Select v-model="form.level_id">
           <SelectTrigger>
-            <SelectValue placeholder="Выберите уровень" />
+            <SelectValue placeholder="Выберите уровень"/>
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -98,12 +98,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { toast } from 'vue-sonner'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Loader2 } from 'lucide-vue-next'
+import {ref, onMounted} from 'vue'
+import {toast} from 'vue-sonner'
+import {Button} from '@/components/ui/button'
+import {Input} from '@/components/ui/input'
+import {Label} from '@/components/ui/label'
+import {Loader2} from 'lucide-vue-next'
 import {
   Select,
   SelectContent,
@@ -112,7 +112,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
-import { UserProfile } from '@/models/user/Profile'
+import {UserProfile} from '@/models/user/Profile'
 import axios from 'axios'
 import {Client} from "@/models/Client";
 
@@ -250,12 +250,15 @@ const submitForm = async () => {
     if (props.clientId) {
       await axios.put(`/clients/${props.clientId}`, payload)
       toast.success('Клиент успешно обновлен')
+      emit('submit', payload)
+
     } else {
       await axios.post('/clients', payload)
       toast.success('Клиент успешно создан')
+      emit('submit', payload)
+
     }
 
-    emit('submit')
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 422) {

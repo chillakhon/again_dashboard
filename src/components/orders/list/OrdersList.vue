@@ -5,6 +5,8 @@
         variant="primary"
     />
 
+
+
     <div class="w-full  flex md:space-x-2 max-md:space-y-2 max-md:flex-col">
       <OrderSearch
           :key="renderSearchComp"
@@ -54,7 +56,7 @@ import OrderListTable from "@/components/orders/list/OrderListTable.vue";
 import {useOrderFunctions} from "@/composables/useOrderFunctions";
 import DynamicTitle from "@/components/dynamics/DynamicTitle.vue";
 import OrderSearch from "@/components/orders/list/OrderSearch.vue";
-import Button from "../../ui/button/Button.vue";
+import Button from "@/components/ui/button/Button.vue";
 import {X} from "lucide-vue-next"
 
 

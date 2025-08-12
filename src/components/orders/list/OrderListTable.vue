@@ -90,17 +90,26 @@ const columns = [
     accessorKey: "status",
     header: "Статус",
     cell: ({row}: any) => {
-      const status = getStatus('order', row.original.status)
+      const raw = row.original?.status ?? ''
+      const value = String(raw).trim()
+      const status = getStatus('order', value)
 
-      return h('span',
+      const bg = status?.color ?? '#8a8a8a'
+      const label = status?.label ?? 'Неизвестный статус'
+
+      return h(
+          'span',
           {
-            style: {backgroundColor: status.color},
-            class: `px-2 py-1 rounded text-white whitespace-nowrap`,
+            style: {backgroundColor: bg},
+            class: 'px-2 py-1 rounded text-white whitespace-nowrap',
+            title: label,
+            'aria-label': label,
           },
-          status.label
+          label
       )
     },
   },
+
   {
     accessorKey: "payment_status",
     header: "Оплата",

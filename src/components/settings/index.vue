@@ -29,7 +29,7 @@
     <div class="flex-1 overflow-auto p-6">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
-          <component :is="Component" />
+          <component :is="Component"/>
         </transition>
       </router-view>
     </div>
@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import {ref} from 'vue'
 
 interface MenuItem {
   path: string
@@ -47,11 +47,12 @@ interface MenuItem {
 
 const menuItems = ref<MenuItem[]>([
   // { path: '/settings/store', title: 'Настройки сайта' },
-  { path: '/settings/product-params', title: 'Параметры товаров' },
-  { path: '/settings/variant-props', title: 'Свойства вариантов' },
-  { path: '/settings/delivery-methods', title: 'Доставка' },
-  { path: '/settings/custom-statuses', title: 'Пользовательские статусы' },
-  { path: '/settings/one-click-order', title: 'Заказ в один клик' },
+  {path: '/settings/home-slider', title: 'Слайдер на главной'},
+  {path: '/settings/product-params', title: 'Параметры товаров'},
+  // { path: '/settings/delivery-methods', title: 'Доставка' },
+  {path: '/settings/variant-props', title: 'Свойства вариантов'},
+  {path: '/settings/custom-statuses', title: 'Пользовательские статусы'},
+  {path: '/settings/one-click-order', title: 'Заказ в один клик'},
 ])
 </script>
 

@@ -27,7 +27,7 @@
             </TableHead>
           </TableRow>
         </TableHeader>
-        <TableBody class="text-xs">
+        <TableBody class="text-xs text-gray-600">
           <template v-if="table.getRowModel().rows.length">
             <template v-for="row in table.getRowModel().rows" :key="row.id">
 
@@ -50,7 +50,7 @@
                       />
                       <AlertDialog
                           title="Подтверждение удаления"
-                          description="Вы уверены что хотите навсегда удалить? Действие безвозвратно!"
+                          description="Вы уверены что хотите удалить?"
                           button-name="Удалить"
                           button-style="bg-red-500 hover:bg-red-600"
                           :icon="Trash2"
@@ -59,19 +59,14 @@
                     </template>
                     <template v-else>
 
-                      <!--                      {{ hasPermission(PermissionsData.USERS_EDIT, false) }}-->
+                      <slot name="addActions" :item="row.original"/>
 
-                      <!--                      <PermissionGuard :permission="PermissionsData.USERS_EDIT">-->
-
-                      <!--                      {{ row.original.email }}-->
-                      <!--                      {{ JSON.parse(JSON.stringify(row.original)).email }}-->
                       <Edit
                           :disabled="!canEdit"
-                          :item="getCloneObj(row.original)"
+                          :item="row.original"
                           :edit="edit"
                           @save_changes="emits('save_changes', $event)"
                       />
-                      <!--                      </PermissionGuard>-->
 
                       <AlertDialog
                           :show-icon="true"
@@ -107,6 +102,8 @@
                 </TableCell>
               </TableRow>
             </template>
+
+
           </template>
 
           <template v-else>
@@ -138,7 +135,7 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import Edit from "@/components/dynamics/DataTable/Edit.vue";
 import AlertDialog from "@/components/dynamics/AlertDialog.vue";
 import Loader from "@/components/common/Loader.vue";
-import {computed, ref} from "vue";
+import {computed, Ref, ref, unref} from "vue";
 import usePermission from "@/composables/usePermission";
 import {PermissionsData} from "@/constants/PermissionsData";
 import cloneDeep from 'lodash/cloneDeep';
@@ -175,10 +172,6 @@ const props = defineProps({
   subRowsField: String,
 });
 
-
-const getCloneObj = (obj: any) => {
-  return cloneDeep(obj)
-}
 
 const {hasPermission} = usePermission()
 

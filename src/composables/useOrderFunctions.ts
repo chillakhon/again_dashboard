@@ -85,6 +85,7 @@ export function useOrderFunctions() {
         sending.value = true
         return await axios.put(`orders/${orderId}`, formData)
             .then(res => {
+                useSuccessHandler().showSuccess(res)
                 return res.data
             })
             .catch(e => {

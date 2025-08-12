@@ -70,7 +70,7 @@ const routes = [
             //         {
             //             path: '/warehouses/production/create',
             //             name: 'production-create',
-            //             component: () => import('../components/warehouses/production/Add/Form.vue'),
+            //             component: () => import('../components/warehouses/production/Add/SlideForm.vue'),
             //         },
             //         {
             //             path: '/warehouses/production/edit/:id',
@@ -116,6 +116,13 @@ const routes = [
                         component: () => import('../components/orders/tasks/create/index.vue'),
                     },
                 ]
+            },
+
+
+            {
+                path: 'contact-requests',
+                name: 'contact_request',
+                component: () => import('../components/contact_request/list/ContactList.vue'),
             },
 
 
@@ -198,7 +205,7 @@ const routes = [
                     {
                         path: '/clients/discounts',
                         name: 'clients-discounts',
-                        component: () => import('../components/discount/DiscountList.vue'),
+                        component: () => import('../components/discount/Discount.vue'),
                     },
                 ]
             },
@@ -332,6 +339,11 @@ const routes = [
                         path: '/settings/one-click-order',
                         name: 'settings-one-click-order',
                         component: () => import('../components/settings/one_click_order/index.vue')
+                    },
+                    {
+                        path: '/settings/home-slider',
+                        name: 'settings-home-slider',
+                        component: () => import('../components/settings/home_slider/list/SliderList.vue'),
                     }
                 ]
             }
