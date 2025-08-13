@@ -152,7 +152,7 @@ const router = useRouter()
 const recipes = ref<Recipe[]>([])
 const isLoading = ref(true)
 const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(15);
 const totalItems = ref(0)
 
 const formatCurrency = (value: number) => {

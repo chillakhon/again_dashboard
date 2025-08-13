@@ -72,7 +72,7 @@ const orderTasks = ref<OrderTask[]>([])
 
 const totalItems = ref(0)
 const currentPage = ref(1)
-const itemsPerPage = ref(10)
+const itemsPerPage = ref(15);
 
 // Функция для форматирования статуса
 const formatStatus = (status: boolean, inProgress: boolean) => {

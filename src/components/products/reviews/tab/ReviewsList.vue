@@ -17,7 +17,7 @@ const reviewsData = ref([]);
 const isLoading = ref(true);
 const totalItems = ref(0);
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(15);
 
 async function fetchData() {
   isLoading.value = true;

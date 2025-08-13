@@ -13,7 +13,7 @@
         class="max-h-full overflow-y-auto overflow-x-auto flex flex-col items-start"
     >
       <DialogHeader>
-        <DialogTitle class="text-gray-800">{{ title }}</DialogTitle>
+        <DialogTitle class="text-gray-800 text-md">{{ title }}</DialogTitle>
         <DialogDescription v-if="description">
           {{ description }}
         </DialogDescription>

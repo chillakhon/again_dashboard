@@ -58,10 +58,17 @@ const handlerEdit = (row: Order) => {
 const {getStatus} = useStatuses()
 
 const columns = [
+  {
+    accessorKey: "id",
+    header: "No",
+    cell: (cell: any) => {
+      return (cell.row.index += 1);
+    },
+  },
 
   {
     accessorKey: 'id',
-    header: '№',
+    header: 'Номер заказа',
     cell: ({row}: any) => {
       const id = row.original.id
       return h(

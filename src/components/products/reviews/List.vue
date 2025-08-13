@@ -92,7 +92,7 @@ const customerStore = useCustomerStore()
 const selectedCustomer = computed(() => props.cart?.customer)
 const totalItems = ref(0);
 const currentPage = ref(1);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(15);
 
 const messages = ref({
   notFondSupplier: ''

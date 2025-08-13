@@ -2,23 +2,26 @@
   <AlertDialog>
     <!--    <AlertDialogTrigger>-->
     <!--    {{ disabledButton }}-->
-    <Button variant="outline" v-if="!icon" :disabled="disabledButton" :class="buttonStyle">
+    <Button variant="outline"
+            v-if="!icon && !showIcon"
+            :disabled="disabledButton"
+            :class="buttonStyle">
       <AlertDialogTrigger>{{ buttonName }}</AlertDialogTrigger>
     </Button>
     <!--    <button v-else :disabled="true" class="">-->
     <AlertDialogTrigger :disabled="disabledButton">
       <component
           v-if="showIcon"
+          :class="[iconStyle || 'text-gray-400 hover:text-gray-500 transition']"
+          :size="iconSize || 17"
           :is="icon"
-          :size="17"
-          class="text-gray-400 hover:text-gray-500 transition"
       />
     </AlertDialogTrigger>
     <!--    </button>-->
 
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>{{ title }}</AlertDialogTitle>
+        <AlertDialogTitle class="text-gray-800 text-md">{{ title }}</AlertDialogTitle>
         <AlertDialogDescription>
           {{ description }}
         </AlertDialogDescription>
@@ -46,6 +49,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import {Button} from '@/components/ui/button'
+import type {Component, PropType} from 'vue'
 
 
 const emit = defineEmits(["continue"]);
@@ -59,7 +63,9 @@ const props = defineProps({
   title: String,
   description: String,
   buttonStyle: String,
-  icon: Object,
+  icon: Object as PropType<Component>,
   showIcon: Boolean,
+  iconSize: Number,
+  iconStyle: String
 });
 </script>

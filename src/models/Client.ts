@@ -64,7 +64,7 @@ export class Client {
                 user: json.user,
                 profile: json.profile,
                 email: json.email,
-                name: json.name,
+                name: json.profile?.first_name || json.profile?.last_name ? `${json.profile?.first_name ?? ''} ${json.profile?.last_name ?? ''}` : undefined,
             });
         } catch (error) {
             console.error('Failed to parse Client from JSON:', error);
@@ -84,6 +84,23 @@ export class Client {
             user: this.user?.toJSON?.() ?? null,
             profile: this.profile?.toJSON?.() ?? null
         };
+    }
+
+
+    clone(): Client {
+        return new Client({
+            id: this.id,
+            user_id: this.user_id,
+            client_level_id: this.client_level_id,
+            bonus_balance: this.bonus_balance,
+            created_at: this.created_at,
+            deleted_at: this.deleted_at,
+            updated_at: this.updated_at,
+            user: this.user ? this.user : null,
+            profile: this.profile ? this.profile : null,
+            email: this.email,
+            name: this.name
+        });
     }
 
 

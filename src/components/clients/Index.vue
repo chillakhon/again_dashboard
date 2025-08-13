@@ -44,7 +44,7 @@ const clients = ref<Client[]>([]);
 const isLoading = ref(true);
 const currentPage = ref(1);
 const totalItems = ref(0);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(15);
 
 const deleteClient = (client: Client) => {
   clients.value = clients.value.filter(

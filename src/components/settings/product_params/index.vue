@@ -42,7 +42,7 @@ const productParams = ref<ProductParam[]>([]);
 const isLoading = ref(true);
 const currentPage = ref(1);
 const totalItems = ref(0);
-const itemsPerPage = ref(10);
+const itemsPerPage = ref(15);
 
 const deleteParam = (param: ProductParam) => {
   productParams.value = productParams.value.filter(
