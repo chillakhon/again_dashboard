@@ -320,7 +320,8 @@
                   >
                     <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
                       <a
-                          :href="item.href"
+                          href="#"
+                          @click="navigateTo(item.href)"
                           :class="[
                           active ? 'bg-gray-50' : '',
                           'px-4 py-2 text-sm text-gray-700 flex items-center gap-2'
@@ -392,6 +393,7 @@ import {BookMinus} from 'lucide-vue-next'
 import {useStore} from "vuex";
 import {User} from "@/models/user/User";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+import router from "@/router";
 
 
 const store = useStore()
@@ -408,6 +410,10 @@ const closeMenu = () => {
   isMenuOpen.value = false
 }
 
+
+const navigateTo = (path) => {
+  router.push(path)
+}
 
 const logo = '/logo.svg'
 
