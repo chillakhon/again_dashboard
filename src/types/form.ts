@@ -13,6 +13,7 @@ export interface FormDynamicFieldType {
     accept?: string
     cropperAspectRatio?: Number //forFileImage
     cropperShow?: boolean //forFileImage
+    cropperAvatar?: boolean //forFileImage
     imagePreview?: boolean //forFileImage
 
     options?: any[]

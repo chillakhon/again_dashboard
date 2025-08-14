@@ -45,12 +45,16 @@ const props = defineProps({
 
 const emit = defineEmits(['updated'])
 const dialogOpen = ref(false);
-const {updateUser} = useUserFunctions();
+
+const {updateUserProfile} = useUserFunctions()
 
 async function handleSubmit() {
-
   try {
-    const res = await updateUser(props.user);
+    const res = await updateUserProfile({
+      email: props.user?.email,
+      ...props.user?.profile
+    });
+
     if (res) {
       dialogOpen.value = false;
       emit('updated', res);

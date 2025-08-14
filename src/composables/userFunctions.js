@@ -4,6 +4,7 @@ import {useErrorHandler} from "@/composables/useErrorHandler";
 import {useSuccessHandler} from "@/composables/useSuccessHandler";
 
 export function useUserFunctions() {
+
     const addUser = async (user) => {
         try {
             const res = await axios.post(`/users`, user);
@@ -14,7 +15,6 @@ export function useUserFunctions() {
             return false;
         }
     };
-
     const updateUser = async (user) => {
         if (!user) return
         try {
@@ -46,6 +46,32 @@ export function useUserFunctions() {
         }
     };
 
+    const updateUserProfile = async (profile) => {
+        if (!profile) return
+        try {
+
+            const userData = {
+                first_name: profile?.first_name || '',
+                last_name: profile?.last_name || '',
+                phone: profile?.phone?.trim() || null,
+                address: profile?.address || null,
+                email: profile?.email || null,
+            };
+
+            const res = await axios.put(`/users/update-profile/${profile.id}`, userData);
+
+            useSuccessHandler().showSuccess(res);
+            return res.data.user
+
+        } catch (e) {
+            if (e.response) {
+                toast.error(e.response.data.error || e.response.data.message || "Произошла ошибка при обновлении");
+            } else {
+                toast.error("Ошибка сети");
+            }
+            console.error("Error updating user:", e);
+        }
+    };
 
     const changeUser = async (user, loader) => {
 
@@ -94,7 +120,6 @@ export function useUserFunctions() {
             loader = false;
         }
     };
-
     const deleteUser = async (user_id) => {
         console.log(user_id);
         axios
@@ -117,7 +142,6 @@ export function useUserFunctions() {
                 toast.error(err.data.message);
             })
     };
-
     const restoreUser = async (user_id) => {
         axios
             .get(`users/${user_id}/restore`)
@@ -134,12 +158,14 @@ export function useUserFunctions() {
             })
     };
 
+
     return {
         addUser,
         changeUser,
         deleteUser,
         restoreUser,
         forceDestroy,
-        updateUser
+        updateUser,
+        updateUserProfile
     };
 }

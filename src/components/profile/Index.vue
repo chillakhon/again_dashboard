@@ -1,37 +1,79 @@
 <template>
   <BackButton title="Профиль пользователя"/>
   <div v-if="user" class=" mx-auto animate-fade-in font-sans mt-2">
+
     <!-- Карточка профиля -->
     <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
       <!-- Обложка и основная информация -->
       <div class="md:flex">
         <!-- Обложка и аватар (мобильная версия) -->
-        <div class="md:hidden h-40 bg-gradient-to-r from-blue-500 to-indigo-600 relative">
+        <!-- Мобильная шапка -->
+        <div class="md:hidden h-40 bg-gradient-to-r from-red-500 to-red-700 relative">
           <div class="absolute -bottom-16 left-6">
-            <Avatar class="h-28 w-28 border-4 border-white shadow-lg">
-              <AvatarFallback class="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-2xl font-medium">
-                {{ initials }}
-              </AvatarFallback>
-            </Avatar>
+            <div class="relative inline-block">
+              <Avatar class="h-40 w-40 mb-4 border-4 border-white shadow-lg">
+                <AvatarImage :src="user.profile?.image" alt="@unovue"/>
+                <AvatarFallback class="bg-gradient-to-r from-red-400 to-red-600 text-white text-4xl font-medium">
+                  {{ initials }}
+                </AvatarFallback>
+              </Avatar>
+
+
+              <EditAvatarModal>
+                <template #content>
+                  <button
+                      class="absolute bottom-6 right-3 bg-white text-red-500 p-2 rounded-full shadow-md hover:bg-red-100 transition"
+                      title="Редактировать аватарку"
+                  >
+                    <Pencil class="w-5 h-5"/>
+                  </button>
+                </template>
+              </EditAvatarModal>
+
+            </div>
+
           </div>
         </div>
 
         <!-- Колонка с аватаром (десктоп) -->
-        <div class="hidden md:flex flex-col items-center p-6 bg-gray-50 border-r border-gray-200 w-64">
-          <Avatar class="h-40 w-40 mb-4 border-4 border-white shadow-lg">
-            <AvatarFallback class="bg-gradient-to-r from-cyan-500 to-blue-600 text-white text-4xl font-medium">
-              {{ initials }}
-            </AvatarFallback>
-          </Avatar>
-          <h1 class="text-xl font-bold text-center text-gray-800">{{ user.fullName }}</h1>
+        <div class="hidden md:flex flex-col items-center p-6 bg-red-500 text-white border-r border-red-700 w-64">
+
+
+          <div class="relative inline-block">
+            <Avatar class="h-40 w-40 mb-4 border-4 border-white shadow-lg">
+              <AvatarImage :src="user.profile?.image" alt="@unovue"/>
+              <AvatarFallback class="bg-gradient-to-r from-red-400 to-red-600 text-white text-4xl font-medium">
+                {{ initials }}
+              </AvatarFallback>
+            </Avatar>
+
+            <!-- Кнопка-карандаш поверх аватарки -->
+
+
+            <EditAvatarModal>
+              <template #content>
+                <button
+                    class="absolute bottom-6 right-3 bg-white text-red-500 p-2 rounded-full shadow-md hover:bg-red-100 transition"
+                    title="Редактировать аватарку"
+                >
+                  <Pencil class="w-5 h-5"/>
+                </button>
+              </template>
+            </EditAvatarModal>
+
+          </div>
+
+
+          <h1 class="text-xl font-bold text-center text-white">{{ user.fullName }}</h1>
           <Badge v-if="user.email_verified_at" variant="success" class="mt-2">
             <BadgeCheck class="h-4 w-4 mr-1"/>
             Подтверждён
           </Badge>
         </div>
 
+
         <!-- Контент профиля -->
-        <div class="flex-1 p-6">
+        <div class="flex-1 p-6 bg-gray-100">
           <!-- Шапка (десктоп) -->
           <div class="hidden md:flex justify-between items-start mb-6">
             <div>
@@ -114,16 +156,14 @@
 <script setup lang="ts">
 import {computed} from 'vue'
 import {Mail, Pencil, Loader2, BadgeCheck} from 'lucide-vue-next'
-import {Button} from '@/components/ui/button'
 import {Badge} from '@/components/ui/badge'
 import {Avatar, AvatarFallback, AvatarImage} from '@/components/ui/avatar'
-import DynamicAlertDialog from '@/components/dynamics/AlertDialog.vue'
 import {Label} from '@/components/ui/label'
 import {useStore} from 'vuex'
 import {User} from '@/models/user/User'
-import {toast} from 'vue-sonner'
 import BackButton from "@/components/BackButton.vue";
 import ProfileEdit from "@/components/profile/Edit/Index.vue"
+import EditAvatarModal from "@/components/profile/Edit/EditAvatarModal.vue";
 
 const store = useStore()
 
@@ -131,6 +171,8 @@ const user = computed(() => {
   const userData = store.state.auth.user
   return userData ? User.fromJSON(userData) : null
 })
+
+
 
 const initials = computed(() => {
   if (!user.value?.profile) return 'П'
@@ -156,7 +198,8 @@ const registrationDate = computed(() => {
 })
 
 function handlingUpdate(updatedUser: User) {
-  store.commit('auth/set_user', updatedUser) // или через dispatch, если у тебя экшены
+
+  store.commit('auth/set_user', updatedUser)
 }
 
 </script>

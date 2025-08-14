@@ -76,7 +76,7 @@ export class User {
             created_at: json.created_at ?? null,
             updated_at: json.updated_at ?? null,
             deleted_at: json.deleted_at ?? null,
-            profile: json.profile ? json.profile : [],
+            profile: json.profile ? UserProfile.fromJSON(json.profile) : null,
             roles: json.roles ?? [],
             permissions: json.permissions ?? []
         });

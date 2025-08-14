@@ -57,7 +57,7 @@ const buildFormFields = () => {
       placeholder: 'Изображение',
       accept: 'image/*',
       cropperAspectRatio: 1920 / 920,
-      cropperShow: true,
+      cropperShow: false,
     }
   ]
 }

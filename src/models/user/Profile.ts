@@ -5,6 +5,7 @@ export class UserProfile {
     public last_name: string | null;
     public phone: string | null;
     public address: string | null;
+    public birthday: string | null;
     public image: string | null;
 
     constructor(data: Partial<UserProfile> = {}) {
@@ -14,6 +15,7 @@ export class UserProfile {
         this.last_name = data.last_name ?? null;
         this.phone = data.phone ?? null;
         this.address = data.address ?? null;
+        this.birthday = data.birthday ?? null;
         this.image = data.image ?? null;
     }
 
@@ -30,7 +32,8 @@ export class UserProfile {
             last_name: json.last_name ?? null,
             phone: json.phone ?? null,
             address: json.address ?? null,
-            image: json.image ?? null
+            birthday: json.birthday ?? null,
+            image: json.image ? `${process.env.VUE_APP_BASE_URL}/users/get-profile/image?path=${json.image}` : '',
         });
     }
 
@@ -45,7 +48,8 @@ export class UserProfile {
             first_name: this.first_name,
             last_name: this.last_name,
             phone: this.phone,
-            address: this.address
+            address: this.address,
+            birthday: this.birthday,
         };
     }
 
@@ -58,6 +62,7 @@ export class UserProfile {
         }
         return this.first_name ?? this.last_name ?? null;
     }
+
 
     /**
      * Проверяет, есть ли основные данные профиля

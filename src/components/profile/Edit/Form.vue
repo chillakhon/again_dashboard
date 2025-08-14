@@ -57,6 +57,9 @@
       <!--      <p v-if="errors.address" class="text-sm text-red-500">{{ errors.address }}</p>-->
     </div>
 
+
+
+
     <div class="flex justify-end pt-4">
       <Button :disabled="loading" type="button" @click="emit('submit')">
         {{ loading ? 'Сохранение...' : 'Сохранить изменения' }}
@@ -67,13 +70,14 @@
 
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
-import { toast } from 'vue-sonner'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import {ref, onMounted, watch} from 'vue'
+import {toast} from 'vue-sonner'
+import {Input} from '@/components/ui/input'
+import {Label} from '@/components/ui/label'
 import axios from 'axios'
 import {User} from "@/models/user/User";
 import {Button} from "@/components/ui/button";
+import DatePicker from "@/components/dynamics/DatePicker.vue";
 
 const props = defineProps({
   user: {
@@ -81,6 +85,8 @@ const props = defineProps({
     default: null
   }
 })
+
+
 
 const emit = defineEmits(['submit'])
 

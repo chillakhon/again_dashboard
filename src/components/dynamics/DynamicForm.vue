@@ -35,8 +35,8 @@
               class="cursor-pointer"
           />
 
-          <div class="max-w-full max-h-full overflow-hidden mt-3 rounded" v-if="field.cropperShow">
-
+          <div class="max-w-full max-h-full overflow-hidden mt-3 rounded"
+               v-if="field.cropperShow && previewImage">
             <ImageCropper
                 class="max-w-full max-h-full object-contain"
                 :src="getImageForCropper(field.name)"
@@ -45,8 +45,19 @@
             />
           </div>
 
+
+          <div class="max-w-full max-h-full overflow-hidden pt-3 rounded"
+               v-else-if="field.cropperAvatar && previewImage">
+            <AvatarCropper
+                class="max-w-full max-h-full object-contain"
+                :src="getImageForCropper(field.name)"
+                @update:file="onCroppedFile(field.name, $event)"
+            />
+          </div>
+
           <div class="relative max-w-full max-h-full overflow-hidden mt-3 rounded border border-gray-300"
-               v-if="field.imagePreview && formData[field.name]">
+               v-else-if="previewImage">
+
             <ImagePreview :file="formData[field.name]"/>
 
             <button
@@ -158,6 +169,7 @@ import ImageCropper from "@/components/dynamics/ImageCropper.vue";
 import aspectRatio from "@tailwindcss/aspect-ratio";
 import ImagePreview from "@/components/dynamics/ImagePreview.vue";
 import {X} from 'lucide-vue-next';
+import AvatarCropper from "@/components/dynamics/cropper/AvatarCropper.vue";
 
 
 interface Props {

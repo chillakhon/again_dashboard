@@ -18,7 +18,7 @@
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-muted-foreground">{{ data?.new?.total_amount ?? 0 }} ₽</span>
+              <span class="text-sm text-muted-foreground">{{ formatPrice(data?.new?.total_amount) }}</span>
               <ChevronRight class="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors"/>
             </div>
           </CardContent>
@@ -39,7 +39,7 @@
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-muted-foreground">{{ data?.processing?.total_amount ?? 0 }} ₽</span>
+              <span class="text-sm text-muted-foreground">{{ formatPrice(data?.processing?.total_amount) }} </span>
               <ChevronRight class="h-4 w-4 text-muted-foreground group-hover:text-amber-500 transition-colors"/>
             </div>
           </CardContent>
@@ -60,7 +60,7 @@
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-muted-foreground">{{ data?.approved?.total_amount ?? 0 }} ₽</span>
+              <span class="text-sm text-muted-foreground">{{ formatPrice(data?.approved?.total_amount) }} </span>
               <ChevronRight class="h-4 w-4 text-muted-foreground group-hover:text-[#00ba13] transition-colors"/>
             </div>
           </CardContent>
@@ -89,9 +89,13 @@ import {onMounted, ref} from "vue";
 import Loader from "@/components/common/Loader.vue";
 import HomeChart from "@/components/dashboard/charts/HomeChart.vue";
 import {toast} from "vue-sonner";
+import {usePriceFormatter} from "@/composables/usePriceFormatter";
+
+const {formatPrice} = usePriceFormatter()
 
 const isLoading = ref<Boolean>(true)
 const data = ref()
+
 
 onMounted(() => {
   fetchData()
@@ -101,10 +105,8 @@ async function fetchData() {
   await axios.get('/orders/stats')
       .then(res => {
         data.value = res.data
-        // console.log(data.value.chartData)
       })
       .catch(err => {
-        toast.error(err.response.data.message || err.response.data.error || 'Что то пащло не так!')
         console.log(err)
       })
       .finally(() => {

@@ -296,14 +296,15 @@
                 <MenuButton class="-m-1.5 flex items-center p-1.5">
                   <span class="sr-only">Open user menu</span>
                   <span class="flex items-center">
-                    <span
-                        class="inline-flex items-center justify-center size-8 rounded-full bg-gradient-to-r from-red-500 to-red-300">
-                      <span class="text-sm font-medium leading-none text-white">JD</span>
-                    </span>
-                    <span class="ml-2 hidden lg:flex lg:items-center">
-                      <span class="text-sm font-medium text-gray-700">John Doe</span>
-                      <!--                      <PhCaretRight class="ml-1 size-4 text-gray-500"/>-->
-                    </span>
+
+
+                     <Avatar class="h-10 w-10 border-2 border-white shadow-lg">
+                    <AvatarImage :src="user.profile?.image" alt="@unovue"/>
+                    <AvatarFallback class="bg-gradient-to-r from-red-400 to-red-600 text-white text-4xl font-medium">
+                      Av
+                        </AvatarFallback>
+                   </Avatar>
+
                   </span>
                 </MenuButton>
                 <transition
@@ -400,6 +401,17 @@ import {
 } from '@phosphor-icons/vue';
 
 import {BookMinus} from 'lucide-vue-next'
+import {useStore} from "vuex";
+import {User} from "@/models/user/User";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
+
+const store = useStore()
+
+const user = computed(() => {
+  const userData = store.state.auth.user
+  return userData ? User.fromJSON(userData) : null
+})
+
 
 const logo = '/logo.svg'
 
@@ -450,12 +462,12 @@ const navigation = [
     ]
   },
   {
-    name: 'Диалоги', href: '/dialogs', icon: PhChatTeardropDots,
-    children: [
-      {name: 'Сообщения', href: '/dialogs/chats', icon: PhChatTeardropDots},
-      // {name: 'Whatsapp', href: '/dialogs/whatsapp', icon: PhChatTeardropDots},
-      // {name: 'Telegram', href: '/dialogs/telegram', icon: PhChatTeardropDots},
-    ]
+    name: 'Диалоги', icon: PhChatTeardropDots, href: '/dialogs/chats',
+    // children: [
+    // {name: 'Сообщения', href: '/dialogs/chats', icon: PhChatTeardropDots},
+    // {name: 'Whatsapp', href: '/dialogs/whatsapp', icon: PhChatTeardropDots},
+    // {name: 'Telegram', href: '/dialogs/telegram', icon: PhChatTeardropDots},
+    // ]
   },
   // {
   //   name: 'Склад', href: '/warehouses', icon: PhWarehouse,
