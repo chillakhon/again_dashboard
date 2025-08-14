@@ -280,14 +280,14 @@
 
 
             <div class="flex items-center gap-x-4 lg:gap-x-6">
-              <button
-                  type="button"
-                  class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 relative rounded-md hover:bg-gray-100 transition-colors"
-              >
-                <span class="sr-only">View notifications</span>
-                <PhBell class="size-6"/>
-                <span class="absolute top-1 right-1 block size-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>
-              </button>
+<!--              <button-->
+<!--                  type="button"-->
+<!--                  class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 relative rounded-md hover:bg-gray-100 transition-colors"-->
+<!--              >-->
+<!--                <span class="sr-only">View notifications</span>-->
+<!--                <PhBell class="size-6"/>-->
+<!--                <span class="absolute top-1 right-1 block size-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>-->
+<!--              </button>-->
 
               <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true"/>
 
