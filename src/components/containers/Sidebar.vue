@@ -292,10 +292,11 @@
               <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true"/>
 
               <!-- Profile dropdown -->
-              <Menu as="div" class="relative" v-model:open="isMenuOpen">
-                <MenuButton class="-m-1.5 flex items-center p-1.5">
-                  <span class="sr-only">Open user menu</span>
-                  <span class="flex items-center">
+              <div ref="menuRef">
+                <Menu as="div" class="relative" v-model:open="isMenuOpen">
+                  <MenuButton class="-m-1.5 flex items-center p-1.5">
+                    <span class="sr-only">Open user menu</span>
+                    <span class="flex items-center">
 
 
                      <Avatar class="h-10 w-10 border-2 border-white shadow-lg">
@@ -306,39 +307,41 @@
                    </Avatar>
 
                   </span>
-                </MenuButton>
-                <transition
-                    enter-active-class="transition ease-out duration-100"
-                    enter-from-class="transform opacity-0 scale-95"
-                    enter-to-class="transform opacity-100 scale-100"
-                    leave-active-class="transition ease-in duration-75"
-                    leave-from-class="transform opacity-100 scale-100"
-                    leave-to-class="transform opacity-0 scale-95"
-                >
-                  <MenuItems
-                      class="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+                  </MenuButton>
+                  <transition
+                      enter-active-class="transition ease-out duration-100"
+                      enter-from-class="transform opacity-0 scale-95"
+                      enter-to-class="transform opacity-100 scale-100"
+                      leave-active-class="transition ease-in duration-75"
+                      leave-from-class="transform opacity-100 scale-100"
+                      leave-to-class="transform opacity-0 scale-95"
                   >
-                    <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
-                      <a
-                          href="#"
-                          @click="navigateTo(item.href)"
-                          :class="[
+                    <MenuItems
+                        class="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
+                    >
+                      <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
+                        <a
+                            href="#"
+                            @click="navigateTo(item.href)"
+                            :class="[
                           active ? 'bg-gray-50' : '',
                           'px-4 py-2 text-sm text-gray-700 flex items-center gap-2'
                         ]"
-                      >
-                        <component
-                            :is="item.icon"
-                            class="size-4 text-gray-500"
-                            v-if="item.icon"
-                        />
-                        {{ item.name }}
-                      </a>
-                    </MenuItem>
+                        >
+                          <component
+                              :is="item.icon"
+                              class="size-4 text-gray-500"
+                              v-if="item.icon"
+                          />
+                          {{ item.name }}
+                        </a>
+                      </MenuItem>
 
-                  </MenuItems>
-                </transition>
-              </Menu>
+                    </MenuItems>
+                  </transition>
+                </Menu>
+              </div>
+
               <!--              <button @click="closeMenu">Закрыть меню из вне</button>-->
 
             </div>
@@ -350,7 +353,7 @@
 </template>
 
 <script setup>
-import {computed, ref} from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import {useRoute} from 'vue-router';
 import {
   Dialog,
@@ -404,11 +407,22 @@ const user = computed(() => {
 })
 
 
-const isMenuOpen = ref(false)  // состояние меню
+const isMenuOpen = ref(false)
+const menuRef = ref(null)
 
-const closeMenu = () => {
-  isMenuOpen.value = false
+function handleClickOutside(e) {
+  if (menuRef.value && !menuRef.value.contains(e.target)) {
+    isMenuOpen.value = false
+  }
 }
+
+onMounted(() => {
+  document.addEventListener('click', handleClickOutside)
+})
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 
 
 const navigateTo = (path) => {
