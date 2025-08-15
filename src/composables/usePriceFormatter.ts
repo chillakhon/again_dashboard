@@ -7,21 +7,15 @@ export function usePriceFormatter() {
             return `0${currency}`;
         }
 
-        // Убираем пробелы
-        const clean = String(price).replace(/\s+/g, '');
-
-        // Берём только цифры и игнорируем всё остальное
-        const numberPart = clean.replace(/[^\d]/g, '');
-
-        // Если число пустое
-        if (!numberPart) {
+        const num = Number(price);
+        if (isNaN(num)) {
             return `0${currency}`;
         }
 
-        // Форматируем с пробелами между тысячами
-        const formattedNumber = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-
-        return `${formattedNumber}${currency}`;
+        return `${num.toLocaleString('ru-RU', {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 2
+        })}${currency}`;
     };
 
     return { formatPrice };
