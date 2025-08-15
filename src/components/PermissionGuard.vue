@@ -1,7 +1,6 @@
 <template>
-  <!--  <slot v-if="hasAccess || showContentAndBlock"/>-->
 
-  <div v-if="hasAccess || showContentAndBlock" @click="onClickSlot">
+  <div v-if="permission">
     <slot/>
   </div>
 
@@ -20,54 +19,12 @@ import {toast} from "vue-sonner";
 
 const props = defineProps({
   permission: {
-    type: [String, Number, Boolean],
-    required: false,
-    default: null
-  },
-  // Проверка хотя бы одного из прав (OR)
-  anyOf: {
-    type: Array as () => (string | number)[],
-    default: () => []
-  },
-  // Проверка всех указанных прав (AND)
-  allOf: {
-    type: Array as () => (string | number)[],
-    default: () => []
-  },
-
-  showContentAndBlock: {
     type: Boolean,
-    default: false
-  }
+    required: true,
+    default: false,
+  },
 
 })
 
-const {hasPermission} = usePermission()
-
-const hasAccess = computed(() => {
-  // Приоритеты проверок: permission > anyOf > allOf
-  if (props.permission !== null) {
-    return hasPermission(props.permission, false)
-  }
-
-  if (props.anyOf.length > 0) {
-    return props.anyOf.some(perm => hasPermission(perm))
-  }
-
-  if (props.allOf.length > 0) {
-    return props.allOf.every(perm => hasPermission(perm))
-  }
-
-  return false
-})
-
-
-function onClickSlot(event: any) {
-  if (!hasAccess.value) {
-    event.stopImmediatePropagation()
-    event.preventDefault()
-    toast.error('У вас нет доступа')
-  }
-}
 
 </script>

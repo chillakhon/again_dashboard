@@ -1,42 +1,39 @@
 <template>
 
-    <div class="flex justify-between">
-      <UsersSearch
-          class="md:w-[400px]"
-          :filter="searchParams"
-          @search="handlingSearch"
-      />
+  <div class="flex justify-between">
+    <UsersSearch
+        class="md:w-[400px]"
+        :filter="searchParams"
+        @search="handlingSearch"
+    />
 
-      <UsersAdd
-          class="mb-2"
-          :permissions="data?.permissions"
-          :roles="data?.roles"
-          @submit="fetchData()"
-      />
+    <UsersAdd
+        class="mb-2"
+        :permissions="data?.permissions"
+        :roles="data?.roles"
+        @submit="fetchData()"
+    />
 
-
-    </div>
-    <PermissionGuard :permission="PermissionsData.USERS_VIEW">
-      <Loader v-if="isLoading"/>
-      <UsersTable
-          v-else
-          :key="renderTable"
-          :users="users"
-          @deleted="deleteUser($event)"
-          @updated="fetchData()"
-      />
-    </PermissionGuard>
-    <div class="mt-2 flex justify-end">
-      <PaginationTable
-          :items-per-page="itemsPerPage"
-          :total="totalItems"
-          :default-page="currentPage"
-          @current-page="
+  </div>
+  <Loader v-if="isLoading"/>
+  <UsersTable
+      v-else
+      :key="renderTable"
+      :users="users"
+      @deleted="deleteUser($event)"
+      @updated="fetchData()"
+  />
+  <div class="mt-2 flex justify-end">
+    <PaginationTable
+        :items-per-page="itemsPerPage"
+        :total="totalItems"
+        :default-page="currentPage"
+        @current-page="
           currentPage = $event;
           fetchData();
         "
-      />
-    </div>
+    />
+  </div>
 </template>
 
 <script setup lang="ts">

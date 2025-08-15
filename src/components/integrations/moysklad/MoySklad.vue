@@ -72,10 +72,17 @@ import {Separator} from "@/components/ui/separator";
 import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
 import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue";
 
-const moysklad = ref<MoyskladSettings>(MoyskladSettings.fromJSON({
-  password: '900737901avaz',
-  email: 'testavazavaz@gmail.com'
-}))
+const moysklad = ref<MoyskladSettings>(MoyskladSettings.fromJSON(
+    process.env.NODE_ENV === 'development'
+        ? {
+          password: '900737901avaz',
+          email: 'testavazavaz@gmail.com'
+        }
+        : {
+          password: '',
+          email: ''
+        }
+))
 
 
 const {progress, sending, updateMoySkladSettings} = useMoySkladFunctions()

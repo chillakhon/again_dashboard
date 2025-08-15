@@ -11,15 +11,13 @@
       </TabsList>
 
       <TabsContent value="activated">
-        <PermissionGuard :permission="PermissionsData.MANAGE_USERS">
+        <PermissionGuard :permission="hasPermission(PermissionsData.USERS_DELETE)">
           <UsersList/>
         </PermissionGuard>
       </TabsContent>
 
       <TabsContent value="deleted">
-        <PermissionGuard :permission="PermissionsData.MANAGE_USERS">
-          <UsersDeleted/>
-        </PermissionGuard>
+        <UsersDeleted/>
       </TabsContent>
     </Tabs>
   </div>
@@ -34,8 +32,14 @@ import {User} from "@/models/user/User";
 import {useStore} from "vuex";
 import {PermissionsData} from "@/constants/PermissionsData";
 import PermissionGuard from "@/components/PermissionGuard.vue";
+import usePermission from "@/composables/usePermission";
 
 const currentTab = ref("activated");
 const store = useStore();
 const user = computed(() => User.fromJSON(store.getters['auth/user']));
+
+const {hasPermission} = usePermission()
+
+
+
 </script>

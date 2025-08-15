@@ -16,9 +16,17 @@ export default function usePermission() {
 
 
     const hasPermission = (permissionId: string | number, showToast = true): boolean => {
+
+        const user = store.getters["auth/user"]
+        //если supper_admin разрешить все
+        if (user?.roles[0]?.id == 1) {
+            return true;
+        }
+
         const hasAccess = computed(() =>
             store.getters['auth/hasPermission'](permissionId)
         ).value;
+
 
         if (!hasAccess && showToast) {
             toast.error('У вас нет доступа');
@@ -26,7 +34,6 @@ export default function usePermission() {
 
         return hasAccess;
     };
-
 
     const canManageUsers = computed(() =>
         hasPermission(PermissionsData.MANAGE_USERS)

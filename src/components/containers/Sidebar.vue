@@ -320,9 +320,9 @@
                         class="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-md bg-white py-2 shadow-lg ring-1 ring-gray-900/5 focus:outline-none"
                     >
                       <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
-                        <a
-                            href="#"
-                            @click="navigateTo(item.href)"
+                        <span
+                            class="cursor-pointer"
+                              @click="navigateTo(item.href)"
                             :class="[
                           active ? 'bg-gray-50' : '',
                           'px-4 py-2 text-sm text-gray-700 flex items-center gap-2'
@@ -334,7 +334,7 @@
                               v-if="item.icon"
                           />
                           {{ item.name }}
-                        </a>
+                        </span>
                       </MenuItem>
 
                     </MenuItems>

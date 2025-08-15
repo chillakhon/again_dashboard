@@ -62,15 +62,15 @@
                       <slot name="addActions" :item="row.original"/>
 
                       <Edit
-                          :disabled="!canEdit"
+                          v-if="editPermission"
                           :item="row.original"
                           :edit="edit"
                           @save_changes="emits('save_changes', $event)"
                       />
 
                       <AlertDialog
+                          v-if="deletePermission"
                           :show-icon="true"
-                          :disabled-button="!canDelete"
                           title="Подтверждение удаления"
                           description="Вы уверены что хотите удалить этот элемент?"
                           button-name="Удалить"
@@ -172,12 +172,6 @@ const props = defineProps({
   subRowsField: String,
 });
 
-
-const {hasPermission} = usePermission()
-
-
-const canEdit = computed(() => hasPermission(PermissionsData.USERS_EDIT, false));
-const canDelete = computed(() => hasPermission(PermissionsData.USERS_DELETE, false));
 
 const emits = defineEmits([
   "deleted",

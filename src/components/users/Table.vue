@@ -6,7 +6,6 @@
       :edit="edit"
       :loading="loading"
       :deletePermission="hasPermission(PermissionsData.USERS_DELETE, false)"
-      :editPermission="hasPermission(PermissionsData.USERS_EDIT, false)"
       @save_changes="handlingUpdateUser"
       @deleted="
       useUserFunctions().deleteUser($event.id);
