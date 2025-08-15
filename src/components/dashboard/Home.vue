@@ -18,7 +18,7 @@
           </CardHeader>
           <CardContent>
             <div class="flex items-center justify-between">
-              <span class="text-sm text-muted-foreground">₽ df</span>
+              <span class="text-sm text-muted-foreground">{{ formatPrice(data?.new?.total_amount, '₽') }}</span>
               <ChevronRight class="h-4 w-4 text-muted-foreground group-hover:text-primary transition-colors"/>
             </div>
           </CardContent>

@@ -10,22 +10,18 @@ export function usePriceFormatter() {
         // Убираем пробелы
         const clean = String(price).replace(/\s+/g, '');
 
-        // Отделяем цифры и всё остальное
-        const match = clean.match(/^(\d+)(.*)$/);
-        if (!match) return `0${currency}`;
+        // Берём только цифры и игнорируем всё остальное
+        const numberPart = clean.replace(/[^\d]/g, '');
 
-        let numberPart = match[1];
-        let detectedCurrency = match[2]?.trim() || currency;
-
-        // Если число пустое (например, передали только валюту)
+        // Если число пустое
         if (!numberPart) {
-            return `0${detectedCurrency}`;
+            return `0${currency}`;
         }
 
         // Форматируем с пробелами между тысячами
         const formattedNumber = numberPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
 
-        return `${formattedNumber}${detectedCurrency}`;
+        return `${formattedNumber}${currency}`;
     };
 
     return { formatPrice };
