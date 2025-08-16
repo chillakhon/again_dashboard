@@ -35,13 +35,23 @@
     <!-- Mobile View -->
     <div class="md:hidden w-full h-full">
       <Transition name="slide-fade" mode="out-in">
-        <UsersList
+
+        <CharListConversations
             v-if="!showChat"
-            key="users-list"
-            class="h-full w-full "
+            class="h-full border-r"
+            :conversations="conversations"
             :selected-user="selectedConversatonId"
+            :current-source="currentSourceName"
             @select-user="handleUserSelect"
         />
+
+        <!--        <UsersList-->
+        <!--            v-if="!showChat"-->
+        <!--            key="users-list"-->
+        <!--            class="h-full w-full "-->
+        <!--            :selected-user="selectedConversatonId"-->
+        <!--            @select-user="handleUserSelect"-->
+        <!--        />-->
         <div
             v-else
             key="chat-widget"
@@ -61,7 +71,7 @@
               <p class="text-xs text-muted-foreground">Онлайн</p>
             </div>
           </div>
-          <ChatWidget class="flex-1"/>
+          <ChatWidget class="flex-1" :conversation="selectedConversation"/>
         </div>
       </Transition>
     </div>

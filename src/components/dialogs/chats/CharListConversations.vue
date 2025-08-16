@@ -30,7 +30,7 @@
           <div class="flex-1 min-w-0">
             <div class="flex justify-between items-center">
               <h3 class="text-xs font-medium truncate text-gray-800">
-                {{ item.client?.profile?.fullName || 'Неизвестный' }}
+                {{ item.client?.profile?.fullName || item.client?.email || 'Неизвестный' }}
               </h3>
               <span class="text-[10px] text-gray-500">
                 {{ formatTime(item.last_message_at) }}
