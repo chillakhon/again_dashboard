@@ -4,28 +4,20 @@
       <div class="flex space-x-2 w-full">
         <Input
             class="max-w-sm"
-            placeholder="Поиск по содержимому отзыва..."
+            placeholder="Поиск по отзыву и товару..."
             v-model="searchQuery"
             @keyup.enter="handleSearch"
         />
         <Button @click="handleSearch">Найти</Button>
         <Button
+            v-if="searchQuery"
             variant="outline"
             @click="clearSearch"
-            :disabled="!searchQuery"
         >
-          Сбросить
+          <X/>
         </Button>
       </div>
 
-      <!--      <div class="flex max-md:mt-2 space-x-2">-->
-      <!--        <Button variant="outline" @click="handleExport">-->
-      <!--          Экспорт-->
-      <!--        </Button>-->
-      <!--        <Button variant="outline" @click="handleImport">-->
-      <!--          Импорт-->
-      <!--        </Button>-->
-      <!--      </div>-->
     </div>
   </div>
 
@@ -50,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from "vue";
+import {ref, onMounted, watch} from "vue";
 import axios from "axios";
 import {toast} from "vue-sonner";
 
@@ -60,6 +52,9 @@ import PaginationTable from "@/components/PaginationTable.vue";
 import {Button} from "@/components/ui/button";
 import {Input} from "@/components/ui/input";
 import {Review} from "@/models/Review";
+import {X} from "lucide-vue-next"
+import {useDebounceFn} from "@vueuse/core";
+
 
 const searchQuery = ref('');
 const reviewsData = ref([]);
@@ -68,6 +63,20 @@ const isLoading = ref(true);
 const totalItems = ref(0);
 const currentPage = ref(1);
 const itemsPerPage = ref(15);
+
+
+const debounce = useDebounceFn(() => {
+  fetchData()
+}, 500)
+
+
+watch(
+    () => searchQuery.value,
+    () => {
+      debounce()
+    }
+)
+
 
 // Fetch on mount
 onMounted(async () => {
@@ -81,7 +90,7 @@ async function fetchData() {
     const params = {
       page: currentPage.value,
       per_page: itemsPerPage.value,
-      search: searchQuery.value || undefined,
+      search: searchQuery.value || null,
       admin: true
     };
 

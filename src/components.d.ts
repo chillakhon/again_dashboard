@@ -238,7 +238,6 @@ declare module 'vue' {
     Tasks: typeof import('./components/orders/tasks/index.vue')['default']
     Tech_operations: typeof import('./components/warehouses/tech_operations/index.vue')['default']
     Telegram: typeof import('./components/dialogs/telegram/index.vue')['default']
-    Test: typeof import('./components/test/index.vue')['default']
     Textarea: typeof import('./components/ui/textarea/Textarea.vue')['default']
     Toast: typeof import('./components/ui/toast/Toast.vue')['default']
     ToastAction: typeof import('./components/ui/toast/ToastAction.vue')['default']

@@ -63,7 +63,7 @@ const columns = [
   { key: 'organization', label: 'Цех', class: 'w-[130px]' },
   { key: 'techOperation', label: 'Технологическая операция', class: 'min-w-[220px]' },
   { key: 'volume', label: 'Объем', class: 'w-[100px] text-right' },
-  { key: 'cost', label: 'Цена закупны', class: 'w-[130px] text-right' },
+  { key: 'cost', label: 'Цена закупки', class: 'w-[130px] text-right' },
   { key: 'shipped', label: 'Отправка', class: 'w-[100px] text-right' },
   { key: 'printed', label: 'Печать', class: 'w-[100px] text-right' },
   { key: 'status', label: 'Статус', class: 'w-[120px]' },

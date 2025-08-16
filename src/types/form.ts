@@ -2,7 +2,7 @@
 export interface FormDynamicFieldType {
     name: string
     label: string
-    component: 'text' | 'textarea' | 'select' | 'multiSelect' | 'checkbox' | 'date' | 'file'
+    component: 'text' | 'textarea' | 'select' | 'multiSelect' | 'checkbox' | 'date' | 'file' | 'color'
     type?: string
     placeholder?: string
     description?: string

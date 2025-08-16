@@ -17,6 +17,7 @@
             v-model="formData[field.name]"
             :placeholder="field.placeholder || ''"
             :required="field.required"
+            :disabled="field.disabled ?? false"
         />
 
         <!-- Поле загрузки файла -->
@@ -131,6 +132,14 @@
         </div>
 
 
+        <div v-else-if="field.component == 'color'">
+          <ColorPicker
+              :colors="field.colors"
+              v-model="formData[field.name]"
+          />
+        </div>
+
+
         <p v-if="errors[field.name]" class="text-sm text-red-500">
           {{ errors[field.name] }}
         </p>
@@ -170,6 +179,7 @@ import aspectRatio from "@tailwindcss/aspect-ratio";
 import ImagePreview from "@/components/dynamics/ImagePreview.vue";
 import {X} from 'lucide-vue-next';
 import AvatarCropper from "@/components/dynamics/cropper/AvatarCropper.vue";
+import ColorPicker from "@/components/dynamics/color/ColorPicker.vue";
 
 
 interface Props {

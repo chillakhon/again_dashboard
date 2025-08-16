@@ -1,6 +1,5 @@
 <template>
-  <Loader v-if="isLoading"/>
-  <div v-else class="">
+  <div class="">
 
     <div class="flex max-md:flex-col justify-between mb-2 max-md:space-y-2">
 
@@ -20,8 +19,9 @@
       </div>
 
     </div>
-
+    <Loader v-if="isLoading"/>
     <ProductListTable
+        v-else
         :key="renderTable"
         :items="data"
         @deleted="fetchData()"
@@ -73,7 +73,7 @@ onMounted(async () => {
 })
 
 async function fetchData() {
-  isLoading.value = true
+  // isLoading.value = true
   data.value = await getProducts({
     per_page: itemsPerPage.value,
     page: currentPage.value,

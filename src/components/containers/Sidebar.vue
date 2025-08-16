@@ -280,14 +280,14 @@
 
 
             <div class="flex items-center gap-x-4 lg:gap-x-6">
-<!--              <button-->
-<!--                  type="button"-->
-<!--                  class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 relative rounded-md hover:bg-gray-100 transition-colors"-->
-<!--              >-->
-<!--                <span class="sr-only">View notifications</span>-->
-<!--                <PhBell class="size-6"/>-->
-<!--                <span class="absolute top-1 right-1 block size-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>-->
-<!--              </button>-->
+              <!--              <button-->
+              <!--                  type="button"-->
+              <!--                  class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 relative rounded-md hover:bg-gray-100 transition-colors"-->
+              <!--              >-->
+              <!--                <span class="sr-only">View notifications</span>-->
+              <!--                <PhBell class="size-6"/>-->
+              <!--                <span class="absolute top-1 right-1 block size-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>-->
+              <!--              </button>-->
 
               <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true"/>
 
@@ -322,7 +322,7 @@
                       <MenuItem v-for="item in userNavigation" :key="item.name" v-slot="{ active }">
                         <span
                             class="cursor-pointer"
-                              @click="navigateTo(item.href)"
+                            @click="navigateTo(item.href)"
                             :class="[
                           active ? 'bg-gray-50' : '',
                           'px-4 py-2 text-sm text-gray-700 flex items-center gap-2'
@@ -353,7 +353,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+import {ref, onMounted, onBeforeUnmount, computed} from 'vue'
 import {useRoute} from 'vue-router';
 import {
   Dialog,
@@ -392,7 +392,7 @@ import {
   PhCodesandboxLogo
 } from '@phosphor-icons/vue';
 
-import {BookMinus} from 'lucide-vue-next'
+import {BookMinus, AlarmClockCheck} from 'lucide-vue-next'
 import {useStore} from "vuex";
 import {User} from "@/models/user/User";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -438,7 +438,7 @@ const navigation = [
     children: [
       {name: 'Все заказы', href: '/orders/list', icon: PhList, notification: 100,},
       {name: 'Заявки', href: '/contact-requests', icon: BookMinus},
-      {name: 'Задачи', href: '/orders/tasks', icon: PhList},
+      {name: 'Задачи', href: '/orders/tasks', icon: AlarmClockCheck},
     ],
   },
   {
@@ -472,10 +472,10 @@ const navigation = [
     ]
   },
   {
-    name: 'Аналитика', href: '/analytics', icon: PhChartPie,
-    children: [
-      {name: 'Сводка', href: '/analytics/summary', icon: PhChartPie}
-    ]
+    name: 'Аналитика', href: '/analytics/summary', icon: PhChartPie,
+    // children: [
+    //   {name: 'Сводка', href: '', icon: PhChartPie}
+    // ]
   },
   {
     name: 'Диалоги', icon: PhChatTeardropDots, href: '/dialogs/chats',

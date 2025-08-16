@@ -1,6 +1,5 @@
 <template>
   <DynamicsDataTable
-      v-if="clients?.length"
       :data="clients"
       :columns="columns"
       :edit="edit"

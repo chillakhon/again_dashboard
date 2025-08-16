@@ -1,20 +1,47 @@
 <template>
-  <DynamicsFilter
-      :columns="filterColumns"
-      :filter="filter"
-      @search="emits('search')"
-  />
+  <div class="md:flex md:space-x-2 max-md:space-y-2 md:w-[400px] max-md:w-full">
+
+    <DynamicsFilter
+        :columns="filterColumns"
+        :filter="filter"
+        @search="emits('search')"
+    />
+
+    <Button
+        v-if="hasActiveFilters"
+        variant="outline"
+        @click="props.filter.search = ''"
+    >
+      <X/>
+    </Button>
+  </div>
+
 </template>
 
-<script setup>
-import {ref, watch} from 'vue';
+<script setup lang="ts">
+import {computed, ref, watch} from 'vue';
 import DynamicsFilter from '@/components/dynamics/Filter/Index.vue';
+import {useDebounceFn} from "@vueuse/core";
+import {Button} from "@/components/ui/button";
+import {X} from "lucide-vue-next"
 
-const props = defineProps({
-  filter: Object,
-});
 
-const emits = defineEmits(["search"]);
+const props = defineProps<{
+  filter: {
+    search: string,
+  },
+}>();
+
+const emits = defineEmits(["search", "clearFilters"]);
+
+
+const hasActiveFilters = computed(() => {
+  const f = props.filter
+
+  return Boolean(
+      f.search
+  )
+})
 
 const filterColumns = ref([
   {
@@ -25,12 +52,16 @@ const filterColumns = ref([
 ]);
 
 
+
+const debounce = useDebounceFn(() => {
+  emits("search");
+}, 500)
+
+
 watch(
     () => props.filter.search,
-    (value) => {
-      if (!value) {
-        emits('search');
-      }
+    () => {
+      debounce()
     }
 )
 

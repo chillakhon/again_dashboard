@@ -47,7 +47,7 @@ const columns = [
 
   {
     accessorKey: 'price',
-    header: 'Цена продаж',
+    header: 'Цена продажи',
     cell: ({row}: any) => {
       return h(Input, {
         modelValue: row.original.price,

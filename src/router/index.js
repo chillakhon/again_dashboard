@@ -113,7 +113,6 @@ const routes = [
                     {
                         path: '/orders/tasks/create',
                         name: 'orders-tasks-create',
-                        component: () => import('../components/orders/tasks/create/index.vue'),
                     },
                 ]
             },

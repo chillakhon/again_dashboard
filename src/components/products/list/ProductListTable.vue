@@ -126,7 +126,7 @@ const columns = [
   },
   {
     accessorKey: "cost_price",
-    header: "Цена закупны",
+    header: "Цена закупки",
   },
   {
     accessorKey: "barcode",

@@ -33,7 +33,7 @@ const filterColumns = ref([
 
   {
     type: "select",
-    placeholder: "Статус заказа",
+    placeholder: "Статус заявки",
     field: "status",
     options: getStatuses('contactRequest'),
     optionValue: 'value',

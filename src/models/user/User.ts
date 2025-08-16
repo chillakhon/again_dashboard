@@ -9,6 +9,7 @@ export class User {
     public created_at: string | null;
     public updated_at: string | null;
     public deleted_at: string | null;
+    public name: string | null;
     public profile: UserProfile | null;
     public roles: UserRole[];
     public permissions: UserPermission[];
@@ -20,6 +21,7 @@ export class User {
         this.created_at = data.created_at ?? null;
         this.updated_at = data.updated_at ?? null;
         this.deleted_at = data.deleted_at ?? null;
+        this.name = data.name ?? null;
 
         // Инициализация profile с созданием экземпляра UserProfile, если данные переданы
         this.profile = data.profile
@@ -30,11 +32,11 @@ export class User {
         this.roles = data.roles
             ? data.roles.map(role => UserRole.fromJSON(role))
             : [];
-            // this.roles = data?.roles[0]?.id || null;
+        // this.roles = data?.roles[0]?.id || null;
 
         // Инициализация permissions с созданием экземпляров UserPermission
         this.permissions = data.permissions
-            ?  data.permissions?.map(perm => UserPermission.fromJSON(perm))
+            ? data.permissions?.map(perm => UserPermission.fromJSON(perm))
             : [];
     }
 
@@ -76,6 +78,7 @@ export class User {
             created_at: json.created_at ?? null,
             updated_at: json.updated_at ?? null,
             deleted_at: json.deleted_at ?? null,
+            name: json.name ?? null,
             profile: json.profile ? UserProfile.fromJSON(json.profile) : null,
             roles: json.roles ?? [],
             permissions: json.permissions ?? []
@@ -130,6 +133,6 @@ export class User {
                 email.includes(lowerQuery)
             );
         })
-        }
+    }
 
 }

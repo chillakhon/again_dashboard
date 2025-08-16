@@ -1,6 +1,5 @@
 <template>
-  <Loader v-if="isLoading"/>
-  <div v-else class="">
+  <div class="">
 
     <div class="flex max-md:flex-col justify-between mb-2 max-md:space-y-2">
       <PromoSearch
@@ -16,7 +15,10 @@
 
     </div>
 
+    <Loader v-if="isLoading"/>
+
     <PromoListTable
+        v-else
         :key="renderTable"
         :items="data ?? []"
         @deleted="handleDeleted"

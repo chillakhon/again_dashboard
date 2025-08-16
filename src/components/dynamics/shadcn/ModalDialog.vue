@@ -1,33 +1,35 @@
 <template>
-  <Dialog v-model:open="internalOpen">
+  <div>
+    <Dialog v-model:open="internalOpen">
 
-    <DialogTrigger as-child>
-      <div @click="open()" class="cursor-pointer">
-        <slot name="trigger"/>
-      </div>
-    </DialogTrigger>
+      <DialogTrigger as-child>
+        <div @click="open()" class="cursor-pointer">
+          <slot name="trigger"/>
+        </div>
+      </DialogTrigger>
 
 
-    <DialogContent
-        :class="dynamicStyle"
-        class="max-h-full overflow-y-auto overflow-x-auto flex flex-col items-start"
-    >
-      <DialogHeader>
-        <DialogTitle class="text-gray-800 text-md">{{ title }}</DialogTitle>
-        <DialogDescription v-if="description">
-          {{ description }}
-        </DialogDescription>
-      </DialogHeader>
+      <DialogContent
+          :class="dynamicStyle"
+          class="max-h-full overflow-y-auto overflow-x-auto flex flex-col items-start"
+      >
+        <DialogHeader>
+          <DialogTitle class="text-gray-800 text-md">{{ title }}</DialogTitle>
+          <DialogDescription v-if="description">
+            {{ description }}
+          </DialogDescription>
+        </DialogHeader>
 
-      <div class="w-full">
-        <slot name="content"/>
-      </div>
+        <div class="w-full">
+          <slot name="content"/>
+        </div>
 
-      <DialogFooter>
-        <slot name="footer"/>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+        <DialogFooter>
+          <slot name="footer"/>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -46,7 +46,7 @@ const columns = [
 
   {
     accessorKey: 'cost_price',
-    header: 'Цена закупны',
+    header: 'Цена закупки',
     cell: ({row}: any) => {
       return h(Input, {
         modelValue: row.original.cost_price,
@@ -79,7 +79,7 @@ const columns = [
 
   {
     accessorKey: 'price',
-    header: 'Цена продаж',
+    header: 'Цена продажи',
     cell: ({row}: any) => {
       if (row.original.price && row.original.price <= 0) {
         row.original.changeDiscount = Number(row.original.price);

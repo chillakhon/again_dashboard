@@ -10,7 +10,6 @@ import {
   parseDate,
   fromDate,
   toCalendarDate,
-  toDate
 } from '@internationalized/date'
 import {CalendarIcon} from 'lucide-vue-next'
 import {computed, PropType, watch} from 'vue'
@@ -32,7 +31,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const df = new DateFormatter(props.locale, {
+const df = new DateFormatter('ru-RU', {
   dateStyle: 'long'
 })
 
@@ -142,7 +141,11 @@ watch(
       </Button>
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0">
-      <Calendar v-model="internalValue" initial-focus/>
+      <Calendar
+          v-model="internalValue"
+          initial-focus
+          locale="ru-RU"
+      />
     </PopoverContent>
   </Popover>
 </template>

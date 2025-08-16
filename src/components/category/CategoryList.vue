@@ -1,6 +1,5 @@
 <template>
-  <Loader v-if="isLoading"/>
-  <div v-else class="">
+  <div>
 
     <div class="flex max-md:flex-col justify-between mb-2 max-md:space-y-2">
       <CategorySearch
@@ -15,8 +14,10 @@
       />
 
     </div>
+    <Loader v-if="isLoading"/>
 
     <CategoryListTable
+        v-else
         :key="renderTable"
         :items="data"
         @deleted="fetchData()"

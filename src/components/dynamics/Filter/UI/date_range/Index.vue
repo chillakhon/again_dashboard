@@ -8,14 +8,13 @@
           !filter[column.field]?.start && 'text-muted-foreground'
         )"
       >
-        <CalendarIcon class="mr-2 h-4 w-4" />
-        <template v-if="filter[column.field]?.start">
-          <template v-if="filter[column.field]?.end">
-            {{ df.format(localRange.start.toDate(getLocalTimeZone())) }} -
-            {{ df.format(localRange.end.toDate(getLocalTimeZone())) }}
+        <CalendarIcon class="mr-2 h-4 w-4"/>
+        <template v-if="localRange.start">
+          <template v-if="localRange.end">
+            {{ formatDisplay(localRange.start) }} - {{ formatDisplay(localRange.end) }}
           </template>
           <template v-else>
-            {{ df.format(localRange.start.toDate(getLocalTimeZone())) }}
+            {{ formatDisplay(localRange.start) }}
           </template>
         </template>
         <template v-else>
@@ -27,34 +26,42 @@
       <RangeCalendar
           v-model="localRange"
           initial-focus
+          locale="ru-RU"
           :number-of-months="1"
       />
     </PopoverContent>
   </Popover>
 </template>
 
-<script setup >
-import { ref, watch } from 'vue'
-import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
-import { RangeCalendar } from '@/components/ui/range-calendar'
-import { CalendarIcon } from 'lucide-vue-next'
-import {
-  CalendarDate,
-  DateFormatter,
-  getLocalTimeZone
-} from '@internationalized/date'
-import { cn } from '@/lib/utils'
+<script setup lang="ts">
+import {ref, watch} from 'vue'
+import {Popover, PopoverTrigger, PopoverContent} from '@/components/ui/popover'
+import {Button} from '@/components/ui/button'
+import {RangeCalendar} from '@/components/ui/range-calendar'
+import {CalendarIcon} from 'lucide-vue-next'
+import {getLocalTimeZone} from '@internationalized/date'
+import {cn} from '@/lib/utils'
 
 const props = defineProps({
   column: Object,
   filter: Object
 })
 
-const df = new DateFormatter('en-US', {
-  dateStyle: 'medium'
-})
+// локальный ref для диапазона
+const localRange = ref(props.filter[props.column.field] || {})
 
+// форматирование для кнопки с русскими месяцами
+const formatDisplay = (date) => {
+  if (!date) return ''
+  const jsDate = date.toDate(getLocalTimeZone())
+  return jsDate.toLocaleDateString('ru-RU', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric'
+  })
+}
+
+// форматирование для бэка
 const formatForBackend = (date) => {
   const jsDate = date.toDate(getLocalTimeZone())
   const year = jsDate.getFullYear()
@@ -63,10 +70,7 @@ const formatForBackend = (date) => {
   return `${year}-${month}-${day}`
 }
 
-// локальный ref для диапазона дат
-const localRange = ref(props.filter[props.column.field] || {})
-
-// следим за изменениями и обновляем filter в нужном формате
+// следим за изменениями и обновляем filter
 watch(
     localRange,
     (range) => {
@@ -75,10 +79,10 @@ watch(
           start: formatForBackend(range.start),
           end: range.end ? formatForBackend(range.end) : null
         }
+      } else {
+        props.filter[props.column.field] = {}
       }
     },
-    { deep: true, immediate: true }
+    {deep: true, immediate: true}
 )
 </script>
-
-<style scoped></style>
