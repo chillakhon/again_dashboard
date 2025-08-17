@@ -7,7 +7,21 @@
         :edit="edit"
         @deleted="handleDeleted"
         @save_changes="handleSave"
-    />
+    >
+      <template #addActions="{item}">
+
+        <AlertDialog
+            v-if="!item?.completed_at"
+            title="Завершить задачу?"
+            description="Вы уверены, что хотите отметить эту задачу как завершённую? Это действие изменит её статус и зафиксирует дату завершения."
+            icon-style="text-green-400 hover:text-green-500"
+            :show-icon="true"
+            :icon="SquareCheckBig"
+            @continue="handleComplete(item.id)"
+        />
+
+      </template>
+    </DynamicsDataTable>
   </div>
 </template>
 
@@ -16,12 +30,14 @@ import {h, PropType, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import Task from "@/models/Task";
 import {useTaskFunctions} from "@/composables/useTaskFunctions"; // поправь путь, если нужно
-import {useStatuses} from "@/composables/useStatuses";
 import {useDateFormat} from "@/composables/useDateFormat";
 import TaskEdit from "@/components/orders/tasks/TaskEdit.vue"; // поправь путь
 import TaskStatus from "@/models/TaskStatus";
 import TaskPriority from "@/models/TaskPriority";
 import TaskLabel from "@/models/TaskLabel";
+import AlertDialog from "@/components/dynamics/AlertDialog.vue"
+import {SquareCheckBig} from 'lucide-vue-next';
+
 
 const props = defineProps({
   items: {
@@ -33,7 +49,7 @@ const props = defineProps({
 
 const emits = defineEmits(["deleted", "updated"]);
 
-const {deleteTask, updateTask} = useTaskFunctions();
+const {deleteTask, updateTask, completeTask, sending} = useTaskFunctions();
 const {formatDateToRussian} = useDateFormat();
 
 const edit = ref({
@@ -290,6 +306,7 @@ const handleDeleted = async (task: Task) => {
   }
 };
 
+
 const handleSave = async (task: Task) => {
   if (!task.id) return;
 
@@ -300,6 +317,15 @@ const handleSave = async (task: Task) => {
     emits('updated', result);
   }
 };
+
+
+const handleComplete = async (id: number) => {
+  const res = await completeTask(id);
+  if (res) {
+    emits("updated", res);
+  }
+}
+
 </script>
 
 <style scoped></style>

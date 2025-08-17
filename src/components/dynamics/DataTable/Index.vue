@@ -58,26 +58,28 @@
                       />
                     </template>
                     <template v-else>
+                      <div class="flex space-x-2 justify-end">
 
-                      <slot name="addActions" :item="row.original"/>
+                        <slot name="addActions" :item="row.original"/>
 
-                      <Edit
-                          v-if="editPermission"
-                          :item="row.original"
-                          :edit="edit"
-                          @save_changes="emits('save_changes', $event)"
-                      />
+                        <Edit
+                            v-if="editPermission"
+                            :item="row.original"
+                            :edit="edit"
+                            @save_changes="emits('save_changes', $event)"
+                        />
 
-                      <AlertDialog
-                          v-if="deletePermission"
-                          :show-icon="true"
-                          title="Подтверждение удаления"
-                          description="Вы уверены что хотите удалить этот элемент?"
-                          button-name="Удалить"
-                          button-style="bg-red-500 hover:bg-red-600"
-                          :icon="Trash2"
-                          @continue="emits('deleted', row.original)"
-                      />
+                        <AlertDialog
+                            v-if="deletePermission"
+                            :show-icon="true"
+                            title="Подтверждение удаления"
+                            description="Вы уверены что хотите удалить этот элемент?"
+                            button-name="Удалить"
+                            button-style="bg-red-500 hover:bg-red-600"
+                            :icon="Trash2"
+                            @continue="emits('deleted', row.original)"
+                        />
+                      </div>
 
                     </template>
                   </div>

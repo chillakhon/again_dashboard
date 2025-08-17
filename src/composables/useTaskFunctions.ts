@@ -158,7 +158,7 @@ export function useTaskFunctions() {
 
     const completeTask = async (id: number | string): Promise<Task | null> => {
         sending.value = true
-        return await axios.patch(`tasks/${id}/complete`)
+        return await axios.post(`tasks/${id}/complete`)
             .then(res => {
                 useSuccessHandler().showSuccess(res)
                 return Task.fromJSON(res.data.task || res.data)
