@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-2">
     <Pagination
         v-if="total > itemsPerPage"
         v-slot="{ page }"

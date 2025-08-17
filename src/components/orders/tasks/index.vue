@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full mt-2">
+  <div class="w-full mb-2">
     <DynamicTabs :tabs="tabs" v-model="tab" class="w-full">
 
       <template #task>
