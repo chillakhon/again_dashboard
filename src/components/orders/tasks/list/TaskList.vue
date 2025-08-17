@@ -74,7 +74,7 @@ const data = ref()
 
 const totalItems = ref(0);
 const currentPage = ref(1);
-const itemsPerPage = ref(15);
+const itemsPerPage = ref(10);
 
 
 onMounted(async () => {
@@ -101,7 +101,7 @@ async function fetchData() {
   tasks.value = result?.tasks ?? []
 
   currentPage.value = result?.meta?.page ?? 1
-  itemsPerPage.value = result?.meta?.per_page ?? 15
+  itemsPerPage.value = result?.meta?.per_page ?? 10
   totalItems.value = result?.meta?.total ?? 0
 
   isLoading.value = false
