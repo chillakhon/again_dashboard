@@ -97,11 +97,18 @@ const columns = [
       const p: TaskStatus | undefined = row.original?.status;
       if (!p) return '';
       const name = p.name ?? '';
-      const color = p.color ?? '#6B7280';
+      const color = p.color;
+
+      const classes = ['px-2', 'py-1', 'rounded', 'whitespace-nowrap'];
+      if (color) {
+        classes.push('text-white');
+      }
+
+
       return h(
           "span",
           {
-            class: "px-2 py-1 rounded text-white whitespace-nowrap",
+            class: classes.join(' '),
             style: {backgroundColor: color}
           },
           name
@@ -115,11 +122,17 @@ const columns = [
       const p: TaskPriority | undefined = row.original?.priority;
       if (!p) return '';
       const name = p.name ?? '';
-      const color = p.color ?? '#6B7280';
+      const color = p.color;
+
+      const classes = ['px-2', 'py-1', 'rounded', 'whitespace-nowrap'];
+      if (color) {
+        classes.push('text-white');
+      }
+
       return h(
           "span",
           {
-            class: "px-2 py-1 rounded text-white whitespace-nowrap",
+            class: classes.join(' '),
             style: {backgroundColor: color}
           },
           name

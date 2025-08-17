@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-between mb-2 md:space-x-4 max-md:flex-col">
+  <div class="flex justify-between mb-2 md:space-x-4 max-md:flex-col ">
 
     <TaskListSearch
         v-if="!isLoading"

@@ -80,7 +80,7 @@ const taskStatus = ref<TaskStatus[]>([])
 
 const totalItems = ref(0);
 const currentPage = ref(1);
-const itemsPerPage = ref(15);
+const itemsPerPage = ref(10);
 
 
 onMounted(async () => {

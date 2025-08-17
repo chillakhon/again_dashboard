@@ -32,10 +32,10 @@ const props = defineProps({
 
 const emits = defineEmits(["deleted", "updated"]);
 
-const {deleteContactRequest, updateContactRequest} = useContactRequestFunctions();
+// const {deleteContactRequest, updateContactRequest} = useContactRequestFunctions();
 
 
-const {updateTaskStatus} = useTaskStatusFunctions()
+const {updateTaskStatus, deleteTaskStatus} = useTaskStatusFunctions()
 
 
 const edit = ref({
@@ -99,9 +99,9 @@ const columns = [
 
 ];
 
-const handleDeleted = async (request: ContactRequest) => {
+const handleDeleted = async (request: TaskStatus) => {
   if (!request.id) return;
-  await deleteContactRequest(request.id);
+  await deleteTaskStatus(request.id);
   emits("deleted");
 };
 const handleSave = async (item: TaskStatus) => {
