@@ -13,6 +13,9 @@ import './assets/css/main.css'
 import './store/modules/auth/subscriber.js';
 
 const access_token = Cookies.get('access_token');
+import { startNotificationsPolling } from './notifications-poller'
+
+
 
 store.dispatch('auth/attempt', access_token)
     .then(() => {
@@ -21,4 +24,7 @@ store.dispatch('auth/attempt', access_token)
             .use(router)
             .use(axiosPlugin)
             .mount('#app')
+
+        startNotificationsPolling()
     })
+

@@ -72,7 +72,14 @@ const columns = [
   {
     accessorKey: "phone",
     header: "Телефон",
+    cell: ({ row }: any) =>
+        h(
+            "span",
+            { class: "whitespace-nowrap" },
+            row.original.phone
+        ),
   },
+
 
 
   {

@@ -5,8 +5,6 @@
         variant="primary"
     />
 
-
-
     <div class="w-full  flex md:space-x-2 max-md:space-y-2 max-md:flex-col">
       <OrderSearch
           :key="renderSearchComp"
@@ -58,6 +56,11 @@ import DynamicTitle from "@/components/dynamics/DynamicTitle.vue";
 import OrderSearch from "@/components/orders/list/OrderSearch.vue";
 import Button from "@/components/ui/button/Button.vue";
 import {X} from "lucide-vue-next"
+import {useStore} from "vuex";
+
+
+const store = useStore();
+
 
 
 const searchParams = ref({
@@ -91,6 +94,8 @@ const itemsPerPage = ref(15);
 
 onMounted(async () => {
   await fetchData()
+  await store.dispatch('notifications/markOrdersChecked');
+
 })
 
 const {getOrders} = useOrderFunctions()

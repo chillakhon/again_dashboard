@@ -70,13 +70,27 @@ const columns = [
       return row.row.original.profile?.fullName || '—';
     }
   },
+
   {
     accessorKey: "profile.phone",
     header: "Телефон",
-    cell: (row: any) => {
-      return row.row.original.profile?.phone || '—';
-    }
+    cell: ({row}: any) =>
+        h(
+            "span",
+            {class: "whitespace-nowrap"},
+            row.row.original.profile?.phone
+        ),
   },
+
+
+  // {
+  //   accessorKey: "profile.phone",
+  //   header: "Телефон",
+  //   cell: (row: any) => {
+  //     return row.row.original.profile?.phone || '—';
+  //   }
+  // },
+
   {
     accessorKey: "email",
     header: "Почта",

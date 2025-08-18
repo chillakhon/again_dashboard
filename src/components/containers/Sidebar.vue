@@ -128,6 +128,12 @@
                                       aria-hidden="true"
                                   />
                                   {{ subItem.name }}
+
+                                  <span v-if="subItem.notification"
+                                        class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+    {{ subItem.notification }}
+  </span>
+
                                 </router-link>
                               </li>
                             </DisclosurePanel>
@@ -236,6 +242,11 @@
                               aria-hidden="true"
                           />
                           {{ subItem.name }}
+
+                          <span v-if="subItem.notification"
+                                class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+    {{ subItem.notification }}
+  </span>
                         </router-link>
                       </li>
                     </DisclosurePanel>
@@ -392,6 +403,7 @@ import {
   PhCodesandboxLogo
 } from '@phosphor-icons/vue';
 
+
 import {BookMinus, AlarmClockCheck} from 'lucide-vue-next'
 import {useStore} from "vuex";
 import {User} from "@/models/user/User";
@@ -431,14 +443,23 @@ const navigateTo = (path) => {
 
 const logo = '/logo.svg'
 
+const ordersCount = computed(() => store.state.notifications.counts.orders);
+const ordersCountTotal = computed(() => store.state.notifications.counts.orders_new_since);
+const tasksCount  = computed(() => store.state.notifications.counts.tasks);
+const reviewsCount= computed(() => store.state.notifications.counts.reviews);
+
+
 const navigation = [
-  {name: 'Главная', href: '/dashboard', icon: PhHouse, notification: 3},
+  {
+    name: 'Главная', href: '/dashboard', icon: PhHouse,
+    notification: ordersCountTotal.value,
+  },
   {
     name: 'Заказы', href: '/orders/list', icon: PhBag,
     children: [
-      {name: 'Все заказы', href: '/orders/list', icon: PhList, notification: 100,},
+      {name: 'Все заказы', href: '/orders/list', icon: PhList, notification: ordersCount.value},
       {name: 'Заявки', href: '/contact-requests', icon: BookMinus},
-      {name: 'Задачи', href: '/orders/tasks', icon: AlarmClockCheck},
+      {name: 'Задачи', href: '/orders/tasks', icon: AlarmClockCheck, notification: tasksCount.value},
     ],
   },
   {
@@ -447,7 +468,7 @@ const navigation = [
       {name: 'Каталог товаров', href: '/products/list', icon: PhList},
       // {name: 'Импорт/Экспорт', href: '/products/import', icon: PhComputerTower},
       {name: 'Цены и остатки', href: '/prices_stock', icon: PhWarehouse},
-      {name: 'Отзывы', href: '/products/reviews', icon: PhChatTeardropDots},
+      {name: 'Отзывы', href: '/products/reviews', icon: PhChatTeardropDots, notification: reviewsCount.value},
     ],
   },
   {
