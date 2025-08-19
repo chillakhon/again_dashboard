@@ -73,7 +73,7 @@ onMounted(async () => {
 })
 
 async function fetchData() {
-  // isLoading.value = true
+  isLoading.value = true
   data.value = await getProducts({
     per_page: itemsPerPage.value,
     page: currentPage.value,
