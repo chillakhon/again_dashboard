@@ -1,6 +1,7 @@
 // store/modules/notifications.ts
 import {Module} from "vuex";
 import axios from "axios";
+import {useLocalTime} from "@/composables/useLocalTime";
 
 export interface NotificationsState {
     counts: {
@@ -13,16 +14,18 @@ export interface NotificationsState {
     lastCheckTasks: string | null;
     lastCheckReviews: string | null;
     hasUpdates: boolean;
+    isFirstCheck: boolean; // Добавляем флаг для первой проверки
 }
 
 const storageKeys = {
     orders: "notifications.lastCheck.orders",
     tasks: "notifications.lastCheck.tasks",
     reviews: "notifications.lastCheck.reviews",
-    counts: "notifications.counts"
+    counts: "notifications.counts",
+    isFirstCheck: "notifications.isFirstCheck" // Ключ для отслеживания первой проверки
 };
 
-const nowIso = () => new Date().toISOString();
+const { nowIso } = useLocalTime();
 
 const parseCountsFromStorage = (): { orders: number; tasks: number; reviews: number; orders_new_since: number } => {
     try {
@@ -49,6 +52,45 @@ const getOrInitTimestamp = (key: string) => {
     return now;
 };
 
+// Функция для запроса разрешения на уведомления
+const requestNotificationPermission = async (): Promise<NotificationPermission> => {
+    if (!("Notification" in window)) {
+        console.warn("Браузер не поддерживает уведомления");
+        return "denied";
+    }
+
+    if (Notification.permission === "default") {
+        return await Notification.requestPermission();
+    }
+
+    return Notification.permission;
+};
+
+// Функция для отправки уведомления
+const sendBrowserNotification = (title: string, body: string, icon?: string) => {
+    console.log(54564654)
+
+    if (Notification.permission === "granted") {
+        console.log(46456466466789879879)
+        const notification = new Notification(title, {
+            body,
+            icon: icon || '/favicon.ico',
+            badge: '/favicon.ico',
+            requireInteraction: false,
+            silent: false
+        });
+
+        // Автоматически закрыть уведомление через 5 секунд
+        setTimeout(() => notification.close(), 5000);
+
+        // Обработка клика по уведомлению
+        notification.onclick = () => {
+            window.focus();
+            notification.close();
+        };
+    }
+};
+
 const notifications: Module<NotificationsState, any> = {
     namespaced: true,
     state: {
@@ -58,6 +100,7 @@ const notifications: Module<NotificationsState, any> = {
         lastCheckTasks: getOrInitTimestamp(storageKeys.tasks),
         lastCheckReviews: getOrInitTimestamp(storageKeys.reviews),
         hasUpdates: false,
+        isFirstCheck: localStorage.getItem(storageKeys.isFirstCheck) !== "false", // true по умолчанию, false если уже был запуск
     },
     mutations: {
         SET_COUNTS(state, payload: { orders: number; tasks: number; reviews: number, orders_new_since: number }) {
@@ -85,6 +128,10 @@ const notifications: Module<NotificationsState, any> = {
         SET_HAS_UPDATES(state, has: boolean) {
             state.hasUpdates = has;
         },
+        SET_FIRST_CHECK(state, isFirst: boolean) {
+            state.isFirstCheck = isFirst;
+            localStorage.setItem(storageKeys.isFirstCheck, String(isFirst));
+        },
         RESET(state) {
             // Полный сброс: обнуляем counts и удаляем lastCheck'и — после следующей инициализации они снова будут установлены в now
             state.counts = {orders: 0, tasks: 0, reviews: 0, orders_new_since: 0};
@@ -92,15 +139,25 @@ const notifications: Module<NotificationsState, any> = {
             state.lastCheckTasks = null;
             state.lastCheckReviews = null;
             state.hasUpdates = false;
+            state.isFirstCheck = true;
             localStorage.removeItem(storageKeys.counts);
             localStorage.removeItem(storageKeys.orders);
             localStorage.removeItem(storageKeys.tasks);
             localStorage.removeItem(storageKeys.reviews);
+            localStorage.removeItem(storageKeys.isFirstCheck);
         },
     },
     actions: {
+        async initNotifications({commit}) {
+            // Запрашиваем разрешение на уведомления при инициализации
+            await requestNotificationPermission();
+        },
+
         async checkForUpdates({state, commit}) {
             try {
+                // Сохраняем предыдущие значения для сравнения
+                const prevCounts = { ...state.counts };
+
                 // Отправляем все три параметра (они теперь инициализированы при старте)
                 const res = await axios.get("/notifications/counter", {
                     params: {
@@ -112,8 +169,56 @@ const notifications: Module<NotificationsState, any> = {
 
                 if (res.data && res.data.status) {
                     const {orders = 0, tasks = 0, reviews = 0, orders_new_since = 0} = res.data.data || {};
+
+                    // Обновляем counts
                     commit("SET_COUNTS", {orders, tasks, reviews, orders_new_since});
                     commit("SET_HAS_UPDATES", (orders + tasks + reviews + orders_new_since) > 0);
+
+                    // Проверяем, нужно ли отправлять уведомления (только если это не первая проверка)
+                    if (!state.isFirstCheck) {
+                        // Проверяем увеличение заказов
+                        if (orders > prevCounts.orders) {
+                            const diff = orders - prevCounts.orders;
+                            sendBrowserNotification(
+                                "Новые заказы",
+                                `У вас ${diff} ${diff === 1 ? 'новый заказ' : 'новых заказов'}`,
+                                '/icons/order-icon.png'
+                            );
+                        }
+
+                        // Проверяем увеличение задач
+                        if (tasks > prevCounts.tasks) {
+                            const diff = tasks - prevCounts.tasks;
+                            sendBrowserNotification(
+                                "Новые задачи",
+                                `У вас ${diff} ${diff === 1 ? 'новая задача' : 'новых задач'}`,
+                                '/icons/task-icon.png'
+                            );
+                        }
+
+                        // Проверяем увеличение отзывов
+                        if (reviews > prevCounts.reviews) {
+                            const diff = reviews - prevCounts.reviews;
+                            sendBrowserNotification(
+                                "Новые отзывы",
+                                `У вас ${diff} ${diff === 1 ? 'новый отзыв' : 'новых отзывов'}`,
+                                '/icons/review-icon.png'
+                            );
+                        }
+
+                        // Проверяем увеличение orders_new_since
+                        if (orders_new_since > prevCounts.orders_new_since) {
+                            const diff = orders_new_since - prevCounts.orders_new_since;
+                            sendBrowserNotification(
+                                "Обновления заказов",
+                                `${diff} ${diff === 1 ? 'заказ обновился' : 'заказов обновились'}`,
+                                '/icons/update-icon.png'
+                            );
+                        }
+                    } else {
+                        // Помечаем, что первая проверка завершена
+                        commit("SET_FIRST_CHECK", false);
+                    }
                 }
             } catch (e) {
                 console.error("Ошибка проверки уведомлений:", e);
@@ -127,7 +232,8 @@ const notifications: Module<NotificationsState, any> = {
             const newOrders = 0;
             const newTasks = state.counts.tasks;
             const newReviews = state.counts.reviews;
-            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews});
+            const orders_new_since = state.counts.orders_new_since;
+            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews, orders_new_since: orders_new_since});
             commit("SET_HAS_UPDATES", (newTasks + newReviews) > 0);
         },
 
@@ -138,7 +244,9 @@ const notifications: Module<NotificationsState, any> = {
             const newTasks = 0;
             const newOrders = state.counts.orders;
             const newReviews = state.counts.reviews;
-            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews});
+            const orders_new_since = state.counts.orders_new_since;
+
+            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews, orders_new_since: orders_new_since});
             commit("SET_HAS_UPDATES", (newOrders + newReviews) > 0);
         },
 
@@ -149,8 +257,21 @@ const notifications: Module<NotificationsState, any> = {
             const newReviews = 0;
             const newOrders = state.counts.orders;
             const newTasks = state.counts.tasks;
-            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews});
+            const orders_new_since = state.counts.orders_new_since;
+            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews, orders_new_since: orders_new_since});
             commit("SET_HAS_UPDATES", (newOrders + newTasks) > 0);
+        },
+
+        async requestNotificationPermission({}) {
+            return await requestNotificationPermission();
+        },
+
+        sendTestNotification({}) {
+            sendBrowserNotification(
+                "Тестовое уведомление",
+                "Уведомления настроены и работают корректно!",
+                '/favicon.ico'
+            );
         },
 
         reset({commit}) {

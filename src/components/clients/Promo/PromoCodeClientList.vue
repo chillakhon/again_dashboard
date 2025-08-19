@@ -7,7 +7,7 @@
       <PromoSearch
           class="md:w-[400px]"
           :filter="paramsSearch"
-          @search="fetchData()"
+          @search="handleSearch"
       />
 
       <PromoCodeClientAddModal
@@ -114,6 +114,11 @@ const handleDeleted = (item: PromoCodeClient) => {
     promoCodeClientIds.value = promoCodeClientIds.value.filter((id: any) => id !== item.promoCode?.id)
     promoCodeClientAddModalRender.value++
   }
+}
+
+const handleSearch = async () => {
+  currentPage.value = 1;
+  await fetchData()
 }
 
 </script>

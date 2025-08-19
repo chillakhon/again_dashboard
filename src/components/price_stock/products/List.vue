@@ -5,7 +5,7 @@
     <ProductSearch
         class="md:w-[400px] mb-2"
         :filter="paramsSearch"
-        @search="fetchData()"
+        @search="handleSearch"
     />
 
     <ProductTableAll
@@ -100,5 +100,8 @@ async function fetchData() {
   renderTable.value++
 }
 
-
+const handleSearch = async () => {
+  currentPage.value = 1;
+  await fetchData()
+}
 </script>

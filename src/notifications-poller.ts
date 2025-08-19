@@ -1,14 +1,17 @@
-import store from './store'
+import store from './store';
 
-export function startNotificationsPolling() {
-    // Проверка сразу при старте
-    store.dispatch('notifications/checkForUpdates')
+export async function startNotificationsPolling() {
 
-    // Запуск интервала каждые 60 секунд
+    await store.dispatch('notifications/requestNotificationPermission');
+
+    // Сразу проверяем обновления (без уведомлений, если разрешение ещё не дано)
+    store.dispatch('notifications/checkForUpdates');
+
+    // Основной polling каждые 60 секунд
     const interval = setInterval(() => {
-        store.dispatch('notifications/checkForUpdates')
-    }, 60 * 1000)
+        store.dispatch('notifications/checkForUpdates');
+    }, 60 * 1000);
 
-    // Очистка при закрытии вкладки
-    window.addEventListener('beforeunload', () => clearInterval(interval))
+    // Очистка интервала при закрытии вкладки
+    window.addEventListener('beforeunload', () => clearInterval(interval));
 }

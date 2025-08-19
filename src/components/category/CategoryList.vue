@@ -5,7 +5,7 @@
       <CategorySearch
           class="md:w-[400px]"
           :filter="paramsSearch"
-          @search="fetchData()"
+          @search="handleSearch"
       />
 
       <CategoryAddModal
@@ -83,5 +83,10 @@ async function fetchData() {
   renderTable.value++
 }
 
+
+const handleSearch = async () => {
+  currentPage.value = 1;
+  await fetchData()
+}
 
 </script>

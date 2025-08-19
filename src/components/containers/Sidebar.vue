@@ -1,5 +1,6 @@
 <template>
   <div>
+
     <!-- Mobile sidebar -->
     <TransitionRoot as="template" :show="sidebarOpen">
       <Dialog class="relative z-40 lg:hidden" @close="sidebarOpen = false">
@@ -81,7 +82,7 @@
                                 aria-hidden="true"
                             />
                             {{ item.name }}
-                            <span v-if="item.notification"
+                            <span v-if="item.notification && item.notification > 0"
                                   class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                               {{ item.notification }}
                             </span>
@@ -129,10 +130,10 @@
                                   />
                                   {{ subItem.name }}
 
-                                  <span v-if="subItem.notification"
+                                  <span v-if="subItem.notification && subItem.notification > 0"
                                         class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
-    {{ subItem.notification }}
-  </span>
+                                    {{ subItem.notification }}
+                                  </span>
 
                                 </router-link>
                               </li>
@@ -143,7 +144,6 @@
                     </li>
 
                     <li class="mt-auto">
-
                       <router-link
                           to="/settings"
                           class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors"
@@ -168,7 +168,6 @@
         <div class="flex h-16 shrink-0 items-center">
           <img class="h-8 w-auto" :src='logo' alt="Company Logo"/>
         </div>
-
 
         <nav class="flex flex-1 flex-col">
           <ul role="list" class="flex flex-1 flex-col gap-y-4">
@@ -196,7 +195,7 @@
                         aria-hidden="true"
                     />
                     {{ item.name }}
-                    <span v-if="item.notification"
+                    <span v-if="item.notification && item.notification > 0"
                           class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
                       {{ item.notification }}
                     </span>
@@ -243,10 +242,10 @@
                           />
                           {{ subItem.name }}
 
-                          <span v-if="subItem.notification"
+                          <span v-if="subItem.notification && subItem.notification > 0"
                                 class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
-    {{ subItem.notification }}
-  </span>
+                            {{ subItem.notification }}
+                          </span>
                         </router-link>
                       </li>
                     </DisclosurePanel>
@@ -256,7 +255,6 @@
             </li>
 
             <li class="mt-auto">
-
               <router-link
                   to="/settings"
                   class="group -mx-2 flex gap-x-3 rounded-md p-2 text-sm font-semibold text-gray-700 hover:bg-gray-50 hover:text-red-600 transition-colors"
@@ -287,19 +285,8 @@
 
           <div class="h-6 w-px bg-gray-200 lg:hidden" aria-hidden="true"/>
 
-          <div class="flex  flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-end">
-
-
+          <div class="flex flex-1 gap-x-4 self-stretch lg:gap-x-6 justify-end">
             <div class="flex items-center gap-x-4 lg:gap-x-6">
-              <!--              <button-->
-              <!--                  type="button"-->
-              <!--                  class="-m-2.5 p-2.5 text-gray-400 hover:text-gray-500 relative rounded-md hover:bg-gray-100 transition-colors"-->
-              <!--              >-->
-              <!--                <span class="sr-only">View notifications</span>-->
-              <!--                <PhBell class="size-6"/>-->
-              <!--                <span class="absolute top-1 right-1 block size-2.5 rounded-full bg-red-500 ring-2 ring-white"></span>-->
-              <!--              </button>-->
-
               <div class="hidden lg:block lg:h-6 lg:w-px lg:bg-gray-200" aria-hidden="true"/>
 
               <!-- Profile dropdown -->
@@ -308,16 +295,14 @@
                   <MenuButton class="-m-1.5 flex items-center p-1.5">
                     <span class="sr-only">Open user menu</span>
                     <span class="flex items-center">
-
-
-                     <Avatar class="h-10 w-10 border-2 border-white shadow-lg">
-                    <AvatarImage :src="user.profile?.image" alt="@unovue"/>
-                    <AvatarFallback class="bg-gradient-to-r from-red-400 to-red-600 text-white text-4xl font-medium">
-                      Av
+                      <Avatar class="h-10 w-10 border-2 border-white shadow-lg">
+                        <AvatarImage :src="user?.profile?.image" alt="@unovue"/>
+                        <AvatarFallback
+                            class="bg-gradient-to-r from-red-400 to-red-600 text-white text-4xl font-medium">
+                          Av
                         </AvatarFallback>
-                   </Avatar>
-
-                  </span>
+                      </Avatar>
+                    </span>
                   </MenuButton>
                   <transition
                       enter-active-class="transition ease-out duration-100"
@@ -347,20 +332,18 @@
                           {{ item.name }}
                         </span>
                       </MenuItem>
-
                     </MenuItems>
                   </transition>
                 </Menu>
               </div>
-
-              <!--              <button @click="closeMenu">Закрыть меню из вне</button>-->
-
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
+
+
 </template>
 
 <script setup>
@@ -403,12 +386,13 @@ import {
   PhCodesandboxLogo
 } from '@phosphor-icons/vue';
 
-
 import {BookMinus, AlarmClockCheck} from 'lucide-vue-next'
 import {useStore} from "vuex";
 import {User} from "@/models/user/User";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import router from "@/router";
+
+
 
 
 const store = useStore()
@@ -417,7 +401,6 @@ const user = computed(() => {
   const userData = store.state.auth.user
   return userData ? User.fromJSON(userData) : null
 })
-
 
 const isMenuOpen = ref(false)
 const menuRef = ref(null)
@@ -436,26 +419,30 @@ onBeforeUnmount(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 
-
 const navigateTo = (path) => {
   router.push(path)
 }
 
 const logo = '/logo.svg'
 
-const ordersCount = computed(() => store.state.notifications.counts.orders);
-const ordersCountTotal = computed(() => store.state.notifications.counts.orders_new_since);
-const tasksCount  = computed(() => store.state.notifications.counts.tasks);
-const reviewsCount= computed(() => store.state.notifications.counts.reviews);
+// Перенести computed значения для уведомлений в реактивный контекст
+const ordersCount = computed(() => store.state.notifications.counts.orders || 0);
+const ordersCountTotal = computed(() => store.state.notifications.counts.orders_new_since || 0);
+const tasksCount = computed(() => store.state.notifications.counts.tasks || 0);
+const reviewsCount = computed(() => store.state.notifications.counts.reviews || 0);
 
-
-const navigation = [
+// Сделать navigation computed, чтобы он реагировал на изменения counts
+const navigation = computed(() => [
   {
-    name: 'Главная', href: '/dashboard', icon: PhHouse,
+    name: 'Главная',
+    href: '/dashboard',
+    icon: PhHouse,
     notification: ordersCountTotal.value,
   },
   {
-    name: 'Заказы', href: '/orders/list', icon: PhBag,
+    name: 'Заказы',
+    href: '/orders/list',
+    icon: PhBag,
     children: [
       {name: 'Все заказы', href: '/orders/list', icon: PhList, notification: ordersCount.value},
       {name: 'Заявки', href: '/contact-requests', icon: BookMinus},
@@ -463,26 +450,29 @@ const navigation = [
     ],
   },
   {
-    name: 'Товары', href: '/products/list', icon: PhPackage,
+    name: 'Товары',
+    href: '/products/list',
+    icon: PhPackage,
     children: [
       {name: 'Каталог товаров', href: '/products/list', icon: PhList},
-      // {name: 'Импорт/Экспорт', href: '/products/import', icon: PhComputerTower},
       {name: 'Цены и остатки', href: '/prices_stock', icon: PhWarehouse},
       {name: 'Отзывы', href: '/products/reviews', icon: PhChatTeardropDots, notification: reviewsCount.value},
     ],
   },
   {
-    name: 'Клиенты', href: '/clients/list', icon: PhUserList,
+    name: 'Клиенты',
+    href: '/clients/list',
+    icon: PhUserList,
     children: [
       {name: 'Все клиенты', href: '/clients/list', icon: PhUserList},
       {name: 'Скидки и промокоды', href: '/clients/discounts', icon: PhUnite},
     ]
   },
-
   {name: 'Категории', href: '/category', icon: PhCodesandboxLogo},
-
   {
-    name: 'Интеграции', href: '/integrations', icon: PhUnite,
+    name: 'Интеграции',
+    href: '/integrations',
+    icon: PhUnite,
     children: [
       {name: 'Мой склад', href: '/integrations/moysklad', icon: PhWarehouse},
       {name: 'Системы платежей', href: '/integrations/payments', icon: PhBag},
@@ -492,42 +482,20 @@ const navigation = [
       {name: 'Мессенджеры', href: '/integrations/messengers', icon: PhChatTeardropDots},
     ]
   },
-  {
-    name: 'Аналитика', href: '/analytics/summary', icon: PhChartPie,
-    // children: [
-    //   {name: 'Сводка', href: '', icon: PhChartPie}
-    // ]
-  },
-  {
-    name: 'Диалоги', icon: PhChatTeardropDots, href: '/dialogs/chats',
-    // children: [
-    // {name: 'Сообщения', href: '/dialogs/chats', icon: PhChatTeardropDots},
-    // {name: 'Whatsapp', href: '/dialogs/whatsapp', icon: PhChatTeardropDots},
-    // {name: 'Telegram', href: '/dialogs/telegram', icon: PhChatTeardropDots},
-    // ]
-  },
-  // {
-  //   name: 'Склад', href: '/warehouses', icon: PhWarehouse,
-  //   children: [
-  //     {name: 'Техкарты', href: '/warehouses/recipes/list', icon: PhList},
-  //     // {name: 'Техоперации', href: '/warehouses/tech_operations', icon: PhPackage},
-  //     {name: 'Производственные задания', href: '/warehouses/production/list', icon: PhFactory},
-  //   ],
-  // },
-  // {name: 'Доставка', href: '/deliveries', icon: PhTruck},
+  {name: 'Аналитика', href: '/analytics/summary', icon: PhChartPie},
+  {name: 'Диалоги', icon: PhChatTeardropDots, href: '/dialogs/chats'},
   {name: 'Пользователи', href: '/users', icon: PhUsers},
-]
+])
 
 const userNavigation = [
   {name: 'Ваш профиль', href: '/profile', icon: PhUser},
-  // {name: 'Настройки', href: '/settings', icon: PhGear},
   {name: 'Выйти', href: '/auth/logout', icon: PhSignOut},
 ];
 
 const route = useRoute()
 
 const updatedNavigation = computed(() =>
-    navigation.map(item => ({
+    navigation.value.map(item => ({
       ...item,
       current: route.path.startsWith(item.href) ||
           (item.children && item.children.some(child => route.path.startsWith(child.href))),

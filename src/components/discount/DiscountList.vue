@@ -5,7 +5,7 @@
       <DiscountSearch
           class="md:w-[400px]"
           :filter="paramsSearch"
-          @search="fetchData()"
+          @search="handleSearch"
       />
 
       <DiscountAddModal
@@ -87,6 +87,12 @@ async function fetchData() {
 function handleDeleted(discount: Discount) {
   data.value = data.value?.filter(d => d.id !== discount.id)
   renderTable.value++
+}
+
+
+const handleSearch = async () => {
+  currentPage.value = 1;
+  await fetchData()
 }
 
 </script>

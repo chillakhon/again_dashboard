@@ -40,8 +40,6 @@
       :show-edges="true"
       @current-page="currentPage = $event; fetchData()"
   />
-
-
 </template>
 
 <script setup lang="ts">
@@ -59,8 +57,8 @@ import {X} from "lucide-vue-next"
 import {useStore} from "vuex";
 
 
-const store = useStore();
 
+const store = useStore();
 
 const searchParams = ref({
   datePicker: {

@@ -5,7 +5,7 @@
       <PromoSearch
           class="md:w-[400px]"
           :filter="paramsSearch"
-          @search="fetchData()"
+          @search="handleSearch"
       />
 
       <PromoAddModal
@@ -87,6 +87,12 @@ async function fetchData() {
 function handleDeleted(promoCode: PromoCode) {
   data.value = data.value?.filter(d => d.id !== promoCode.id)
   renderTable.value++
+}
+
+
+const handleSearch = async () => {
+  currentPage.value = 1;
+  await fetchData()
 }
 
 </script>

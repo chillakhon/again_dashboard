@@ -5,7 +5,7 @@
 
       <ClientSearch
           :filter="filters"
-          @search="fetchData()"
+          @search="handleSearch"
       />
 
       <ClientsAdd
@@ -96,4 +96,11 @@ async function fetchData() {
 onMounted(() => {
   fetchData();
 });
+
+
+const handleSearch = async () => {
+  currentPage.value = 1;
+  await fetchData()
+}
+
 </script>
