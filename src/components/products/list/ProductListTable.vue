@@ -133,9 +133,13 @@ const columns = [
     header: "Штрих-код",
   },
   {
-    accessorKey: "sku",
-    header: "Артикул",
+    accessorKey: "code",
+    header: "Код",
   },
+  // {
+  //   accessorKey: "sku",
+  //   header: "Артикул",
+  // },
   {
     accessorKey: "dimensions",
     header: "Габариты (д*ш*в)",

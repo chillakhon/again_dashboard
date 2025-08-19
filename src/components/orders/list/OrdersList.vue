@@ -62,7 +62,6 @@ import {useStore} from "vuex";
 const store = useStore();
 
 
-
 const searchParams = ref({
   datePicker: {
     start: '',
