@@ -56,7 +56,7 @@ import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
 const data = ref([]);
 const totalItems = ref(0);
 const currentPage = ref(1);
-const itemsPerPage = ref(2);
+const itemsPerPage = ref(15);
 const isLoading = ref(true)
 const renderTable = ref(1)
 
