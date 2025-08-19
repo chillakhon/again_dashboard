@@ -6,7 +6,7 @@
       <ProductSearch
           class="md:w-[400px]"
           :filter="paramsSearch"
-          @search="fetchData()"
+          @search="handleSearch"
       />
 
       <div class="md:flex md:space-x-2">
@@ -56,7 +56,7 @@ import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
 const data = ref([]);
 const totalItems = ref(0);
 const currentPage = ref(1);
-const itemsPerPage = ref(15);
+const itemsPerPage = ref(2);
 const isLoading = ref(true)
 const renderTable = ref(1)
 
@@ -96,6 +96,11 @@ async function syncMoysklad() {
   await productsSync({})
   isLoading.value = false
   renderTable.value++
+}
+
+const handleSearch = async () => {
+  currentPage.value = 1;
+  await fetchData()
 }
 
 </script>
