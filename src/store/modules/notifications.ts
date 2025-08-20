@@ -8,38 +8,46 @@ export interface NotificationsState {
         orders: number;
         tasks: number;
         reviews: number;
+        requests: number;
+        conversations: number;
         orders_new_since: number;
     };
     lastCheckOrders: string | null;
     lastCheckTasks: string | null;
     lastCheckReviews: string | null;
+    lastCheckRequests: string | null;
+    lastCheckConversations: string | null;
     hasUpdates: boolean;
-    isFirstCheck: boolean; // Добавляем флаг для первой проверки
+    isFirstCheck: boolean;
 }
 
 const storageKeys = {
     orders: "notifications.lastCheck.orders",
     tasks: "notifications.lastCheck.tasks",
     reviews: "notifications.lastCheck.reviews",
+    requests: "notifications.lastCheck.requests",
+    conversations: "notifications.lastCheck.conversations",
     counts: "notifications.counts",
     isFirstCheck: "notifications.isFirstCheck" // Ключ для отслеживания первой проверки
 };
 
-const { nowIso } = useLocalTime();
+const {nowIso} = useLocalTime();
 
-const parseCountsFromStorage = (): { orders: number; tasks: number; reviews: number; orders_new_since: number } => {
+const parseCountsFromStorage = (): { orders: number; tasks: number; reviews: number; requests: number; conversations: number; orders_new_since: number } => {
     try {
         const raw = localStorage.getItem(storageKeys.counts);
-        if (!raw) return {orders: 0, tasks: 0, reviews: 0, orders_new_since: 0};
+        if (!raw) return {orders: 0, tasks: 0, reviews: 0, requests: 0, conversations: 0, orders_new_since: 0};
         const parsed = JSON.parse(raw);
         return {
             orders: parsed.orders || 0,
             tasks: parsed.tasks || 0,
             reviews: parsed.reviews || 0,
+            requests: parsed.requests || 0,
+            conversations: parsed.conversations || 0,
             orders_new_since: parsed.orders_new_since || 0,
         };
     } catch {
-        return {orders: 0, tasks: 0, reviews: 0, orders_new_since: 0};
+        return {orders: 0, tasks: 0, reviews: 0, requests: 0, conversations: 0, orders_new_since: 0};
     }
 };
 
@@ -68,10 +76,8 @@ const requestNotificationPermission = async (): Promise<NotificationPermission> 
 
 // Функция для отправки уведомления
 const sendBrowserNotification = (title: string, body: string, icon?: string) => {
-    console.log(54564654)
 
     if (Notification.permission === "granted") {
-        console.log(46456466466789879879)
         const notification = new Notification(title, {
             body,
             icon: icon || '/favicon.ico',
@@ -99,14 +105,18 @@ const notifications: Module<NotificationsState, any> = {
         lastCheckOrders: getOrInitTimestamp(storageKeys.orders),
         lastCheckTasks: getOrInitTimestamp(storageKeys.tasks),
         lastCheckReviews: getOrInitTimestamp(storageKeys.reviews),
+        lastCheckRequests: getOrInitTimestamp(storageKeys.requests),
+        lastCheckConversations: getOrInitTimestamp(storageKeys.conversations),
         hasUpdates: false,
         isFirstCheck: localStorage.getItem(storageKeys.isFirstCheck) !== "false", // true по умолчанию, false если уже был запуск
     },
     mutations: {
-        SET_COUNTS(state, payload: { orders: number; tasks: number; reviews: number, orders_new_since: number }) {
+        SET_COUNTS(state, payload: { orders: number; tasks: number; reviews: number; requests: number; conversations: number; orders_new_since: number }) {
             state.counts.orders = payload.orders;
             state.counts.tasks = payload.tasks;
             state.counts.reviews = payload.reviews;
+            state.counts.requests = payload.requests;
+            state.counts.conversations = payload.conversations;
             state.counts.orders_new_since = payload.orders_new_since;
             localStorage.setItem(storageKeys.counts, JSON.stringify(state.counts));
         },
@@ -125,6 +135,16 @@ const notifications: Module<NotificationsState, any> = {
             if (date === null) localStorage.removeItem(storageKeys.reviews);
             else localStorage.setItem(storageKeys.reviews, date);
         },
+        SET_LAST_CHECK_REQUESTS(state, date: string | null) {
+            state.lastCheckRequests = date;
+            if (date === null) localStorage.removeItem(storageKeys.requests);
+            else localStorage.setItem(storageKeys.requests, date);
+        },
+        SET_LAST_CHECK_CONVERSATIONS(state, date: string | null) {
+            state.lastCheckConversations = date;
+            if (date === null) localStorage.removeItem(storageKeys.conversations);
+            else localStorage.setItem(storageKeys.conversations, date);
+        },
         SET_HAS_UPDATES(state, has: boolean) {
             state.hasUpdates = has;
         },
@@ -134,16 +154,20 @@ const notifications: Module<NotificationsState, any> = {
         },
         RESET(state) {
             // Полный сброс: обнуляем counts и удаляем lastCheck'и — после следующей инициализации они снова будут установлены в now
-            state.counts = {orders: 0, tasks: 0, reviews: 0, orders_new_since: 0};
+            state.counts = {orders: 0, tasks: 0, reviews: 0, requests: 0, conversations: 0, orders_new_since: 0};
             state.lastCheckOrders = null;
             state.lastCheckTasks = null;
             state.lastCheckReviews = null;
+            state.lastCheckRequests = null;
+            state.lastCheckConversations = null;
             state.hasUpdates = false;
             state.isFirstCheck = true;
             localStorage.removeItem(storageKeys.counts);
             localStorage.removeItem(storageKeys.orders);
             localStorage.removeItem(storageKeys.tasks);
             localStorage.removeItem(storageKeys.reviews);
+            localStorage.removeItem(storageKeys.requests);
+            localStorage.removeItem(storageKeys.conversations);
             localStorage.removeItem(storageKeys.isFirstCheck);
         },
     },
@@ -156,23 +180,25 @@ const notifications: Module<NotificationsState, any> = {
         async checkForUpdates({state, commit}) {
             try {
                 // Сохраняем предыдущие значения для сравнения
-                const prevCounts = { ...state.counts };
+                const prevCounts = {...state.counts};
 
-                // Отправляем все три параметра (они теперь инициализированы при старте)
+                // Отправляем все пять параметров (они теперь инициализированы при старте)
                 const res = await axios.get("/notifications/counter", {
                     params: {
                         last_updated_orders: state.lastCheckOrders,
                         last_updated_tasks: state.lastCheckTasks,
                         last_updated_reviews: state.lastCheckReviews,
+                        last_updated_requests: state.lastCheckRequests,
+                        last_updated_conversations: state.lastCheckConversations,
                     },
                 });
 
                 if (res.data && res.data.status) {
-                    const {orders = 0, tasks = 0, reviews = 0, orders_new_since = 0} = res.data.data || {};
+                    const {orders = 0, tasks = 0, reviews = 0, requests = 0, conversations = 0, orders_new_since = 0} = res.data.data || {};
 
                     // Обновляем counts
-                    commit("SET_COUNTS", {orders, tasks, reviews, orders_new_since});
-                    commit("SET_HAS_UPDATES", (orders + tasks + reviews + orders_new_since) > 0);
+                    commit("SET_COUNTS", {orders, tasks, reviews, requests, conversations, orders_new_since});
+                    commit("SET_HAS_UPDATES", (orders + tasks + reviews + requests + conversations + orders_new_since) > 0);
 
                     // Проверяем, нужно ли отправлять уведомления (только если это не первая проверка)
                     if (!state.isFirstCheck) {
@@ -206,6 +232,26 @@ const notifications: Module<NotificationsState, any> = {
                             );
                         }
 
+                        // Проверяем увеличение запросов
+                        if (requests > prevCounts.requests) {
+                            const diff = requests - prevCounts.requests;
+                            sendBrowserNotification(
+                                "Новые запросы",
+                                `У вас ${diff} ${diff === 1 ? 'новый запрос' : 'новых запросов'}`,
+                                '/icons/request-icon.png'
+                            );
+                        }
+
+                        // Проверяем увеличение разговоров
+                        if (conversations > prevCounts.conversations) {
+                            const diff = conversations - prevCounts.conversations;
+                            sendBrowserNotification(
+                                "Новые разговоры",
+                                `У вас ${diff} ${diff === 1 ? 'новый разговор' : 'новых разговоров'}`,
+                                '/icons/conversation-icon.png'
+                            );
+                        }
+
                         // Проверяем увеличение orders_new_since
                         if (orders_new_since > prevCounts.orders_new_since) {
                             const diff = orders_new_since - prevCounts.orders_new_since;
@@ -232,9 +278,18 @@ const notifications: Module<NotificationsState, any> = {
             const newOrders = 0;
             const newTasks = state.counts.tasks;
             const newReviews = state.counts.reviews;
+            const newRequests = state.counts.requests;
+            const newConversations = state.counts.conversations;
             const orders_new_since = state.counts.orders_new_since;
-            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews, orders_new_since: orders_new_since});
-            commit("SET_HAS_UPDATES", (newTasks + newReviews) > 0);
+            commit("SET_COUNTS", {
+                orders: newOrders,
+                tasks: newTasks,
+                reviews: newReviews,
+                requests: newRequests,
+                conversations: newConversations,
+                orders_new_since: orders_new_since
+            });
+            commit("SET_HAS_UPDATES", (newTasks + newReviews + newRequests + newConversations) > 0);
         },
 
         markTasksChecked({commit, state}) {
@@ -244,10 +299,19 @@ const notifications: Module<NotificationsState, any> = {
             const newTasks = 0;
             const newOrders = state.counts.orders;
             const newReviews = state.counts.reviews;
+            const newRequests = state.counts.requests;
+            const newConversations = state.counts.conversations;
             const orders_new_since = state.counts.orders_new_since;
 
-            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews, orders_new_since: orders_new_since});
-            commit("SET_HAS_UPDATES", (newOrders + newReviews) > 0);
+            commit("SET_COUNTS", {
+                orders: newOrders,
+                tasks: newTasks,
+                reviews: newReviews,
+                requests: newRequests,
+                conversations: newConversations,
+                orders_new_since: orders_new_since
+            });
+            commit("SET_HAS_UPDATES", (newOrders + newReviews + newRequests + newConversations) > 0);
         },
 
         markReviewsChecked({commit, state}) {
@@ -257,10 +321,64 @@ const notifications: Module<NotificationsState, any> = {
             const newReviews = 0;
             const newOrders = state.counts.orders;
             const newTasks = state.counts.tasks;
+            const newRequests = state.counts.requests;
+            const newConversations = state.counts.conversations;
             const orders_new_since = state.counts.orders_new_since;
-            commit("SET_COUNTS", {orders: newOrders, tasks: newTasks, reviews: newReviews, orders_new_since: orders_new_since});
-            commit("SET_HAS_UPDATES", (newOrders + newTasks) > 0);
+            commit("SET_COUNTS", {
+                orders: newOrders,
+                tasks: newTasks,
+                reviews: newReviews,
+                requests: newRequests,
+                conversations: newConversations,
+                orders_new_since: orders_new_since
+            });
+            commit("SET_HAS_UPDATES", (newOrders + newTasks + newRequests + newConversations) > 0);
         },
+
+        markRequestsChecked({commit, state}) {
+            const now = nowIso();
+            commit("SET_LAST_CHECK_REQUESTS", now);
+
+            const newRequests = 0;
+            const newOrders = state.counts.orders;
+            const newTasks = state.counts.tasks;
+            const newReviews = state.counts.reviews;
+            const newConversations = state.counts.conversations;
+            const orders_new_since = state.counts.orders_new_since;
+            commit("SET_COUNTS", {
+                orders: newOrders,
+                tasks: newTasks,
+                reviews: newReviews,
+                requests: newRequests,
+                conversations: newConversations,
+                orders_new_since: orders_new_since
+            });
+            commit("SET_HAS_UPDATES", (newOrders + newTasks + newReviews + newConversations) > 0);
+        },
+
+
+
+        markConversationsChecked({commit, state}) {
+            const now = nowIso();
+            commit("SET_LAST_CHECK_CONVERSATIONS", now);
+
+            const newConversations = 0;
+            const newOrders = state.counts.orders;
+            const newTasks = state.counts.tasks;
+            const newReviews = state.counts.reviews;
+            const newRequests = state.counts.requests;
+            const orders_new_since = state.counts.orders_new_since;
+            commit("SET_COUNTS", {
+                orders: newOrders,
+                tasks: newTasks,
+                reviews: newReviews,
+                requests: newRequests,
+                conversations: newConversations,
+                orders_new_since: orders_new_since
+            });
+            commit("SET_HAS_UPDATES", (newOrders + newTasks + newReviews + newRequests) > 0);
+        },
+
 
         async requestNotificationPermission({}) {
             return await requestNotificationPermission();

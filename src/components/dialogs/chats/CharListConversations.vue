@@ -11,7 +11,7 @@
       <div
           v-for="item in props.conversations"
           :key="item.id"
-          @click="selectUser(item.id ?? 0)"
+          @click="selectUser(item.id ?? 0); item.unread_messages_count = undefined"
           :class="`p-2 border-b cursor-pointer transition-all ${
           selectedUser === item.id
             ? 'bg-red-50 border-l-4 border-l-red-500'

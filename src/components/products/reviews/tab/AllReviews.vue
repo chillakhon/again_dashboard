@@ -54,7 +54,10 @@ import {Input} from "@/components/ui/input";
 import {Review} from "@/models/Review";
 import {X} from "lucide-vue-next"
 import {useDebounceFn} from "@vueuse/core";
+import {useStore} from "vuex";
 
+
+const store = useStore();
 
 const searchQuery = ref('');
 const reviewsData = ref([]);
@@ -81,6 +84,7 @@ watch(
 // Fetch on mount
 onMounted(async () => {
   await fetchData();
+  await store.dispatch('notifications/markReviewsChecked');
 });
 
 // Fetch reviews with pagination and search
@@ -130,15 +134,7 @@ const clearSearch = async () => {
   await fetchData();
 };
 
-const handleExport = () => {
-  // Логика экспорта данных
-  console.log('Экспорт данных')
-}
 
-const handleImport = () => {
-  // Логика импорта данных
-  console.log('Импорт данных')
-}
 </script>
 
 <style scoped>

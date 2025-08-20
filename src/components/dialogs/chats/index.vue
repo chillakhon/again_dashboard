@@ -45,13 +45,6 @@
             @select-user="handleUserSelect"
         />
 
-        <!--        <UsersList-->
-        <!--            v-if="!showChat"-->
-        <!--            key="users-list"-->
-        <!--            class="h-full w-full "-->
-        <!--            :selected-user="selectedConversatonId"-->
-        <!--            @select-user="handleUserSelect"-->
-        <!--        />-->
         <div
             v-else
             key="chat-widget"
@@ -81,7 +74,6 @@
 
 
 <script setup lang="ts">
-import UsersList from "@/components/dialogs/chats/UsersList.vue";
 import ChatWidget from "@/components/dialogs/chats/ChatWidget.vue";
 import {ref, onMounted, onBeforeUnmount, watch} from 'vue';
 import {Button} from '@/components/ui/button';
@@ -89,8 +81,10 @@ import {ChevronLeft, MessagesSquare} from 'lucide-vue-next';
 import {useChatsFunctions} from "@/composables/useChatsFunctions";
 import CharListConversations from "@/components/dialogs/chats/CharListConversations.vue";
 import {Conversation} from "@/models/Conversation";
-import ChatSelectSource from "@/components/dialogs/chats/ChatSelectSource.vue";
+import {useStore} from "vuex";
 
+
+const store = useStore();
 
 const renderChat = ref(1)
 
@@ -115,9 +109,10 @@ const handleUserSelect = (userId: number) => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   checkScreenSize();
   window.addEventListener('resize', checkScreenSize);
+  await store.dispatch('notifications/markConversationsChecked');
 });
 
 onBeforeUnmount(() => {

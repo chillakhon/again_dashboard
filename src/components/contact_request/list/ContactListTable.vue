@@ -58,8 +58,16 @@ const columns = [
   // },
   {
     accessorKey: "created_at",
-    header: "Создана",
-    cell: ({row}: any) => useDateFormat().formatDateToRussian(row.original?.created_at)
+    header: "Создан",
+
+    cell: ({ row }: any) =>
+        h(
+            "span",
+            { class: "whitespace-nowrap" },
+            useDateFormat().formatDateToRussian(row.original?.created_at)
+        ),
+
+    // cell: ({row}: any) => useDateFormat().formatDateToRussian(row.original?.created_at)
   },
   {
     accessorKey: "name",

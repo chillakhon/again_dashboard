@@ -93,7 +93,7 @@ const columns = [
 
   {
     accessorKey: "created_at",
-    header: "Создана",
+    header: "Создан",
     cell: ({row}: any) => useDateFormat().formatDateToRussian(row.original?.created_at)
   },
 

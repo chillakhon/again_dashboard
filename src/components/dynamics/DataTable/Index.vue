@@ -138,9 +138,6 @@ import Edit from "@/components/dynamics/DataTable/Edit.vue";
 import AlertDialog from "@/components/dynamics/AlertDialog.vue";
 import Loader from "@/components/common/Loader.vue";
 import {computed, Ref, ref, unref} from "vue";
-import usePermission from "@/composables/usePermission";
-import {PermissionsData} from "@/constants/PermissionsData";
-import cloneDeep from 'lodash/cloneDeep';
 
 
 const props = defineProps({

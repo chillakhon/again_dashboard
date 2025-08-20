@@ -56,7 +56,10 @@ import ContactListSearch from "@/components/contact_request/list/ContactListSear
 import ContactListTable from "@/components/contact_request/list/ContactListTable.vue";
 import ContactRequest from "@/models/ContactRequest";
 import {useContactRequestFunctions} from "@/composables/useContactRequestFunctions";
+import {useStore} from "vuex";
 
+
+const store = useStore();
 
 const searchParams = ref({
   datePicker: {
@@ -86,6 +89,7 @@ const itemsPerPage = ref(15);
 
 onMounted(async () => {
   await fetchData()
+  await store.dispatch('notifications/markRequestsChecked');
 })
 
 const {getContactRequests} = useContactRequestFunctions()

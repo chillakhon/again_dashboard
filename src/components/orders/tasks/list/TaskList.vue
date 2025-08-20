@@ -44,14 +44,15 @@
 import {ref, onMounted, computed} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import Loader from "@/components/common/Loader.vue";
-import Button from "@/components/ui/button/Button.vue";
-import {X} from "lucide-vue-next"
 import {useTaskFunctions} from "@/composables/useTaskFunctions";
 import TaskListSearch from "@/components/orders/tasks/list/TaskListSearch.vue";
 import TaskAddModal from "@/components/orders/tasks/TaskAddModal.vue";
 import Task from "@/models/Task";
 import TaskListTable from "@/components/orders/tasks/list/TaskListTable.vue";
+import {useStore} from "vuex";
 
+
+const store = useStore();
 
 const searchParams = ref({
   search: '',
@@ -79,6 +80,8 @@ const itemsPerPage = ref(10);
 
 onMounted(async () => {
   await fetchData()
+  await store.dispatch('notifications/markTasksChecked');
+
 })
 
 

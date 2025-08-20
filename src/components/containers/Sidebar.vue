@@ -393,8 +393,6 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import router from "@/router";
 
 
-
-
 const store = useStore()
 
 const user = computed(() => {
@@ -430,6 +428,8 @@ const ordersCount = computed(() => store.state.notifications.counts.orders || 0)
 const ordersCountTotal = computed(() => store.state.notifications.counts.orders_new_since || 0);
 const tasksCount = computed(() => store.state.notifications.counts.tasks || 0);
 const reviewsCount = computed(() => store.state.notifications.counts.reviews || 0);
+const requests = computed(() => store.state.notifications.counts.requests || 0);
+const conversationCount = computed(() => store.state.notifications.counts.conversations || 0);
 
 // Сделать navigation computed, чтобы он реагировал на изменения counts
 const navigation = computed(() => [
@@ -445,7 +445,7 @@ const navigation = computed(() => [
     icon: PhBag,
     children: [
       {name: 'Все заказы', href: '/orders/list', icon: PhList, notification: ordersCount.value},
-      {name: 'Заявки', href: '/contact-requests', icon: BookMinus},
+      {name: 'Заявки', href: '/contact-requests', icon: BookMinus, notification: requests.value},
       {name: 'Задачи', href: '/orders/tasks', icon: AlarmClockCheck, notification: tasksCount.value},
     ],
   },
@@ -483,7 +483,7 @@ const navigation = computed(() => [
     ]
   },
   {name: 'Аналитика', href: '/analytics/summary', icon: PhChartPie},
-  {name: 'Диалоги', icon: PhChatTeardropDots, href: '/dialogs/chats'},
+  {name: 'Диалоги', icon: PhChatTeardropDots, href: '/dialogs/chats', notification: conversationCount.value},
   {name: 'Пользователи', href: '/users', icon: PhUsers},
 ])
 

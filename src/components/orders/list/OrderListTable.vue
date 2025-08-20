@@ -84,6 +84,12 @@ const columns = [
   {
     accessorKey: "created_at",
     header: "Создан",
+    cell: ({ row }: any) =>
+        h(
+            "span",
+            { class: "whitespace-nowrap" },
+            row.original.created_at
+        ),
   },
   {
     accessorKey: "total_amount",

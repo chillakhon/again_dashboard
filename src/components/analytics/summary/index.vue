@@ -1,14 +1,53 @@
 <template>
   <div>
-    <h1 class="text-xl font-semibold mb-4 ml-2text-gray-800 dark:text-gray-200">Сводка</h1>
-    <financial-analytics />
-    <Line class="mt-2"/>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+      <DynamicTitle title="Сводка"/>
+      <p class="text-sm text-muted-foreground mt-1 md:mt-0">
+        Данные аналитики получены из МойСклад
+      </p>
+    </div>
+
+    <AnalyticSearch
+        :filter="searchParams"
+    />
+
+    <div class="grid gap-4 lg:grid-cols-2 max-lg:grid-cols-1 mt-2">
+
+      <WeeklyAmount :filter="searchParams"/>
+      <ProductsIncome :filter="searchParams"/>
+
+      <FinancialSummaryOrders :filter="searchParams"/>
+      <FinancialSummarySales :filter="searchParams"/>
+      <!--    <CombinedAnalytics :filter="searchParams"/>-->
+      <!--    <DiscountsAnalytics :filter="searchParams"/>-->
+
+    </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
-import FinancialAnalytics from "@/components/analytics/summary/FinancialAnalytics.vue";
-import Line from "@/components/analytics/summary/charts/Line.vue";
+
+import AnalyticSearch from "@/components/analytics/summary/AnalyticSearch.vue";
+import {ref} from "vue";
+import DynamicTitle from "@/components/dynamics/DynamicTitle.vue";
+import FinancialSummarySales from "@/components/analytics/summary/FinancialSummarySales.vue";
+import FinancialSummaryOrders from "@/components/analytics/summary/FinancialSummaryOrders.vue";
+import CombinedAnalytics from "@/components/analytics/summary/CombinedAnalytics.vue";
+import DiscountsAnalytics from "@/components/analytics/summary/DiscountsAnalytics.vue";
+import ProductsIncome from "@/components/analytics/summary/ProductsIncome.vue";
+import WeeklyAmount from "@/components/analytics/summary/WeeklyAmount.vue";
+
+
+const renderAnalytics = ref(1)
+
+const searchParams = ref({
+  datePicker: {
+    start: undefined,
+    end: undefined,
+  },
+})
+
 </script>
 
 <style scoped>
