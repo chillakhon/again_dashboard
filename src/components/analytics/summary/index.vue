@@ -11,17 +11,22 @@
         :filter="searchParams"
     />
 
-    <div class="grid gap-4 lg:grid-cols-2 max-lg:grid-cols-1 mt-2">
+    <div class="mt-2">
 
-      <WeeklyAmount :filter="searchParams"/>
-      <ProductsIncome :filter="searchParams"/>
+      <div class="space-y-2">
+        <ProductsIncome :filter="searchParams"/>
+        <WeeklyAmount :filter="searchParams"/>
+      </div>
 
-      <FinancialSummaryOrders :filter="searchParams"/>
-      <FinancialSummarySales :filter="searchParams"/>
-      <!--    <CombinedAnalytics :filter="searchParams"/>-->
-      <!--    <DiscountsAnalytics :filter="searchParams"/>-->
+      <div class="grid gap-4 lg:grid-cols-2 max-lg:grid-cols-1 mt-2">
+        <FinancialSummaryOrders :filter="searchParams"/>
+        <FinancialSummarySales :filter="searchParams"/>
+      </div>
 
     </div>
+
+<!--        <CombinedAnalytics :filter="searchParams"/>-->
+    <!--    <DiscountsAnalytics :filter="searchParams"/>-->
 
   </div>
 </template>
