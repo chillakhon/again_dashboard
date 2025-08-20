@@ -15,7 +15,7 @@
 
       <div class="space-y-2">
         <ProductsIncome :filter="searchParams"/>
-        <WeeklyAmount :filter="searchParams"/>
+<!--        <WeeklyAmount :filter="searchParams"/>-->
       </div>
 
       <div class="grid gap-4 lg:grid-cols-2 max-lg:grid-cols-1 mt-2">

@@ -3,17 +3,17 @@
     <!-- Сводка продаж -->
     <Card>
       <CardHeader>
-        <CardTitle class="text-lg font-medium text-gray-700">Сводка продаж</CardTitle>
+        <CardTitle class=" font-medium text-gray-700">Сводка продаж</CardTitle>
       </CardHeader>
       <CardContent>
-        <div class="flex gap-2 justify-between">
+        <div class="flex flex-wrap gap-2 justify-between">
           <div>
             <p class="text-xs text-muted-foreground">Всего штук</p>
-            <p class="text-lg font-medium">{{ sales?.total_quantity ?? '—' }}</p>
+              <p class=" font-medium">{{ sales?.total_quantity ?? '—' }}</p>
           </div>
           <div>
             <p class="text-xs text-muted-foreground">Сумма</p>
-            <p class="text-lg font-medium">{{ formattedNumber(sales?.total_sum) }} ₽</p>
+            <p class=" font-medium">{{ formattedNumber(sales?.total_sum) }} ₽</p>
           </div>
         </div>
         <div v-if="sending" class="text-sm text-muted-foreground">Загрузка... {{ progress }}%</div>
@@ -23,17 +23,17 @@
     <!-- Сводка заказов -->
     <Card>
       <CardHeader>
-        <CardTitle class="text-lg font-medium text-gray-700">Сводка заказов</CardTitle>
+        <CardTitle class=" font-medium text-gray-700">Сводка заказов</CardTitle>
       </CardHeader>
       <CardContent>
-        <div class="flex gap-2 justify-between">
+        <div class="flex gap-2 flex-wrap justify-between">
           <div>
             <p class="text-xs text-muted-foreground">Всего заказов</p>
-            <p class="text-lg font-medium">{{ orders?.total_quantity ?? '—' }}</p>
+            <p class=" font-medium">{{ orders?.total_quantity ?? '—' }}</p>
           </div>
           <div>
             <p class="text-xs text-muted-foreground">Сумма заказов</p>
-            <p class="text-lg font-medium">{{ formattedNumber(orders?.total_sum) }} ₽</p>
+            <p class=" font-medium">{{ formattedNumber(orders?.total_sum) }} ₽</p>
           </div>
         </div>
         <div v-if="sending" class="text-sm text-muted-foreground">Загрузка... {{ progress }}%</div>
@@ -43,21 +43,21 @@
     <!-- Доход по товарам -->
     <Card>
       <CardHeader>
-        <CardTitle class="text-lg font-medium text-gray-700">Доход по товарам</CardTitle>
+        <CardTitle class=" font-medium text-gray-700">Доход по товарам</CardTitle>
       </CardHeader>
       <CardContent>
-        <div class="flex gap-2 justify-between">
+        <div class="flex gap-2 flex-wrap justify-between">
           <div>
             <p class="text-xs text-muted-foreground">Прибыль</p>
-            <p class="text-lg font-medium">{{ formattedNumber(products?.total_profit) }} ₽</p>
+            <p class=" font-medium">{{ formattedNumber(products?.total_profit) }} ₽</p>
           </div>
           <div>
             <p class="text-xs text-muted-foreground">Выручка</p>
-            <p class="text-lg font-medium">{{ formattedNumber(products?.total_revenue) }} ₽</p>
+            <p class=" font-medium">{{ formattedNumber(products?.total_revenue) }} ₽</p>
           </div>
           <div>
             <p class="text-xs text-muted-foreground">Себестоимость</p>
-            <p class="text-lg font-medium">{{ formattedNumber(products?.total_cost) }} ₽</p>
+            <p class=" font-medium">{{ formattedNumber(products?.total_cost) }} ₽</p>
           </div>
         </div>
         <div v-if="sending" class="text-sm text-muted-foreground">Загрузка... {{ progress }}%</div>
