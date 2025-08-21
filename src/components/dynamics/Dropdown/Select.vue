@@ -1,70 +1,71 @@
 <template>
-  <Label v-if="title" class="text-xs">{{ title }}</Label>
-  <!--  {{options}}-->
-  <Select
-      :required="props.required"
-      :disabled="props.disabled"
-      :modelValue="modelValue"
-      @update:modelValue="(value: any) => emit('update:modelValue', value)"
-  >
-    <SelectTrigger class="relative">
-      <SelectValue :placeholder="placeholder || 'Выберите...'"/>
-      <button
-          v-if="modelValue"
-          @pointerdown.stop
-          @mousedown.stop
-          @click.stop="clearSelection"
-          class="absolute right-8 h-full flex items-center text-muted-foreground hover:text-foreground transition-colors"
-          type="button"
-          :disabled="disabled"
+  <div>
+    <Label v-if="title" class="text-xs">{{ title }}</Label>
+    <Select
+        :disabled="props.disabled"
+        :modelValue="modelValue"
+        @update:modelValue="handleUpdate"
+    >
+      <SelectTrigger
+          class="relative"
+          :class="{
+          'border-red-400 ring-2 ring-red-400/20 focus:ring-red-400': showError
+        }"
       >
-        <X class="h-4 w-4"/>
-      </button>
-    </SelectTrigger>
-    <SelectContent>
-      <SelectGroup>
-        <SelectLabel v-if="label">{{ label }}</SelectLabel>
-        <!--        <SelectItem-->
-        <!--            v-for="option in options"-->
-        <!--            :key="option.value"-->
-        <!--            :value="option[optionValue ?? 'label']"-->
-        <!--            :disabled="option.disabled"-->
-        <!--        >-->
-        <!--          &lt;!&ndash;          {{JSON.stringify(option)}}&ndash;&gt;-->
-        <!--          {{ option[optionLabel ?? 'label'] }}-->
-        <!--        </SelectItem>-->
-
-
-        <SelectItem
-            v-for="option in options"
-            :key="option.value"
-            :value="option[optionValue ?? 'label']"
-            :disabled="option.disabled"
+        <SelectValue :placeholder="placeholder || 'Выберите...'"/>
+        <button
+            v-if="modelValue"
+            @pointerdown.stop
+            @mousedown.stop
+            @click.stop="clearSelection"
+            class="absolute right-8 h-full flex items-center text-muted-foreground hover:text-foreground transition-colors"
+            type="button"
+            :disabled="disabled"
         >
-          <span class="flex items-center gap-2 text-xs">
-    <!-- Рендер иконки -->
-          <component
-              v-if="option.icon && typeof option.icon !== 'string'"
-              class="w-4 h-4"
-              :is="option.icon"
-              :class="option.styleIcon"/>
+          <X class="h-4 w-4"/>
+        </button>
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectLabel v-if="label">{{ label }}</SelectLabel>
+          <SelectItem
+              v-for="option in options"
+              :key="option.value"
+              :value="option[optionValue ?? 'label']"
+              :disabled="option.disabled"
+          >
+            <span class="flex items-center gap-2 text-xs">
+              <!-- Рендер иконки -->
+              <component
+                  v-if="option.icon && typeof option.icon !== 'string'"
+                  class="w-4 h-4"
+                  :is="option.icon"
+                  :class="option.styleIcon"/>
 
-            <span v-else-if="option.icon" class="text-base">{{ option.icon }}</span>
+              <span v-else-if="option.icon" class="text-base">{{ option.icon }}</span>
 
+              {{ option[optionLabel ?? 'label'] }}
+            </span>
+          </SelectItem>
+        </SelectGroup>
+      </SelectContent>
+    </Select>
 
-            {{ option[optionLabel ?? 'label'] }}
-
-           </span>
-
-        </SelectItem>
-
-
-      </SelectGroup>
-    </SelectContent>
-  </Select>
+    <!-- Скрытый input для HTML5 валидации -->
+    <input
+        v-if="props.required"
+        ref="hiddenInput"
+        :value="modelValue || ''"
+        :required="props.required"
+        tabindex="-1"
+        style="position: absolute; opacity: 0; pointer-events: none; height: 1px; width: 1px; left: -9999px;"
+        @invalid="handleInvalid"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, onUnmounted } from 'vue'
 import {
   Select,
   SelectContent,
@@ -74,14 +75,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {X} from 'lucide-vue-next'
+import { Label } from '@/components/ui/label'
+import { X } from 'lucide-vue-next'
 
 interface SelectOption {
   value: string
   label: string
   disabled?: boolean
-  icon?: object | string,
-  styleIcon?: string,
+  icon?: object | string
+  styleIcon?: string
 }
 
 const props = defineProps<{
@@ -91,19 +93,58 @@ const props = defineProps<{
   label?: string
   optionLabel?: string
   optionValue?: string
-  disabled?: boolean,
-  required?: boolean,
-  title?: {
-    type: string,
-    default: ''
-  }
+  disabled?: boolean
+  required?: boolean
+  title?: string
 }>()
 
 const emit = defineEmits(['update:modelValue'])
+
+const showError = ref(false)
+const hiddenInput = ref<HTMLInputElement>()
+
+const handleUpdate = (value: any) => {
+  // Убираем ошибку при выборе значения
+  if (showError.value) {
+    showError.value = false
+  }
+  emit('update:modelValue', value)
+}
 
 const clearSelection = (e: Event) => {
   e.preventDefault()
   e.stopPropagation()
   emit('update:modelValue', '')
 }
+
+// Обработчик HTML5 валидации
+const handleInvalid = (e: Event) => {
+  e.preventDefault()
+  showError.value = true
+}
+
+// Слушаем submit события на всех родительских формах
+const handleFormSubmit = (e: Event) => {
+  const form = e.target as HTMLFormElement
+  const selectElement = hiddenInput.value
+
+  if (selectElement && form.contains(selectElement)) {
+    if (props.required && !props.modelValue) {
+      showError.value = true
+      e.preventDefault()
+      e.stopPropagation()
+      return false
+    }
+  }
+}
+
+// Подключаем глобальные обработчики
+onMounted(() => {
+  // Слушаем submit на всем документе для перехвата отправки форм
+  document.addEventListener('submit', handleFormSubmit, true)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('submit', handleFormSubmit, true)
+})
 </script>

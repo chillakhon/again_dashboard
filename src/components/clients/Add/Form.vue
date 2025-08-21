@@ -36,58 +36,14 @@
     </div>
 
     <!-- Поля клиента -->
-    <div class="grid grid-cols-2 gap-3">
-      <div class="space-y-2">
-        <Label for="level_id">Уровень клиента</Label>
-        <Select v-model="form.level_id">
-          <SelectTrigger>
-            <SelectValue placeholder="Выберите уровень"/>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem
-                  v-for="level in clientLevels"
-                  :key="level.id"
-                  :value="level.id"
-              >
-                {{ level.name }}
-              </SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-      <div class="space-y-2">
-        <Label for="bonus_balance">Бонусный баланс</Label>
-        <Input
-            id="bonus_balance"
-            type="number"
-            v-model="form.bonus_balance"
-            placeholder="0.00"
-            min="0"
-            step="0.01"
-        />
-        <p v-if="errors.bonus_balance" class="text-sm text-red-500">{{ errors.bonus_balance }}</p>
-      </div>
+    <div class="">
+
+
+      <Label for="birthday">Дата рождения</Label>
+      <DatePicker v-model="form.birthday"/>
+
     </div>
 
-    <!-- Поля для пароля (только при создании) -->
-    <template v-if="!clientId">
-      <div class="space-y-2">
-        <Label for="password">Пароль <span class="text-red-500">*</span></Label>
-        <Input id="password" type="password" v-model="form.password" placeholder="Не менее 8 символов"/>
-        <p v-if="errors.password" class="text-sm text-red-500">{{ errors.password }}</p>
-      </div>
-
-      <div class="space-y-2">
-        <Label for="password_confirmation">Подтверждение пароля <span class="text-red-500">*</span></Label>
-        <Input
-            id="password_confirmation"
-            type="password"
-            v-model="form.password_confirmation"
-            placeholder="Повторите пароль"
-        />
-      </div>
-    </template>
 
     <!-- Кнопка отправки -->
     <Button type="submit" class="mt-2" :disabled="loading">
@@ -103,16 +59,9 @@ import {toast} from 'vue-sonner'
 import {Button} from '@/components/ui/button'
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
+import DatePicker from '@/components/dynamics/DatePicker.vue'
 import {Loader2} from 'lucide-vue-next'
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from '@/components/ui/select'
-import {UserProfile} from '@/models/user/Profile'
+
 import axios from 'axios'
 import {Client} from "@/models/Client";
 
@@ -141,7 +90,7 @@ const form = ref({
   phone: '',
   address: '',
   level_id: null as number | null,
-  bonus_balance: '0',
+  birthday: undefined,
   password: '',
   password_confirmation: ''
 })
@@ -165,9 +114,8 @@ onMounted(async () => {
         phone: client.profile?.phone || '',
         address: client.profile?.address || '',
         level_id: client.client_level_id,
-        bonus_balance: client.bonus_balance,
-        password: '',
-        password_confirmation: ''
+        birthday: client.profile?.birthday,
+
       }
     } catch (error) {
       toast.error('Ошибка загрузки данных клиента')
@@ -185,53 +133,9 @@ onMounted(async () => {
   }
 })
 
-const validateForm = (): boolean => {
-  errors.value = {}
-  let isValid = true
-
-  if (!form.value.first_name) {
-    errors.value.first_name = 'Имя обязательно'
-    isValid = false
-  }
-
-  if (!form.value.last_name) {
-    errors.value.last_name = 'Фамилия обязательна'
-    isValid = false
-  }
-
-  if (!form.value.email) {
-    errors.value.email = 'Email обязателен'
-    isValid = false
-  } else if (!/^\S+@\S+\.\S+$/.test(form.value.email)) {
-    errors.value.email = 'Некорректный email'
-    isValid = false
-  }
-
-  if (!props.clientId) {
-    if (!form.value.password) {
-      errors.value.password = 'Пароль обязателен'
-      isValid = false
-    } else if (form.value.password.length < 8) {
-      errors.value.password = 'Пароль должен быть не менее 8 символов'
-      isValid = false
-    }
-
-    if (form.value.password !== form.value.password_confirmation) {
-      errors.value.password_confirmation = 'Пароли не совпадают'
-      isValid = false
-    }
-  }
-
-  if (form.value.bonus_balance && isNaN(parseFloat(form.value.bonus_balance))) {
-    errors.value.bonus_balance = 'Некорректное значение баланса'
-    isValid = false
-  }
-
-  return isValid
-}
 
 const submitForm = async () => {
-  if (!validateForm()) return
+
 
   try {
     loading.value = true
@@ -242,9 +146,8 @@ const submitForm = async () => {
       phone: form.value.phone,
       address: form.value.address,
       level_id: form.value.level_id,
-      bonus_balance: parseFloat(form.value.bonus_balance) || 0,
-      password: form.value.password,
-      password_confirmation: form.value.password_confirmation
+      birthday: form.value.birthday ?? null,
+
     }
 
     if (props.clientId) {
@@ -274,4 +177,6 @@ const submitForm = async () => {
     loading.value = false
   }
 }
+
+
 </script>

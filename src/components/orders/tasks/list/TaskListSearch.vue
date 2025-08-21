@@ -3,14 +3,14 @@
 
     <DynamicsFilter
         class="max-w-md w-full"
-        :columns="[filterColumns[1]]"
+        :columns="[filterColumns[2]]"
         :filter="filter"
         @search="emits('search'); renderSearch++"
     />
 
     <div class="flex gap-2 max-md:my-2">
       <DynamicsFilterModalWithFilter
-          :columns="filterColumns.filter((_ , index ) => index !== 1)"
+          :columns="filterColumns.filter((_ , index ) => index !== 2)"
           :filter="filter"
           @search="emits('search'); renderSearch++"
       />
@@ -43,7 +43,8 @@ const props = defineProps<{
     priority: string,
     assignee: string,
     label: string,
-    dueDate: string
+    dueDate: string,
+    overdue: boolean,
   },
   statuses?: Array<{ id: number, name: string }>,
   priorities?: Array<{ id: number, name: string }>,
@@ -64,13 +65,19 @@ const hasActiveFilters = computed(() => {
       f.priority ||
       f.assignee ||
       f.label ||
-      f.dueDate
+      f.dueDate ||
+      f.overdue
   )
 })
 
 
 const filterColumns = computed(() => [
 
+  {
+    type: "checkbox",
+    label: "Просроченные задачи",
+    field: "overdue",
+  },
   {
     type: "date",
     placeholder: "Выберите дату выполнения",

@@ -41,7 +41,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import Loader from "@/components/common/Loader.vue";
 import {useTaskFunctions} from "@/composables/useTaskFunctions";
@@ -60,7 +60,8 @@ const searchParams = ref({
   priority: '',
   assignee: '',
   label: '',
-  dueDate: ''
+  dueDate: '',
+  overdue: false
 })
 
 
@@ -89,8 +90,10 @@ const {getTasks} = useTaskFunctions()
 
 async function fetchData() {
 
-  // isLoading.value = true
+  // isLoading.value = false
 
+  // console.log(searchParams.value)
+  // return
 
   const result = await getTasks({
     page: currentPage.value,
@@ -124,7 +127,8 @@ function resetFilters() {
     priority: '',
     assignee: '',
     label: '',
-    dueDate: ''
+    dueDate: '',
+    overdue: false
   }
 
   currentPage.value = 1

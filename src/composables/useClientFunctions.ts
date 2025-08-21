@@ -37,8 +37,6 @@ export function useClientFunctions() {
                 return null;
             }
 
-            console.log('data',prepareClientDataForValidation(client))
-            // return null
             const response = await axios.put(`/clients/${client.id}`, prepareClientDataForValidation(client));
 
             toast.success(response.data.message || "Данные клиента обновлены");
@@ -106,8 +104,6 @@ export function useClientFunctions() {
     };
 
 
-
-
     function prepareClientDataForValidation(client: Client) {
         return {
             first_name: client.profile?.first_name ?? null,
@@ -115,7 +111,8 @@ export function useClientFunctions() {
             email: client.email ?? null,
             phone: client.profile?.phone ?? null,
             address: client.profile?.address ?? null,
-            user_id: client?.id ?? null
+            user_id: client?.id ?? null,
+            birthday: client.profile?.birthday ?? null,
         };
     }
 

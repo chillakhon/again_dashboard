@@ -165,6 +165,50 @@ const columns = [
     }
   },
 
+
+  {
+    accessorKey: "created_at",
+    header: "Создан",
+    cell: ({row}: any) =>
+        h(
+            "span",
+            {class: "whitespace-nowrap"},
+            formatDateToRussian(row.original?.created_at)
+        ),
+  },
+
+  {
+    accessorKey: "started_at",
+    header: "Начало",
+    cell: ({row}: any) =>
+        h(
+            "span",
+            {class: "whitespace-nowrap"},
+            formatDateToRussian(row.original?.started_at)
+        ),
+  },
+
+  {
+    accessorKey: "due_date",
+    header: "Срок",
+    cell: ({row}: any) => {
+      const due = row.original?.due_date;
+      const formatted = formatDateToRussian(due);
+      const overdue = isOverdue(due) && !row.original?.completed_at;
+      return h(
+          "span",
+          {
+            class: [
+              "whitespace-nowrap",
+              overdue ? "text-red-600 font-medium" : ""
+            ].join(" "),
+          },
+          formatted
+      );
+    },
+  },
+
+
   {
     accessorKey: "creator",
     header: "Создал",
@@ -190,12 +234,12 @@ const columns = [
         // текст: имя + email (маленьким и muted)
         h('div', {class: 'min-w-0'}, [
           h('div', {
-            class: 'text-sm font-medium text-gray-900 ',
+            class: 'truncate',
             title: name || ''
           }, name || '—'),
           email
               ? h('div', {
-                class: 'text-xs text-gray-500 truncate',
+                class: 'truncate',
                 title: email
               }, email)
               : null
@@ -226,49 +270,17 @@ const columns = [
 
         h('div', {class: 'min-w-0'}, [
           h('div', {
-            class: 'text-sm font-medium text-gray-900 truncate',
+            class: 'truncate',
             title: name || ''
           }, name || '—'),
           email
               ? h('div', {
-                class: 'text-xs text-gray-500 truncate',
+                class: 'truncate',
                 title: email
               }, email)
               : null
         ])
       ])
-    }
-  },
-
-
-  {
-    accessorKey: "created_at",
-    header: "Создан",
-    cell: ({row}: any) => formatDateToRussian(row.original?.created_at),
-  },
-
-
-  {
-    accessorKey: "started_at",
-    header: "Начало",
-    cell: ({row}: any) => formatDateToRussian(row.original?.started_at),
-  },
-
-
-  {
-    accessorKey: "due_date",
-    header: "Срок",
-    cell: ({row}: any) => {
-      const due = row.original?.due_date;
-      const formatted = formatDateToRussian(due);
-      const overdue = isOverdue(due) && !row.original?.completed_at;
-      return h(
-          "span",
-          {
-            class: overdue ? "text-red-600 font-medium" : ""
-          },
-          formatted
-      );
     }
   },
 

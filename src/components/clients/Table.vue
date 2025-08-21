@@ -27,6 +27,7 @@ import {useClientFunctions} from "@/composables/useClientFunctions";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Client} from "@/models/Client";
 import PromoCodeClientModal from "@/components/clients/Promo/PromoCodeClientModal.vue";
+import {useDateFormat} from "@/composables/useDateFormat";
 
 const props = defineProps({
   clients: {
@@ -38,6 +39,8 @@ const props = defineProps({
 
 const emits = defineEmits(["deleted", "updated"]);
 
+
+const {formatDateToRussian} = useDateFormat()
 
 async function handlingUpdate(data: Client) {
   console.log(data);
@@ -67,7 +70,7 @@ const columns = [
     accessorKey: "profile.fullName",
     header: "Клиент",
     cell: (row: any) => {
-      return row.row.original.profile?.fullName || '—';
+      return row.row?.original?.profile?.fullName || '—';
     }
   },
 
@@ -78,7 +81,7 @@ const columns = [
         h(
             "span",
             {class: "whitespace-nowrap"},
-            row.row.original.profile?.phone
+            row.original?.profile?.phone
         ),
   },
 
@@ -95,20 +98,31 @@ const columns = [
     accessorKey: "email",
     header: "Почта",
   },
+
+  // {
+  //   accessorKey: "bonus_balance",
+  //   header: "Бонусный баланс",
+  //   cell: (row: any) => {
+  //     return parseFloat(row.getValue()).toFixed(2);
+  //   }
+  // },
+
   {
-    accessorKey: "bonus_balance",
-    header: "Бонусный баланс",
+    accessorKey: "profile.birthday",
+    header: "Дата рождения",
     cell: (row: any) => {
-      return parseFloat(row.getValue()).toFixed(2);
-    }
+      return h('span', { class: 'whitespace-nowrap' }, formatDateToRussian(row.getValue(), false ));
+    },
   },
   {
     accessorKey: "created_at",
     header: "Дата регистрации",
     cell: (row: any) => {
-      return new Date(row.getValue()).toLocaleDateString();
-    }
+      return h('span', { class: 'whitespace-nowrap' }, formatDateToRussian(row.getValue()));
+    },
   },
+
+
   {
     accessorKey: "isActive",
     header: "Активен",
