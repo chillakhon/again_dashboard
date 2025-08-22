@@ -173,9 +173,7 @@ import {FormDynamicFieldType} from "@/types/form";
 import {Button} from "@/components/ui/button";
 import DatePicker from "@/components/dynamics/DatePicker.vue";
 import {Checkbox} from '@/components/ui/checkbox'
-import ImageSlideCropper from "@/components/settings/home_slider/image/ImageSlideCropper.vue";
 import ImageCropper from "@/components/dynamics/ImageCropper.vue";
-import aspectRatio from "@tailwindcss/aspect-ratio";
 import ImagePreview from "@/components/dynamics/ImagePreview.vue";
 import {X} from 'lucide-vue-next';
 import AvatarCropper from "@/components/dynamics/cropper/AvatarCropper.vue";
