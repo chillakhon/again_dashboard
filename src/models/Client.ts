@@ -64,7 +64,7 @@ export class Client {
                 user: json.user,
                 profile: json.profile,
                 email: json.email,
-                name: json.profile?.first_name || json.profile?.last_name ? `${json.profile?.first_name ?? ''} ${json.profile?.last_name ?? ''}` : undefined,
+                name:  json.profile?.first_name || json.profile?.last_name ? `${json.profile?.first_name ?? ''} ${json.profile?.last_name ?? ''}` : json.name ?? undefined,
             });
         } catch (error) {
             console.error('Failed to parse Client from JSON:', error);

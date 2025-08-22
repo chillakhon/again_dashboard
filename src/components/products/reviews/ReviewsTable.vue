@@ -38,7 +38,7 @@
               class="hover:bg-gray-50 border-b border-gray-100 last:border-b-0"
           >
             <!-- Товар -->
-            <TableCell class="px-3 py-3 whitespace-nowrap text-sm font-medium">
+            <TableCell class="px-3 py-3 whitespace-nowrap text-xs ">
               {{ review.reviewable?.name || 'Не указан' }}
             </TableCell>
 
@@ -50,19 +50,19 @@
             </TableCell>
 
             <!-- Автор -->
-            <TableCell class="px-3 py-3 whitespace-nowrap text-sm">
-              <div class="font-medium">{{ review.client?.name || 'Аноним' }}</div>
-              <div class="text-gray-500 text-xs">{{ review.client?.email || 'Нет email' }}</div>
+            <TableCell class="px-3 py-3 whitespace-nowrap text-xs">
+              <div class="">{{ review.client?.name || 'Аноним' }}</div>
+              <div class=" text-xs">{{ review.client?.email || 'Нет email' }}</div>
             </TableCell>
 
             <!-- Рейтинг -->
             <TableCell class="px-3 py-3 whitespace-nowrap">
               <div class="flex items-center">
                 <StarIcon class="h-4 w-4 text-yellow-400 fill-yellow-400"/>
-                <span class="ml-1 text-sm">{{ review.rating }}/5</span>
+                <span class="ml-1 text-xs">{{ review.rating }}/5</span>
               </div>
               <!-- Display attribute ratings if they exist -->
-              <div v-if="review.attributes.length" class="text-xs text-gray-500 mt-1">
+              <div v-if="review.attributes.length" class="text-xs  mt-1">
                 <div v-for="attr in review.attributes" :key="attr.id">
                   {{ attr.name }}: {{ attr.rating }}/5
                 </div>
@@ -70,8 +70,8 @@
             </TableCell>
 
             <!-- Отзыв -->
-            <TableCell class="px-3 py-3 text-sm">
-              <div class="min-w-[200px]">{{ review.content }}</div>
+            <TableCell class="px-3 py-3 text-xs">
+              <div class="min-w-[200px]  text-xs">{{ review.content }}</div>
               <!-- Display images if they exist -->
               <div v-if="review.images.length" class="mt-2 flex gap-2">
                 <img
@@ -85,17 +85,17 @@
             </TableCell>
 
             <!-- Дата создания -->
-            <TableCell class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+            <TableCell class="px-3 py-3 whitespace-nowrap text-xs ">
               {{ formatDateToRussian(review.created_at!) }}
             </TableCell>
 
             <!-- Дата публикации -->
-            <TableCell class="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+            <TableCell class="px-3 py-3 whitespace-nowrap text-xs ">
               {{ review.published_at ? formatDateToRussian(review.published_at) : '-' }}
             </TableCell>
 
             <!-- Actions -->
-            <TableCell class="px-3 py-3 whitespace-nowrap text-sm">
+            <TableCell class="px-3 py-3 whitespace-nowrap text-xs">
               <div class="flex items-center gap-2">
                 <!-- Publish/Unpublish -->
                 <Button
@@ -137,7 +137,7 @@
         <TableRow v-else>
           <TableCell
               :colspan="8"
-              class="h-20 text-center text-gray-500 py-3"
+              class="h-20 text-center  py-3"
           >
             Нет отзывов
           </TableCell>
@@ -162,6 +162,9 @@ type ReviewStatus = 'new' | 'published' | 'pending' | 'draft' | 'imported' | 're
 const props = defineProps<{
   reviews: Review[]
 }>()
+
+
+console.log(props.reviews)
 
 const emit = defineEmits(['refresh'])
 

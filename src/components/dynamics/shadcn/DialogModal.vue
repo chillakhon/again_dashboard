@@ -6,7 +6,7 @@
 
     <DialogContent
         :class="dynamicStyle"
-        class="w-full max-h-[75vh] overflow-y-auto flex flex-col items-start"
+        class="w-full max-h-[95vh] overflow-y-auto flex flex-col items-start"
     >
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>
