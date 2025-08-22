@@ -123,10 +123,23 @@ const columns = [
   {
     header: "Цена",
     accessorKey: "price",
+    cell: ({ row }: any) =>
+        h(
+            "span",
+            { class: "whitespace-nowrap" },
+            row.original.price
+        ),
   },
   {
     accessorKey: "cost_price",
     header: "Цена закупки",
+    cell: ({ row }: any) =>
+        h(
+            "span",
+            { class: "whitespace-nowrap" },
+            row.original.cost_price
+        ),
+
   },
   {
     accessorKey: "barcode",
@@ -150,7 +163,7 @@ const columns = [
   },
   {
     accessorKey: "weight",
-    header: "Вес Гр",
+    header: "Вес(гр)",
   },
 
   {

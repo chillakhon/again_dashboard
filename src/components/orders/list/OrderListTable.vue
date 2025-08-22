@@ -94,6 +94,12 @@ const columns = [
   {
     accessorKey: "total_amount",
     header: "Сумма",
+    cell: ({ row }: any) =>
+        h(
+            "span",
+            { class: "whitespace-nowrap" },
+            row.original.total_amount
+        ),
   },
   {
     accessorKey: "client.full_name",

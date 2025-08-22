@@ -53,7 +53,7 @@ const columns = [
         'onUpdate:modelValue': (value) => {
           row.original.cost_price = Number(value)
         },
-        class: 'w-24 text-center border-gray-300 text-sm h-8 px-2',
+        class: 'w-24 text-center border-gray-300 text-sm h-8 px-2 whitespace-nowrap',
         type: 'number',
         min: 0,
         readonly: true,
@@ -89,7 +89,7 @@ const columns = [
         'onUpdate:modelValue': (value) => {
           row.original.price = Number(value)
         },
-        class: 'w-24 text-center border-gray-300 text-sm h-8 px-2',
+        class: 'w-24 text-center border-gray-300 text-sm h-8 px-2 whitespace-nowrap',
         type: 'number',
         min: 0,
         readonly: true,

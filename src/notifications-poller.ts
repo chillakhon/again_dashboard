@@ -10,7 +10,7 @@ export async function startNotificationsPolling() {
     // Основной polling каждые 60 секунд
     const interval = setInterval(() => {
         store.dispatch('notifications/checkForUpdates');
-    }, 30 * 1000);
+    }, 20 * 1000);
 
     // Очистка интервала при закрытии вкладки
     window.addEventListener('beforeunload', () => clearInterval(interval));

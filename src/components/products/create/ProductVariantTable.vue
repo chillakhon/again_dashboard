@@ -111,7 +111,7 @@ const columns = [
         'onUpdate:modelValue': (val: any) => {
           row.original.price = Number(val)
         },
-        class: 'w-24 text-center',
+        class: 'w-24 text-center whitespace-nowrap whitespace-nowrap',
         type: 'number',
         placeholder: "Цена",
         min: 0,
@@ -140,7 +140,7 @@ const columns = [
         'onUpdate:modelValue': (val: any) => {
           row.original.cost_price = val
         },
-        class: 'w-24 text-center',
+        class: 'w-24 text-center whitespace-nowrap',
         type: 'number',
         placeholder: "Цена закупкы",
         min: 0,

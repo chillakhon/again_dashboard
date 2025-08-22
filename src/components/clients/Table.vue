@@ -98,10 +98,7 @@ const columns = [
     accessorKey: "email",
     header: "Почта",
   },
-  {
-    accessorKey: "profile.address",
-    header: "Адрес",
-  },
+
 
   // {
   //   accessorKey: "bonus_balance",
@@ -126,7 +123,10 @@ const columns = [
     },
   },
 
-
+  {
+    accessorKey: "profile.address",
+    header: "Адрес",
+  },
   {
     accessorKey: "isActive",
     header: "Активен",
