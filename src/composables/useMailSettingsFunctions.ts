@@ -16,7 +16,7 @@ export function useMailSettingsFunctions() {
 
         try {
             const res = await axios.post('third-party-integrations/mail/getMailSettings')
-            useSuccessHandler().showSuccess(res)
+            // useSuccessHandler().showSuccess(res)
             return res.data
         } catch (e) {
             useErrorHandler().showError(e)
