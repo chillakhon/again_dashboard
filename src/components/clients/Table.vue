@@ -85,28 +85,11 @@ const columns = [
         ),
   },
 
-
-  // {
-  //   accessorKey: "profile.phone",
-  //   header: "Телефон",
-  //   cell: (row: any) => {
-  //     return row.row.original.profile?.phone || '—';
-  //   }
-  // },
-
   {
     accessorKey: "email",
     header: "Почта",
   },
 
-
-  // {
-  //   accessorKey: "bonus_balance",
-  //   header: "Бонусный баланс",
-  //   cell: (row: any) => {
-  //     return parseFloat(row.getValue()).toFixed(2);
-  //   }
-  // },
 
   {
     accessorKey: "profile.birthday",
@@ -139,4 +122,6 @@ const columns = [
 ];
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

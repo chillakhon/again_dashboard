@@ -201,7 +201,9 @@
                     </span>
                   </router-link>
 
+
                   <Disclosure as="div" v-else v-slot="{ open }">
+
                     <DisclosureButton
                         :class="[
                         item.current ? 'bg-gray-50' : 'hover:bg-gray-50',
@@ -210,14 +212,26 @@
                     >
                       <component :is="item.icon" class="size-6 shrink-0 text-gray-400" aria-hidden="true"/>
                       {{ item.name }}
-                      <PhCaretRight
-                          :class="[
+
+                      <div class="flex ml-auto">
+
+                           <span v-if="item.notification && item.notification > 0"
+                                 class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                      {{ item.notification }}
+                    </span>
+                        <PhCaretRight
+                            :class="[
                           open ? 'rotate-90 text-gray-500' : 'text-gray-400',
                           'ml-auto size-5 shrink-0 transition-transform'
                         ]"
-                          aria-hidden="true"
-                      />
+                            aria-hidden="true"
+                        />
+
+
+                      </div>
+
                     </DisclosureButton>
+
 
                     <DisclosurePanel as="ul" class="mt-1 pl-9">
                       <li v-for="subItem in item.children" :key="subItem.name">
@@ -431,6 +445,10 @@ const reviewsCount = computed(() => store.state.notifications.counts.reviews || 
 const requests = computed(() => store.state.notifications.counts.requests || 0);
 const conversationCount = computed(() => store.state.notifications.counts.conversations || 0);
 
+const total = computed(() => {
+  return ordersCount.value + requests.value + tasksCount.value
+})
+
 // Сделать navigation computed, чтобы он реагировал на изменения counts
 const navigation = computed(() => [
   {
@@ -443,6 +461,7 @@ const navigation = computed(() => [
     name: 'Заказы',
     href: '/orders/list',
     icon: PhBag,
+    notification: total.value,
     children: [
       {name: 'Все заказы', href: '/orders/list', icon: PhList, notification: ordersCount.value},
       {name: 'Заявки', href: '/contact-requests', icon: BookMinus, notification: requests.value},
