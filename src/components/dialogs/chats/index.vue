@@ -103,7 +103,7 @@ const currentSourceName = ref({source: 'all'})
 
 const isMobile = ref(false);
 const showChat = ref(false);
-const selectedConversatonId = ref<number | null>(1);
+const selectedConversatonId = ref<number | null>(null);
 
 const checkScreenSize = () => {
   isMobile.value = window.innerWidth < 768;
