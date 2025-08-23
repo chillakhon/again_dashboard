@@ -1,6 +1,6 @@
 <template>
 
-  <div class="flex justify-between">
+  <div class="flex justify-between max-md:flex-col max-md:space-y-2 max-md:mb-2">
     <UsersSearch
         class="md:w-[400px]"
         :filter="searchParams"

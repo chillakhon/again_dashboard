@@ -39,6 +39,7 @@
         <CharListConversations
             v-if="!showChat"
             class="h-full border-r"
+
             :conversations="conversations"
             :selected-user="selectedConversatonId"
             :current-source="currentSourceName"
@@ -61,10 +62,14 @@
             </Button>
             <div>
               <h3 class="font-medium">Чат с клиентом</h3>
-              <p class="text-xs text-muted-foreground">Онлайн</p>
+<!--              <p class="text-xs text-muted-foreground">Онлайн</p>-->
             </div>
           </div>
-          <ChatWidget class="flex-1" :conversation="selectedConversation"/>
+          <ChatWidget
+              class="flex-1"
+              :key="renderChat"
+              :conversation="selectedConversation"
+          />
         </div>
       </Transition>
     </div>

@@ -97,13 +97,27 @@
                             >
                               <component :is="item.icon" class="size-6 shrink-0 text-gray-400" aria-hidden="true"/>
                               {{ item.name }}
-                              <PhCaretRight
-                                  :class="[
-                                  open ? 'rotate-90 text-gray-500' : 'text-gray-400',
-                                  'ml-auto size-5 shrink-0 transition-transform'
+
+
+                              <div class="flex ml-auto">
+
+                            <span v-if="item.notification && item.notification > 0"
+                                  class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800">
+                              {{ item.notification }}
+                            </span>
+                                <PhCaretRight :class="[
+                                open ? 'rotate-90 text-gray-500' : 'text-gray-400',
+                                'ml-auto size-5 shrink-0 transition-transform'
                                 ]"
-                                  aria-hidden="true"
-                              />
+                                              aria-hidden="true"/>
+                              </div>
+                              <!--                              <PhCaretRight-->
+                              <!--                                  :class="[-->
+                              <!--                                  open ? 'rotate-90 text-gray-500' : 'text-gray-400',-->
+                              <!--                                  'ml-auto size-5 shrink-0 transition-transform'-->
+                              <!--                                ]"-->
+                              <!--                                  aria-hidden="true"-->
+                              <!--                              />-->
                             </DisclosureButton>
 
                             <DisclosurePanel as="ul" class="mt-1 pl-9">

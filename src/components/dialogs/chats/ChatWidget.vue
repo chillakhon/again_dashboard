@@ -26,12 +26,12 @@
     </CardHeader>
 
     <!-- Messages -->
-    <CardContent class="flex-1 p-2 overflow-auto flex flex-col">
+    <CardContent class="flex-1 p-2 overflow-y-auto flex flex-col">
       <div v-if="clientAddress" class="mb-2 text-xs border-b pb-2">
         <p class="text-muted-foreground">Адрес:</p>
         <p class="truncate">{{ clientAddress }}</p>
       </div>
-      <div class="flex-1 overflow-y-auto space-y-1">
+      <div class="flex-1 overflow-y-auto space-y-1 max-md:max-h-[66vh] max-md:min-h-[66vh]">
         <div
             v-for="message in conversation.messages"
             :key="message.id"
