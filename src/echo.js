@@ -16,6 +16,9 @@ const authEndpoint = API_BASE ? `${API_BASE}/broadcasting/auth` : '/broadcasting
 const useTLS = REVERB_SCHEME === 'https';
 const access_token = Cookies.get('access_token');
 
+
+
+
 // Простая конфигурация
 window.Echo = new Echo({
     broadcaster: 'pusher',
@@ -24,9 +27,9 @@ window.Echo = new Echo({
     wsHost: REVERB_HOST,
     wsPort: REVERB_PORT,
     wssPort: REVERB_PORT,
-    forceTLS: useTLS,
-    encrypted: useTLS,
-    enabledTransports: ['ws', 'wss'],
+    forceTLS: false,
+    encrypted: false,
+    enabledTransports: ['ws'],
     disableStats: true,
     authEndpoint: authEndpoint,
     auth: {
