@@ -6,7 +6,6 @@
           :current-source="currentSource"
       />
     </CardHeader>
-
     <div class="overflow-y-auto h-[calc(100%-44px)] pt-1" v-if="props.conversations.length > 0">
       <div
           v-for="item in props.conversations"
@@ -77,6 +76,7 @@ import {Card, CardHeader} from '@/components/ui/card'
 import ChatSelectSource from '@/components/dialogs/chats/ChatSelectSource.vue'
 import {Conversation} from '@/models/Conversation'
 import {MessagesSquare} from "lucide-vue-next";
+import {numeric} from "@vuelidate/validators";
 
 const props = defineProps({
   conversations: {
@@ -90,13 +90,19 @@ const props = defineProps({
     default: {
       source: 'all'
     }
+  },
+
+  selectedUserId: {
+    type: Number,
+    default: null
   }
+
 })
 
 
 const emit = defineEmits(['selectUser', 'changeSource'])
 
-const selectedUser = ref<number | null>(null)
+const selectedUser = ref<number | null>(props.selectedUserId)
 
 function selectUser(userId: number) {
   selectedUser.value = userId

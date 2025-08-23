@@ -5,8 +5,9 @@
       <div class="flex flex-col h-[85vh]">
         <CharListConversations
             class="h-full w-80 border-r"
+            :key="renderListConv"
             :conversations="conversations"
-            :selected-user="selectedConversatonId"
+            :selected-user-id="selectedConversatonId"
             :current-source="currentSourceName"
             @select-user="handleUserSelect"
         />
@@ -16,9 +17,10 @@
 
         <ChatWidget
             v-if="selectedConversation"
+            class="h-[85vh]"
             :key="renderChat"
             :conversation="selectedConversation"
-            class="h-[85vh]"
+            @has-new-message="handleUpdateConv"
         />
 
         <div v-else class="flex flex-col items-center justify-center gap-3 bg-muted/20 p-6 border h-[85vh]"
@@ -39,6 +41,7 @@
         <CharListConversations
             v-if="!showChat"
             class="h-full border-r"
+            :selected-user-id="selectedConversatonId"
 
             :conversations="conversations"
             :selected-user="selectedConversatonId"
@@ -62,13 +65,15 @@
             </Button>
             <div>
               <h3 class="font-medium">Чат с клиентом</h3>
-<!--              <p class="text-xs text-muted-foreground">Онлайн</p>-->
+              <!--              <p class="text-xs text-muted-foreground">Онлайн</p>-->
             </div>
           </div>
           <ChatWidget
               class="flex-1"
               :key="renderChat"
               :conversation="selectedConversation"
+              @has-new-message="handleUpdateConv"
+
           />
         </div>
       </Transition>
@@ -92,6 +97,7 @@ import {useStore} from "vuex";
 const store = useStore();
 
 const renderChat = ref(1)
+const renderListConv = ref(1)
 
 const currentSourceName = ref({source: 'all'})
 
@@ -164,6 +170,13 @@ watch(
       fetchData()
     }
 )
+
+
+const handleUpdateConv = async () => {
+
+  await fetchData()
+  renderListConv.value++
+}
 
 </script>
 

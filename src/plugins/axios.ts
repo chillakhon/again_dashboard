@@ -3,6 +3,7 @@ import axios from "axios";
 import { App } from "vue";
 
 axios.defaults.baseURL = process.env.VUE_APP_BASE_URL
+axios.defaults.withCredentials = true;
 
 export default {
     install(app: App) {

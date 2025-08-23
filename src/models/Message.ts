@@ -17,6 +17,7 @@ export class Message {
     status: MessageStatus | undefined
     created_at: string | undefined
     updated_at: string | undefined
+    attachments: any | null | undefined
 
     constructor() {
         this.id = undefined
@@ -28,6 +29,7 @@ export class Message {
         this.status = undefined
         this.created_at = undefined
         this.updated_at = undefined
+        this.attachments = undefined
     }
 
     static fromJSON(json: any): Message {
@@ -46,6 +48,7 @@ export class Message {
 
         msg.created_at = json.created_at
         msg.updated_at = json.updated_at
+        msg.attachments = json.attachments ?? undefined
         return msg
     }
 }

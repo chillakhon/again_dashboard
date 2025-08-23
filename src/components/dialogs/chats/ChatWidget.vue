@@ -82,8 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, nextTick, onMounted, watch, computed} from 'vue'
-import axios from 'axios'
+import {ref, nextTick, onMounted, onBeforeUnmount, watch, computed} from 'vue'
 import {
   Card,
   CardHeader,
@@ -107,8 +106,13 @@ import {
 } from 'lucide-vue-next'
 import {useChatsFunctions} from '@/composables/useChatsFunctions'
 
+import '@/echo';
+
 const props = defineProps<{ conversation: Conversation }>()
 const conversation = props.conversation
+
+
+const emits = defineEmits(['hasNewMessage'])
 
 const {conversationReplyById} = useChatsFunctions()
 
@@ -173,10 +177,13 @@ function getStatusIcon(status: string | undefined) {
   }
 }
 
+let addMessage = true
+
 async function sendMessage() {
   const text = newMessage.value.trim()
   if (!text || conversation.id === undefined) return
 
+  addMessage = false
   try {
     const conv = await conversationReplyById(Number(conversation.id), {
       content: text,
@@ -187,16 +194,20 @@ async function sendMessage() {
       conversation.messages.push(conv)
       newMessage.value = ''
       scrollToBottom()
+      emits('hasNewMessage', conversation.id);
     }
   } catch (e) {
     console.error('Ошибка отправки:', e)
+  } finally {
+    addMessage = true
   }
 }
 
-onMounted(() => scrollToBottom('auto'))
+onMounted(() =>
+    scrollToBottom('auto')
+)
 
 watch(() => conversation.messages?.length, () => scrollToBottom())
-
 
 const urlPattern = /(\bhttps?:\/\/[^\s<>]+[^\s<.,:;"')\]\s])/g
 
@@ -204,5 +215,71 @@ function linkify(text = ''): string {
   return text
       .replace(urlPattern, url => `<a href="${url}" target="_blank" class="text-blue-600 underline">${url}</a>`)
 }
+
+/* ---------- WebSocket подписка ---------- */
+let currentChannel: any = null;
+
+watch(() => conversation.id, (id, oldId) => {
+
+  // отпишемся от старого канала
+  if (oldId && (window as any).Echo) {
+    try {
+      (window as any).Echo.leave(`private-conversation.${oldId}`);
+    } catch (e) {
+    }
+  }
+
+  if (!id || !(window as any).Echo) return;
+
+
+  // подписываемся на private канал conversation.{id}
+  try {
+    currentChannel = (window as any).Echo.private(`conversation.${id}`);
+
+    currentChannel.listen('.MessageCreated', (payload: any) => {
+
+      if (!addMessage) return
+      // приводим к формату сообщения, который ожидает UI
+      const incoming: Partial<Message> = {
+        id: payload.id,
+        content: payload.content,
+        direction: payload.direction,
+        status: payload.status,
+        created_at: payload.created_at,
+        attachments: payload.attachments ?? []
+      };
+
+
+      // добавляем только если такой id ещё не присутствует (предотвращаем дубликаты)
+      conversation.messages = conversation.messages || [];
+
+      const exists = conversation.messages.some(m => String(m.id) === String(incoming.id));
+      if (!exists) {
+        conversation.messages.push(incoming as Message);
+        nextTick(() => scrollToBottom());
+        emits('hasNewMessage', id);
+      }
+
+
+    });
+
+  } catch (e) {
+    console.error('Echo subscribe failed:', e);
+  }
+}, {
+  immediate: true,
+});
+
+// при уходе с компонента — отпишемся
+onBeforeUnmount(() => {
+  const id = conversation.id;
+  if (id && (window as any).Echo) {
+    try {
+      (window as any).Echo.leave(`private-conversation.${id}`);
+    } catch (e) { /* ignore */
+    }
+  }
+});
+/* ---------- конец WebSocket ---------- */
 
 </script>
