@@ -67,17 +67,16 @@ const columns = [
     accessorKey: "image_url",
     header: "Картинка",
     cell: ({row}: any) => {
-      const url = row.original.imageURL('sm');
-      const originalUrl = row.original.imageURL('original');
+      const url = row.original.image_urls;
       return url
           ? h(
               "img",
               {
-                src: url,
+                src: url.sm,
                 alt: row.original.title ?? "slide image",
                 style: "height: 40px; object-fit: contain; cursor: pointer;",
                 onClick: () => {
-                  window.open(originalUrl, "_blank");
+                  window.open(url.original, "_blank");
                 },
               }
           )

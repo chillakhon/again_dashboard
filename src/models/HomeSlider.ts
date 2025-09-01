@@ -6,6 +6,7 @@ export default class HomeSlider {
     subtitle: string | null | undefined;
     text: string | null | undefined;
     image_paths: ImagePaths | null | undefined;
+    image_urls: object | null | undefined;
     image_url: string | null | undefined;  // публичный URL
     image: File | string | null | undefined;        // файл для загрузки
     order: number | null | undefined;
@@ -19,6 +20,7 @@ export default class HomeSlider {
         this.subtitle = null;
         this.text = null;
         this.image_paths = null;
+        this.image_urls = null;
         this.image_url = null;
         this.image = null;
         this.order = null;
@@ -34,6 +36,7 @@ export default class HomeSlider {
         slide.subtitle = json.subtitle ?? null;
         slide.text = json.text ?? null;
         slide.image_paths = json.image_paths ?? null;
+        slide.image_urls = json.image_urls ?? null;
 
         // slide.image_url = json.image_paths ? this.getImageUrl(json.image_paths, 'original') : null;
         slide.image = null;
