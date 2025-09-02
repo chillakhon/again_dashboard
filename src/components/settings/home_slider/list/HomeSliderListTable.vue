@@ -8,6 +8,13 @@
         @deleted="handleDeleted"
         @save_changes="handleSave"
     />
+
+
+    <ModalWithProgressBar
+        :sending="sending"
+        :target-progress="uploadProgress"
+    />
+
   </div>
 </template>
 
@@ -19,6 +26,7 @@ import HomeSlider from "@/models/HomeSlider";
 import SlideEdit from "@/components/settings/home_slider/SlideEdit.vue";
 import {useHomeSlideFunctions} from "@/composables/useHomeSlideFunctions";
 import {Check, X} from "lucide-vue-next";
+import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue";
 
 const props = defineProps({
   items: {
@@ -30,7 +38,7 @@ const props = defineProps({
 
 const emits = defineEmits(["deleted", "updated"]);
 
-const {deleteSlide, updateSlide} = useHomeSlideFunctions();
+const {deleteSlide, updateSlide, sending, uploadProgress} = useHomeSlideFunctions();
 
 const edit = ref({
   title: "Редактирование слайда",

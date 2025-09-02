@@ -6,6 +6,8 @@ import HomeSlider from '@/models/HomeSlider'
 
 export function useHomeSlideFunctions() {
     const sending = ref(false)
+    const uploadProgress = ref(0) // прогресс загрузки (0-100)
+
 
     const getSlides = async (): Promise<HomeSlider[] | null> => {
         sending.value = true
@@ -48,8 +50,15 @@ export function useHomeSlideFunctions() {
 
     const updateSlide = async (id: number | string, slide: HomeSlider): Promise<HomeSlider | null> => {
         sending.value = true
+        uploadProgress.value = 0
+
         return await axios.post(`slides/${id}?_method=PATCH`, slide.toFormDataForSave(), {
-            headers: {'Content-Type': 'multipart/form-data'}
+            headers: { 'Content-Type': 'multipart/form-data' },
+            onUploadProgress: (progressEvent) => {
+                if (progressEvent.total) {
+                    uploadProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                }
+            }
         })
             .then(res => {
                 useSuccessHandler().showSuccess(res)
@@ -59,7 +68,10 @@ export function useHomeSlideFunctions() {
                 useErrorHandler().showError(e)
                 return null
             })
-            .finally(() => sending.value = false)
+            .finally(() => {
+                sending.value = false
+                uploadProgress.value = 0 // сброс после завершения
+            })
     }
 
     const deleteSlide = async (id: number | string): Promise<boolean> => {
@@ -86,6 +98,7 @@ export function useHomeSlideFunctions() {
         getSlideById,
         createSlide,
         updateSlide,
-        deleteSlide
+        deleteSlide,
+        uploadProgress
     }
 }

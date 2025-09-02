@@ -54,7 +54,7 @@
                       v-if="horizontal"
                       variant="ghost"
                       size="icon"
-                      class="absolute -top-2 -right-2 h-6 w-6 text-destructive hover:text-destructive bg-background/90 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                      class="absolute -top-2 -right-2 h-6 w-6 text-destructive hover:text-destructive bg-background/90 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10 max-md:opacity-100"
                       @mousedown.stop
                       @click.stop="removeImage(element.id!)"
                   >

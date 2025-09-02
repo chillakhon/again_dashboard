@@ -1,41 +1,40 @@
 <template>
   <div class="w-full space-y-2">
-    <Progress :model-value="progress"/>
+    <Progress :model-value="progress" />
     <div class="flex justify-between text-sm text-muted-foreground">
-      <span>Progress: {{ progress }}%</span>
+      <span>Прогресс: {{ progress }}%</span>
       <button
           v-if="!isAnimating && progress < targetProgress"
           @click="startProgress"
           class="text-primary hover:underline"
       >
-        Resume
+        Продолжить
       </button>
       <button
           v-if="progress > 0 && progress < targetProgress"
           @click="resetProgress"
           class="text-destructive hover:underline"
       >
-        Reset
+        Сбросить
       </button>
     </div>
   </div>
 </template>
 
-
 <script setup lang="ts">
-import {Progress} from '@/components/ui/progress'
-import {ref, onMounted, watch, onBeforeUnmount} from 'vue'
+import { Progress } from '@/components/ui/progress'
+import { ref, onMounted, watch, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
-  duration: { // Длительность анимации в секундах
+  duration: { // Длительность анимации в секундах (время анимации от текущего прогресса до targetProgress)
     type: Number,
     default: 3
   },
-  targetProgress: { // Целевое значение прогресса (0-100)
+  targetProgress: { // Целевое значение прогресса (0–100)
     type: Number,
     default: 100
   },
-  autoStart: { // Автоматически запускать анимацию
+  autoStart: { // Автоматически запускать анимацию при монтировании
     type: Boolean,
     default: true
   }
@@ -43,27 +42,38 @@ const props = defineProps({
 
 const progress = ref(0)
 const isAnimating = ref(false)
-let animationFrame: number
-let startTime: number
+let animationFrame: number | null = null
+let startTime = 0
+let startProgressValue = 0
 
+// Анимируем от текущего progress.value к props.targetProgress
 const startProgress = () => {
-  if (isAnimating.value) return
+  // отменяем предыдущую анимацию (если есть) и начнём новую от текущего значения
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame)
+    animationFrame = null
+  }
 
   isAnimating.value = true
-  progress.value = 0
+  startProgressValue = progress.value // стартуем от текущего значения
   startTime = performance.now()
 
+  const totalDurationMs = Math.max(props.duration * 1000, 1) // мс
+
   const animate = (currentTime: number) => {
-    const elapsed = (currentTime - startTime) / 1000 // в секундах
-    const progressPercent = Math.min(elapsed / props.duration, 1) * props.targetProgress
+    const elapsed = currentTime - startTime
+    const t = Math.min(elapsed / totalDurationMs, 1) // 0..1
 
-    progress.value = Math.round(progressPercent)
+    // интерполируем от startProgressValue до targetProgress
+    const newProgress = startProgressValue + (props.targetProgress - startProgressValue) * t
+    progress.value = Math.round(newProgress)
 
-    if (elapsed < props.duration && progress.value < props.targetProgress) {
+    if (t < 1 && progress.value < props.targetProgress) {
       animationFrame = requestAnimationFrame(animate)
     } else {
       isAnimating.value = false
       progress.value = props.targetProgress
+      animationFrame = null
     }
   }
 
@@ -71,27 +81,32 @@ const startProgress = () => {
 }
 
 const resetProgress = () => {
-  cancelAnimationFrame(animationFrame)
+  if (animationFrame) {
+    cancelAnimationFrame(animationFrame)
+    animationFrame = null
+  }
   progress.value = 0
   isAnimating.value = false
 }
 
-// Автоматический старт при монтировании
+// Автоматический запуск при монтировании
 onMounted(() => {
-  if (props.autoStart) {
-    startProgress()
-  }
+  if (props.autoStart) startProgress()
 })
 
-// Следим за изменениями targetProgress
+// Теперь при изменении targetProgress — запускаем анимацию от текущего значения к новому.
+// ВАЖНО: не обнуляем progress при этом — поэтому плавно увеличиваемся.
 watch(() => props.targetProgress, (newVal) => {
   if (newVal > progress.value) {
     startProgress()
+  } else {
+    // если целевое уменьшилось — просто установим его
+    progress.value = newVal
   }
 })
 
 // Очистка анимации при размонтировании
 onBeforeUnmount(() => {
-  cancelAnimationFrame(animationFrame)
+  if (animationFrame) cancelAnimationFrame(animationFrame)
 })
 </script>

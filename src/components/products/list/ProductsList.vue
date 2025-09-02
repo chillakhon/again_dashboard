@@ -2,7 +2,6 @@
   <div class="">
 
     <div class="flex max-md:flex-col justify-between mb-2 max-md:space-y-2">
-
       <ProductSearch
           class="md:w-[400px]"
           :filter="paramsSearch"
@@ -37,10 +36,7 @@
           @current-page="currentPage = $event; fetchData()"
       />
     </div>
-
-
   </div>
-
 </template>
 
 <script setup lang="ts">

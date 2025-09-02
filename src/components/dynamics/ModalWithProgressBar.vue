@@ -8,7 +8,7 @@
     <template #content>
       <ShadcnProgress
           :auto-start="true"
-          :duration="3"
+          :duration="5"
           :target-progress="targetProgress"
       />
     </template>

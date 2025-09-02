@@ -8,7 +8,7 @@
 
         <div class="text-gray-600">
 
-          <div class="grid grid-cols-2">
+          <div class="grid grid-cols-2 items-end">
             <div class="grid w-full items-center gap-2 p-2">
               <Label for="sku">Артикул*</Label>
               <Input

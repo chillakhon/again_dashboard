@@ -3,7 +3,7 @@
     <img
         :src="showImage(element)"
         alt="Uploaded image"
-        class="object-cover rounded-md border m-1 w-full h-full"
+        class="object-cover rounded-md border w-full h-full"
     />
   </div>
 
