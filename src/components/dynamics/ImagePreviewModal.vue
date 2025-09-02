@@ -11,7 +11,7 @@
       :dialog-open="dialogOpen"
       @close="dialogOpen = false"
       title=""
-      dynamic-style="md:min-w-[60vw] flex items-center justify-center"
+      dynamic-style="md:min-w-[60vw] flex items-center justify-center "
   >
     <template v-slot:content>
       <swiper

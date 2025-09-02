@@ -8,7 +8,7 @@
     </DialogTrigger>
     <DialogContent
         :class="dynamicStyle"
-        class="w-full min-h-[100px]: overflow-y-auto flex flex-col items-start"
+        class="w-full min-h-[100px]: overflow-y-auto flex flex-col items-start max-h-[95vh]"
     >
       <DialogHeader>
         <DialogTitle>{{ title }}</DialogTitle>

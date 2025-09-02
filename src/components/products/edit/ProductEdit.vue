@@ -33,7 +33,7 @@
 
                   <div class="grid md:grid-cols-2 w-full gap-2">
 
-                    <div class="flex md:flex-col justify-between">
+                    <div class="flex flex-col max-md:space-y-2 justify-between">
 
                       <div class="">
                         <Label for="name">Наименование*</Label>
