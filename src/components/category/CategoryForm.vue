@@ -1,9 +1,9 @@
 <template>
+  <Loader v-if="loading"/>
   <DynamicForm
-      v-if="!isLoading"
+      v-else
       v-model="props.formData"
       :fields="formFields"
-      :errors="errors"
       :show-submit-button="true"
       :submit-button-text="submitButtonName"
       @submit-form="emit('submitForm')"
@@ -18,6 +18,7 @@ import {FormDynamicFieldType} from "@/types/form";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
 import {useProductFunctions} from "@/composables/useProductFunctions";
 import {Product} from "@/models/Product";
+import Loader from "@/components/common/Loader.vue";
 
 const props = defineProps({
   formData: {
@@ -30,23 +31,37 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['submitForm'])
+const loading = ref(true)
 
-const isLoading = ref<boolean>(true)
-const errors = ref<Record<string, string>>({})
-const formFields = ref<FormDynamicFieldType[]>([])
+const emit = defineEmits(['submitForm'])
 
 const {getCategories} = useCategoryFunctions()
 const {getProducts} = useProductFunctions()
 
+const categories = ref<Category[]>([])
+const products = ref<Product[]>([])
+
+const formFields = ref<FormDynamicFieldType[]>([])
+
+
 onMounted(async () => {
-  const categories = await getCategories({get_children: false})
-  const products = await getProducts({per_page: 200, paginate: false})
+
+  categories.value = await getCategories({get_children: false})
+  products.value = await getProducts({per_page: 200, paginate: false})
       .then(response => {
-        return response.map(item => Product.fromJSON(item))
+        return response.map((item: any) => Product.fromJSON(item))
       })
 
-  formFields.value = [
+
+  formFields.value = await getColumns()
+
+  loading.value = false
+
+})
+
+
+const getColumns = async () => {
+  return [
     {
       name: 'name',
       component: 'text',
@@ -61,7 +76,7 @@ onMounted(async () => {
       label: 'Родительская категория',
       required: false,
       placeholder: 'Выберите категорию',
-      options: categories,
+      options: categories.value ?? [],
       optionLabel: 'name',
       optionValue: 'id'
     },
@@ -71,7 +86,7 @@ onMounted(async () => {
       label: 'Товары',
       required: false,
       placeholder: 'Выберите товары',
-      options: products,
+      options: products.value ?? [],
       optionLabel: 'name',
       optionValue: 'id'
     },
@@ -84,8 +99,6 @@ onMounted(async () => {
       rows: 3
     }
   ]
-
-  isLoading.value = false
-})
+}
 
 </script>

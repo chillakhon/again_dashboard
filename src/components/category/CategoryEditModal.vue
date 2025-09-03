@@ -9,9 +9,8 @@
     </template>
 
     <template #content>
-      <Loader v-if="sending"/>
+<!--      <Loader v-if="sending"/>-->
       <CategoryForm
-          v-else
           :formData="category"
           submit-button-name="Сохранить"
           @submit-form="handleSaveToServe"
@@ -45,8 +44,6 @@ const {sending, updateCategory, getProductsByCategory} = useCategoryFunctions()
 
 const dialogOpen = async (param: boolean) => {
   if (param) {
-
-    console.log(props.item)
 
     category.value.productIds = await getProductsByCategory({category_id: category.value.id})
         .then(res => {

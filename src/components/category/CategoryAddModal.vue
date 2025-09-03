@@ -5,9 +5,9 @@
     </template>
 
     <template #content>
-      <Loader v-if="sending"/>
+<!--      <Loader v-if="sending"/>-->
       <CategoryForm
-          v-else
+          :key="renderCreated"
           :formData="category"
           @submit-form="handleSaveToServe"
       />
@@ -27,9 +27,12 @@ import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
 const emit = defineEmits(["created"]);
 
 
+const renderCreated = ref(1)
+
 const category = ref<Category>(Category.fromJSON({}));
 
 const {createCategory, sending} = useCategoryFunctions()
+
 
 const handleSaveToServe = async () => {
 
@@ -38,6 +41,9 @@ const handleSaveToServe = async () => {
   emit('created')
 
 }
+
+
+
 
 </script>
 

@@ -6,7 +6,7 @@
       description="Заполните форму, чтобы добавить новый слайд на главную страницу. Укажите заголовок, подзаголовок, текст и загрузите изображение."
   >
     <template #trigger>
-      <Button variant="outline">
+      <Button variant="outline" class="max-md:w-full">
         Добавить
       </Button>
     </template>

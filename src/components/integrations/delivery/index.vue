@@ -40,7 +40,14 @@
           <Label for="cdek-tariffs">Тарифы (через запятую)</Label>
           <Input id="cdek-tariffs" v-model="deliveryData.cdek.tariffs" placeholder="136,137,233" :disabled="!deliveryEnabled.cdek" />
         </div>
+
+
+        <Button>Сохранить</Button>
+
+
       </CardContent>
+
+
     </Card>
 
     <!-- Boxberry -->
@@ -74,7 +81,13 @@
           <Label for="boxberry-url">URL API</Label>
           <Input id="boxberry-url" v-model="deliveryData.boxberry.apiUrl" placeholder="https://api.boxberry.ru" :disabled="!deliveryEnabled.boxberry" />
         </div>
+
+        <Button>Сохранить</Button>
+
+
       </CardContent>
+
+
     </Card>
 
     <!-- Почта России -->
@@ -110,7 +123,12 @@
           <Label for="post-token">Token</Label>
           <Input id="post-token" v-model="deliveryData.russianPost.token" type="password" placeholder="Введите токен доступа" :disabled="!deliveryEnabled.russianPost" />
         </div>
+        <Button>Сохранить</Button>
+
       </CardContent>
+
+
+
     </Card>
   </div>
 </template>
@@ -122,6 +140,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
+import {Button} from '@/components/ui/button'
 
 const deliveryEnabled = ref({
   cdek: true,

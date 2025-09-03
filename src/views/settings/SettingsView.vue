@@ -1,30 +1,6 @@
 <template>
-<!--  <div class="flex h-full">-->
-<!--    &lt;!&ndash; Боковое меню &ndash;&gt;-->
-<!--    <div class="w-64 border-r p-4">-->
-<!--      <h1 class="text-xl font-bold mb-6">Настройки</h1>-->
 
-<!--      <div>-->
-<!--        <h2 class="text-sm font-semibold text-gray-500 uppercase mb-2">Настройки магазина</h2>-->
-<!--        <nav class="space-y-1">-->
-<!--          <router-link-->
-<!--              v-for="item in menuItems"-->
-<!--              :key="item.path"-->
-<!--              :to="item.path"-->
-<!--              class="block px-2 py-1 text-sm rounded hover:bg-gray-100"-->
-<!--              active-class="bg-gray-100 font-medium"-->
-<!--          >-->
-<!--            <span v-if="item.checked" class="inline-block w-4 h-4 mr-2">✓</span>-->
-<!--            {{ item.title }}-->
-<!--          </router-link>-->
-<!--        </nav>-->
-<!--      </div>-->
-<!--    </div>-->
-
-<!--    &lt;!&ndash; Основное содержимое &ndash;&gt;-->
-<!--  </div>-->
-
-  <div class="flex-1 p-6">
+  <div class="flex-1">
     <router-view/>
   </div>
 
