@@ -41,15 +41,15 @@ onMounted(() => {
 const buildFormFields = () => {
   formFields.value = [
     [
-      {name: 'order', component: 'text', placeholder: 'Порядок отображения', type: 'number'},
+      {name: 'order', component: 'text', placeholder: 'Порядок', type: 'number', label: 'Порядок отображения'},
       {name: 'is_active', component: 'checkbox', label: 'Активен'},
     ],
     [
-      {name: 'title', component: 'text', placeholder: 'Заголовок'},
-      {name: 'subtitle', component: 'text', placeholder: 'Подзаголовок'},
+      {name: 'title', component: 'text', placeholder: 'Заголовок', required: true, label: 'Заголовок'},
+      {name: 'subtitle', component: 'text', placeholder: 'Подзаголовок', label: 'Подзаголовок'},
     ],
 
-    {name: 'text', component: 'textarea', placeholder: 'Текст'},
+    {name: 'text', component: 'textarea', placeholder: 'Текст', label: 'Текст'},
     {
       name: 'image',
       component: 'text',
