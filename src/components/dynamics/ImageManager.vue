@@ -126,7 +126,7 @@
            class="flex flex-col items-center justify-center py-8 border-2 border-dashed rounded-lg cursor-pointer"
       >
         <UploadIcon class="h-10 w-10 text-muted-foreground mb-2"/>
-        <p class="text-sm text-muted-foreground">No images uploaded yet</p>
+        <p class="text-sm text-muted-foreground">Изображения ещё не загружены</p>
       </div>
     </div>
 
