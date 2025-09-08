@@ -115,7 +115,16 @@ const columns = [
   {
     accessorKey: "name",
     header: "Название",
+    cell: ({row}: any) => {
+      const product = row.original;
+
+      return h('span', {
+        class: 'text-blue-500 cursor-pointer hover:underline',
+        onClick: () => editProduct(product)
+      }, product.name);
+    }
   },
+
   {
     accessorKey: "stock_quantity",
     header: "Остаток",
@@ -123,20 +132,20 @@ const columns = [
   {
     header: "Цена",
     accessorKey: "price",
-    cell: ({ row }: any) =>
+    cell: ({row}: any) =>
         h(
             "span",
-            { class: "whitespace-nowrap" },
+            {class: "whitespace-nowrap"},
             row.original.price
         ),
   },
   {
     accessorKey: "cost_price",
     header: "Цена закупки",
-    cell: ({ row }: any) =>
+    cell: ({row}: any) =>
         h(
             "span",
-            { class: "whitespace-nowrap" },
+            {class: "whitespace-nowrap"},
             row.original.cost_price
         ),
 
