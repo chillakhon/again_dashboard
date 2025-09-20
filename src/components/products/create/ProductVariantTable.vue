@@ -1,6 +1,5 @@
 <template>
   <Loader v-if="loading"/>
-
   <DynamicsDataTable
       v-else
       :key="renderTable"

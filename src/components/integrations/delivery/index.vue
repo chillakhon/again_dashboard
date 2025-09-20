@@ -55,18 +55,18 @@
 
     </Card>
 
-    <!-- Boxberry -->
+    <!-- Яндекс.доставка  -->
     <Card>
       <CardHeader>
         <div class="flex items-center space-x-3">
           <div
               class="w-10 h-10 rounded-md bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white">
-            <span class="font-bold">B</span>
+            <span class="font-bold">Я</span>
           </div>
           <div class="flex-1 flex justify-between items-center">
             <div>
-              <CardTitle>Boxberry</CardTitle>
-              <CardDescription>Интеграция с API Boxberry</CardDescription>
+              <CardTitle>Яндекс доставка </CardTitle>
+              <CardDescription>Интеграция с API Яндекс.доставка </CardDescription>
             </div>
             <Switch v-model="deliveryEnabled.boxberry"/>
           </div>
@@ -87,7 +87,7 @@
         </div>
         <div class="space-y-2">
           <Label for="boxberry-url">URL API</Label>
-          <Input id="boxberry-url" v-model="deliveryData.boxberry.apiUrl" placeholder="https://api.boxberry.ru"
+          <Input id="boxberry-url" v-model="deliveryData.boxberry.apiUrl" placeholder="Введите url"
                  :disabled="!deliveryEnabled.boxberry"/>
         </div>
 
@@ -170,7 +170,7 @@ const deliveryData = ref({
   boxberry: {
     token: '',
     widgetCode: '',
-    apiUrl: 'https://api.boxberry.ru'
+    apiUrl: ''
   },
   russianPost: {
     login: '',

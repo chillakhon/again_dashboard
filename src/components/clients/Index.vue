@@ -58,6 +58,10 @@ const renderTable = ref(1)
 
 const filters = ref({
   search: "",
+  birth_date: {
+    start: undefined,
+    end: undefined,
+  }
 })
 
 
@@ -72,7 +76,9 @@ async function fetchData() {
   const p = {
     page: currentPage.value,
     per_page: itemsPerPage.value,
-    ...filters.value,
+    search: filters.value.search,
+    birth_date_from: filters.value.birth_date.start ?? null,
+    birth_date_to: filters.value.birth_date.end ?? null,
   }
 
   try {

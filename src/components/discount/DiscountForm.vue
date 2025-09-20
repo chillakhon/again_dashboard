@@ -1,6 +1,7 @@
 <template>
+  <Loader v-if="isLoading"/>
   <DynamicForm
-      v-if="!isLoading"
+      v-else
       v-model="props.formData"
       :key="renderForm"
       :fields="formFields"
@@ -20,6 +21,7 @@ import {Product} from "@/models/Product";
 import {DiscountTargetOptions, DiscountTargetType, DiscountValueOptions} from "@/constants/DiscountType";
 import {Discount} from "@/models/Discount";
 import {Category} from "@/models/Category";
+import Loader from "@/components/common/Loader.vue";
 
 
 const props = defineProps({
@@ -50,7 +52,6 @@ const {getProducts} = useProductFunctions()
 
 onMounted(async () => {
 
-
   await loadOptions()
 
   buildFormFields();
@@ -60,7 +61,8 @@ onMounted(async () => {
 
 watch(
     () => props.formData?.discountType,
-    (newValue) => {
+    async (newValue) => {
+
       if (props.formData) {
         if (newValue != DiscountTargetType.SPECIFIC) {
           props.formData.productIds = undefined
@@ -70,6 +72,7 @@ watch(
         }
       }
 
+      await loadOptions()
       buildFormFields();
     }
 );
@@ -151,7 +154,7 @@ const buildFormFields = () => {
           {
             name: 'productIds',
             component: 'multiSelect',
-            label: 'Продукты',
+            label: 'Товары',
             required: true,
             placeholder: 'Выберите продукты',
             options: products.value,
@@ -188,24 +191,19 @@ async function loadOptions() {
 
   switch (type) {
     case DiscountTargetType.ALL:
-      categories.value = []
-      products.value = []
       break
-
     case DiscountTargetType.CATEGORY:
-      categories.value = await getCategories({get_children: false})
-      products.value = []
+      if (!categories.value.length) {
+        categories.value = await getCategories({get_children: false})
+      }
       break
-
     case DiscountTargetType.SPECIFIC:
-      categories.value = []
-      products.value = await getProducts({per_page: 200, paginate: false})
-          .then(res => res.map((item: any) => Product.fromJSON(item)))
+      if (!products.value.length) {
+        products.value = await getProducts({per_page: 200, paginate: false})
+            .then(res => res.map((item: any) => Product.fromJSON(item)))
+      }
       break
-
     default:
-      categories.value = []
-      products.value = []
       break
   }
 }

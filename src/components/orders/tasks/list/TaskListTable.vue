@@ -29,9 +29,9 @@
 import {h, PropType, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import Task from "@/models/Task";
-import {useTaskFunctions} from "@/composables/useTaskFunctions"; // поправь путь, если нужно
+import {useTaskFunctions} from "@/composables/useTaskFunctions";
 import {useDateFormat} from "@/composables/useDateFormat";
-import TaskEdit from "@/components/orders/tasks/TaskEdit.vue"; // поправь путь
+import TaskEdit from "@/components/orders/tasks/TaskEdit.vue";
 import TaskStatus from "@/models/TaskStatus";
 import TaskPriority from "@/models/TaskPriority";
 import TaskLabel from "@/models/TaskLabel";

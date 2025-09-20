@@ -1,9 +1,11 @@
 <template>
-  <component
-      :is="dynamicComponent"
-      :column="column"
-      :filter="filter"
-  />
+  <div>
+    <component
+        :is="dynamicComponent"
+        :column="column"
+        :filter="filter"
+    />
+  </div>
 </template>
 
 <script setup>

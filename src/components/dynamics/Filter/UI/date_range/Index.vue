@@ -1,36 +1,40 @@
 <template>
-  <Popover>
-    <PopoverTrigger as-child>
-      <Button
-          variant="outline"
-          :class="cn(
-          'w-full justify-start text-left font-normal',
-          !filter[column.field]?.start && 'text-muted-foreground'
-        )"
-      >
-        <CalendarIcon class="mr-2 h-4 w-4"/>
-        <template v-if="localRange.start">
-          <template v-if="localRange.end">
-            {{ formatDisplay(localRange.start) }} - {{ formatDisplay(localRange.end) }}
-          </template>
-          <template v-else>
-            {{ formatDisplay(localRange.start) }}
-          </template>
-        </template>
-        <template v-else>
-          {{ column.placeholder || 'Pick a date' }}
-        </template>
-      </Button>
-    </PopoverTrigger>
-    <PopoverContent class="w-auto p-0">
-      <RangeCalendar
-          v-model="localRange"
-          initial-focus
-          locale="ru-RU"
-          :number-of-months="1"
-      />
-    </PopoverContent>
-  </Popover>
+  <div>
+    <Popover>
+      <PopoverTrigger as-child>
+        <Button
+            variant="outline"
+            :class="cn(
+    'w-full justify-start text-left font-normal overflow-hidden text-ellipsis whitespace-nowrap',
+    !filter[column.field]?.start && 'text-muted-foreground'
+  )"
+        >
+          <CalendarIcon class="mr-2 h-4 w-4 shrink-0"/>
+          <span class="truncate">
+    <template v-if="localRange.start">
+      <template v-if="localRange.end">
+        {{ formatDisplay(localRange.start) }} - {{ formatDisplay(localRange.end) }}
+      </template>
+      <template v-else>
+        {{ formatDisplay(localRange.start) }}
+      </template>
+    </template>
+    <template v-else>
+      {{ column.placeholder || 'Выберите период' }}
+    </template>
+  </span>
+        </Button>
+
+      </PopoverTrigger>
+      <PopoverContent class="w-auto p-0">
+
+        <DatePickerWithSelectYear
+            v-model="localRange"
+        />
+
+      </PopoverContent>
+    </Popover>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -41,6 +45,7 @@ import {RangeCalendar} from '@/components/ui/range-calendar'
 import {CalendarIcon} from 'lucide-vue-next'
 import {getLocalTimeZone} from '@internationalized/date'
 import {cn} from '@/lib/utils'
+import DatePickerWithSelectYear from '@/components/dynamics/shadcn/date/DataPickerWithSelectYear.vue'
 
 const props = defineProps({
   column: Object,

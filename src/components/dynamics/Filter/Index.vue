@@ -3,6 +3,7 @@
     <div class="flex max-md:flex-col gap-3 w-full">
       <!--      {{columns}}-->
       <DynamicsFilterColumn
+          class="w-full min-w-[250px]"
           v-for="(column, index) in columns"
           :key="index"
           :column="column"
