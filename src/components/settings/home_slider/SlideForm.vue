@@ -45,7 +45,7 @@ const buildFormFields = () => {
       {name: 'is_active', component: 'checkbox', label: 'Активен'},
     ],
     [
-      {name: 'title', component: 'text', placeholder: 'Заголовок', required: true, label: 'Заголовок'},
+      {name: 'title', component: 'text', placeholder: 'Заголовок', label: 'Заголовок'},
       {name: 'subtitle', component: 'text', placeholder: 'Подзаголовок', label: 'Подзаголовок'},
     ],
 

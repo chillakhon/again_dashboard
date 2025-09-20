@@ -41,10 +41,6 @@
             >
               Добавить
             </Button>
-            <!--            <ArrowDown v-if="product.variants?.length"-->
-            <!--                       @click="open = false"-->
-            <!--                       class="mt-2 cursor-pointer text-gray-600  hover:text-gray-800"-->
-            <!--            />-->
           </div>
 
         </div>

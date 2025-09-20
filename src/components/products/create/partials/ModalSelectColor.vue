@@ -1,10 +1,8 @@
 <template>
   <ModalDialog>
     <template #trigger>
-      <loader v-if="loading"/>
-      <div class="relative group inline-block"
-           v-else
-      >
+      <!--      <loader v-if="loading"/>-->
+      <div class="relative group inline-block">
         <div
             class="flex items-center text-sky-600 text-sm cursor-pointer pb-1 border-b border-dashed border-gray-300 group-hover:border-sky-400 transition-colors duration-200">
           {{ getColorById(item?.color_id ?? '') ?? 'Выберите цвет' }}
@@ -25,11 +23,11 @@
       <div class="flex flex-col space-y-2">
         <Select
             v-model="color_id_local"
-            :options="colors || []"
+            :options="props.colors || []"
             option-label="name"
             option-value="id"
             placeholder="Выберите цвет товара"
-         />
+        />
 
         <div class="flex space-x-2">
           <!--          <Button variant="outline">Отменить</Button>-->
@@ -40,26 +38,23 @@
       </div>
 
     </template>
-
   </ModalDialog>
-
 </template>
 
 <script setup lang="ts">
 
 import ModalDialog from "@/components/dynamics/shadcn/ModalDialog.vue";
-import {useColorsFunctions} from "@/composables/useColorFunctions";
-import {onMounted, ref} from "vue";
+import {onMounted, PropType, ref} from "vue";
 import {Color} from "@/types/Types";
 import Select from "@/components/dynamics/Dropdown/Select.vue";
 import {Product} from "@/models/Product";
 
 import Button from "@/components/ui/button/Button.vue";
 
-const loading = ref(true);
 
 const props = defineProps({
-  item: Product
+  item: Product,
+  colors: Array as PropType<Color[]>,
 })
 
 
@@ -67,23 +62,12 @@ const emits = defineEmits(["updateColor"]);
 
 const color_id_local = ref(props.item?.color_id ?? undefined);
 
-const {getColors} = useColorsFunctions()
 
 const getColorById = (id: string) => {
-
   if (!id) return
-
-  const color = colors.value?.find((color) => color?.id === id)
+  const color = props.colors?.find((color) => color?.id === id)
   return color?.name
 }
-
-const colors = ref<Color[]>([]);
-
-
-onMounted(async () => {
-  colors.value = await getColors();
-  loading.value = false;
-})
 
 
 const saveColor = () => {
