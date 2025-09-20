@@ -24,6 +24,8 @@ const tab = ref('discount');
 const tabs = ref([
   {title: 'Скидки', tab: 'discount'},
   {title: 'Промокоды', tab: 'promo'},
+  {title: 'Рефералка', tab: 'referalka', disabled: true},
+  {title: 'Сертификаты', tab: 'sertifik', disabled: true},
 ])
 
 

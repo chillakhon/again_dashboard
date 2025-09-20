@@ -11,6 +11,7 @@ interface Tab {
   tab: string
   title: string
   content: string | any // Можете указать более конкретный тип для content
+  disabled: boolean
 }
 
 const props = defineProps<{
@@ -33,6 +34,7 @@ const activeTab = computed({
       <TabsTrigger
           v-for="tab in tabs"
           :key="tab.tab"
+          :disabled="tab.disabled"
           :value="tab.tab"
       >
         {{ tab.title }}
