@@ -17,23 +17,25 @@
 
     <Loader v-if="isLoading"/>
 
-    <PromoListTable
-        v-else
-        :key="renderTable"
-        :items="data ?? []"
-        @deleted="handleDeleted"
-        @updated="fetchData()"
-    />
+    <div v-else>
+      <PromoListTable
+          :key="renderTable"
+          :items="data ?? []"
+          @deleted="handleDeleted"
+          @updated="fetchData()"
+      />
 
-    <PaginationTable
-        class="flex justify-end w-full"
-        :total="totalItems"
-        :default-page="currentPage"
-        :items-per-page="itemsPerPage"
-        :sibling-count="1"
-        :show-edges="true"
-        @current-page="currentPage = $event; fetchData()"
-    />
+      <PaginationTable
+          class="flex justify-end w-full"
+          :total="totalItems"
+          :default-page="currentPage"
+          :items-per-page="itemsPerPage"
+          :sibling-count="1"
+          :show-edges="true"
+          @current-page="currentPage = $event; fetchData()"
+      />
+    </div>
+
 
   </div>
 </template>

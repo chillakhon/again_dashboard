@@ -37,7 +37,7 @@ export function usePromoCodeFunctions() {
             formData.append('_method', 'PUT');
 
             const response = await axios.post(`/promo-codes/${promo.id}`, formData, {
-                headers: { 'Content-Type': 'multipart/form-data' }
+                headers: {'Content-Type': 'multipart/form-data'}
             });
 
             useSuccessHandler().showSuccess(response);

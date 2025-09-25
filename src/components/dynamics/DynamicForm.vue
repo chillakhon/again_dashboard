@@ -2,13 +2,16 @@
   <form class="space-y-4" @submit.prevent="emit('submitForm')">
     <div v-for="(row, rowIndex) in groupedFields" :key="rowIndex" class="grid gap-2"
          :class="`md:grid-cols-${row.length}`">
-      <div v-for="field in row" :key="field.name" class="space-y-1 max-w-full overflow-hidden p-1">
+      <div v-for="field in row" :key="field.name" class="space-y-1 max-w-full overflow-hidden p-1"
+
+      >
         <Label :for="field.name">
-          {{ field.component != 'checkbox' ? field.label : '' }}
+          {{ field.component != 'checkbox' && field.component != 'emitButton' ? field.label : '' }}
           <span v-if="field.required" class="text-red-500">*</span>
         </Label>
 
         <!-- Текстовое поле -->
+
 
         <Input
             v-if="field.component === 'text' && field.type !== 'file'"
@@ -140,6 +143,15 @@
         </div>
 
 
+        <div
+            class="flex flex-col items-start justify-end h-full pb-1"
+            v-else-if="field.component == 'enyComponentSlot'">
+
+            <slot name="enyComponentSlot"></slot>
+
+        </div>
+
+
         <p v-if="errors[field.name]" class="text-sm text-red-500">
           {{ errors[field.name] }}
         </p>
@@ -193,7 +205,7 @@ const props = withDefaults(
       errors: () => ({}),
     })
 
-const emit = defineEmits(['update:modelValue', 'submitForm'])
+const emit = defineEmits(['update:modelValue', 'submitForm', 'emitButton']);
 
 
 const formData = computed({

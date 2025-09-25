@@ -18,6 +18,14 @@ export const DiscountTargetOptions = Object.entries(DiscountTargetLabels).map(
     }),
 );
 
+export const PromoCodeTargetOptions = Object.entries(DiscountTargetLabels)
+    .filter(([value, _label]) => value !== DiscountTargetType.CATEGORY)
+    .map(([value, label]) => ({
+        value: value as DiscountTargetType,
+        label,
+    }));
+
+
 
 // === 2) Как именно считается скидка ===
 export enum DiscountValueType {

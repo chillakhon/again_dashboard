@@ -32,6 +32,29 @@ export function useProductFunctions() {
             })
             .finally(() => sending.value = false)
     }
+    const getProductsSimple = async (params: {
+        per_page?: number,
+        page?: number,
+        search?: string,
+    }) => {
+        if (sending.value) return
+
+        sending.value = true
+        progress.value = 0
+
+        return await axios.get('products/simple', {
+            params: params
+        })
+            .then(res => {
+                return res.data
+            })
+
+            .catch(e => {
+                sending.value = false
+                useErrorHandler().showError(e)
+            })
+            .finally(() => sending.value = false)
+    }
 
     const getProductsById = async (productId: any, params: {
         per_page?: number,
@@ -90,6 +113,7 @@ export function useProductFunctions() {
         progress,
         getProducts,
         getProductsById,
-        deleteProduct
+        deleteProduct,
+        getProductsSimple,
     }
 }

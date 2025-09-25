@@ -26,8 +26,10 @@ import {ref} from "vue";
 import {PromoCode} from "@/models/PromoCode";
 import {usePromoCodeFunctions} from "@/composables/usePromoCodeFunctions";
 import PromoForm from "@/components/discount/Promo/PromoForm.vue";
+import {Product} from "@/models/Product";
 
 const emit = defineEmits(["created"]);
+
 
 const promoCode = ref<PromoCode>(PromoCode.fromJSON({
   isActive: true,

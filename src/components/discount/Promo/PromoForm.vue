@@ -7,14 +7,31 @@
       :fields="formFields"
       :errors="errors"
       :show-submit-button="submitButtonButton"
+      @emit-button="console.log(45)"
       @submit-form="emit('submitForm')"
-  />
+  >
+
+    <template #enyComponentSlot>
+      <div class="flex justify-between  space-x-2">
+        <PromoProductDrawer
+            :promo-code="props.formData"
+        />
+        <span>Выбрано продуктов: {{ props.formData?.selected_products?.length ?? 0 }}</span>
+      </div>
+    </template>
+
+  </DynamicForm>
+
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue'
+import {ref, onMounted, watch} from 'vue'
 import DynamicForm from '@/components/dynamics/DynamicForm.vue'
 import {PromoCode} from "@/models/PromoCode";
+import {DiscountTargetType, PromoCodeTargetOptions} from "@/constants/DiscountType";
+import PromoProductDrawer from "@/components/discount/Promo/promo_product/PromoProductDrawer.vue";
+import {Product} from "@/models/Product";
+
 
 const props = defineProps({
   formData: {
@@ -24,10 +41,10 @@ const props = defineProps({
   submitButtonButton: {
     type: Boolean,
     default: false,
-  }
+  },
 })
 
-const emit = defineEmits(['submitForm'])
+const emit = defineEmits(['submitForm', 'selectedProducts'])
 
 const renderForm = ref(1)
 const isLoading = ref<boolean>(true)
@@ -41,7 +58,6 @@ onMounted(() => {
 
 const buildFormFields = () => {
   formFields.value = [
-
     {
       name: 'isActive',
       component: 'checkbox',
@@ -103,10 +119,33 @@ const buildFormFields = () => {
         name: 'expiresAt',
         component: 'date',
         label: 'Дата окончания'
-      }
+      },
+
     ],
 
 
+    [
+
+      {
+        name: 'promo_code_type',
+        component: 'select',
+        label: 'Применять',
+        required: true,
+        placeholder: 'Выбрать',
+        options: PromoCodeTargetOptions,
+        optionLabel: 'label',
+        optionValue: 'value'
+      },
+
+
+      ...(props.formData?.promo_code_type == DiscountTargetType.SPECIFIC
+          ? [{
+            name: 'enyComponentSlot',
+            component: 'enyComponentSlot',
+          }]
+          : []),
+
+    ],
     {
       name: 'image',
       component: 'text',
@@ -117,7 +156,16 @@ const buildFormFields = () => {
       imagePreview: true
     }
 
-
   ]
 }
+
+
+watch(
+    () => props.formData?.promo_code_type,
+    () => {
+      buildFormFields()
+    }
+)
+
+
 </script>

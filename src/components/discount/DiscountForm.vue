@@ -180,8 +180,6 @@ const buildFormFields = () => {
 
         ]
         : [])
-
-
   ]
 }
 

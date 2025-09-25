@@ -1,3 +1,6 @@
+import {Product} from "@/models/Product";
+import {DiscountTargetType} from "@/constants/DiscountType";
+
 export class PromoCode {
     id: number | undefined;
     code: string | undefined;
@@ -11,8 +14,11 @@ export class PromoCode {
     maxUses: number | undefined;
     timesUsed: number | undefined;
     isActive: boolean | undefined;
+    applies_to_all_products: boolean | undefined;
     createdAt: string | undefined;
     updatedAt: string | undefined;
+    promo_code_type: string | undefined;
+    selected_products: Product[] | undefined;
 
     constructor() {
         this.id = undefined;
@@ -27,8 +33,11 @@ export class PromoCode {
         this.maxUses = undefined;
         this.timesUsed = 0;
         this.isActive = true;
+        this.applies_to_all_products = false;
         this.createdAt = undefined;
         this.updatedAt = undefined;
+        this.promo_code_type = undefined;
+        this.selected_products = undefined;
     }
 
     get discountTypeLabel(): string {
@@ -58,8 +67,11 @@ export class PromoCode {
         promo.maxUses = json.max_uses ?? undefined;
         promo.timesUsed = json.times_used ?? 0;
         promo.isActive = !!json.is_active;
+        promo.applies_to_all_products = !!json.applies_to_all_products;
         promo.createdAt = json.created_at ?? undefined;
         promo.updatedAt = json.updated_at ?? undefined;
+        promo.promo_code_type = json.type;
+        promo.selected_products = json.products ?? [];
         return promo;
     }
 
@@ -91,6 +103,18 @@ export class PromoCode {
         formData.append('max_uses', String(this.maxUses ?? ''));
         formData.append('times_used', String(this.timesUsed ?? 0));
         formData.append('is_active', this.isActive ? '1' : '0');
+
+
+        formData.append('type', String(this.promo_code_type ?? ''))
+
+        if (this.promo_code_type == DiscountTargetType.SPECIFIC) {
+            if (this.selected_products?.length) {
+                this.selected_products.forEach((product: Product) => {
+                    formData.append('product_ids[]', String(product.id));
+                })
+            }
+        }
+
 
         if (this.image instanceof File) {
             formData.append('image', this.image, this.image.name);

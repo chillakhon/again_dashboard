@@ -4,6 +4,7 @@ export class Product {
 
     id: number | null;
     uuid: string | null;
+    code: string | null;
     color_id: string | undefined;
     name: string;
     description: string;
@@ -40,6 +41,7 @@ export class Product {
     constructor() {
         this.id = null;
         this.uuid = null;
+        this.code = null;
         this.color_id = undefined;
         this.name = '';
         this.description = '';
@@ -80,6 +82,7 @@ export class Product {
 
         product.id = json.id ?? null;
         product.name = json.name ?? null;
+        product.code = json.code ?? null;
         product.description = json.description ?? null;
         product.type = json.type ?? "simple";
         product.default_unit_id = json.default_unit_id ?? "1";
