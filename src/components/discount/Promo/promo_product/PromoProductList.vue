@@ -68,14 +68,7 @@ const paramsSearch = ref({
 
 const {getProductsByPromoCode} = usePromoCodeProductFunctions()
 
-onMounted(async () => {
 
-  // if (!props.promoCode?.id) {
-  //   isLoading.value = false;
-  //   return
-  // }
-  // await fetchData()
-})
 
 async function fetchData() {
 
@@ -98,6 +91,7 @@ const handleSearch = async () => {
 
 const removeProductFromData = (p: Product) => {
   data.value = data.value.filter((item: Product) => item.id !== p.id)
+  props.promoCode.selected_products = props.promoCode?.selected_products?.filter((item: Product) => item.id !== p.id)
   renderTable.value++
 }
 
