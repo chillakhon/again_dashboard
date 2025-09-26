@@ -19,23 +19,31 @@
 
     </div>
     <Loader v-if="isLoading"/>
-    <ProductListTable
-        v-else
-        :key="renderTable"
-        :items="data"
-        @deleted="fetchData()"
-    />
+    <div v-else>
 
-    <div class="flex items-center justify-end space-x-2 py-4">
-      <PaginationTable
-          :total="totalItems"
-          :default-page="currentPage"
-          :items-per-page="itemsPerPage"
-          :sibling-count="1"
-          :show-edges="true"
-          @current-page="currentPage = $event; fetchData()"
+      <ProductListTable
+          :key="renderTable"
+          :items="data"
+          @deleted="fetchData()"
+          @updated="fetchData()"
       />
+
+      <div class="flex items-center justify-end space-x-2 py-4">
+        <PaginationTable
+            :total="totalItems"
+            :default-page="currentPage"
+            :items-per-page="itemsPerPage"
+            :sibling-count="1"
+            :show-edges="true"
+            :show-per-page-option="true"
+            @items-per-page-change="itemsPerPage = $event;"
+            @current-page="currentPage = $event; fetchData()"
+        />
+      </div>
+
+
     </div>
+
   </div>
 </template>
 

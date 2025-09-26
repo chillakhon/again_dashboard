@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, watch} from 'vue';
+import {ref} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import Loader from "@/components/common/Loader.vue";
 import PromoProductListTable from "@/components/discount/Promo/promo_product/PromoProductListTable.vue";
@@ -67,7 +67,6 @@ const paramsSearch = ref({
 })
 
 const {getProductsByPromoCode} = usePromoCodeProductFunctions()
-
 
 
 async function fetchData() {

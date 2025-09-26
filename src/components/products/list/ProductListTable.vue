@@ -1,4 +1,15 @@
 <template>
+  <div class="pb-1" v-if="selectedIds.length">
+    <BulkActionsMenu
+        :selected-ids="selectedIds"
+        :actions="[
+        { label: 'Активировать', icon: Eye, onClick: handleActivate },
+        { label: 'Деактивировать', icon: EyeOff, onClick: handleDeactivate },
+        // { label: 'Удалить', icon: Trash2, onClick: handleDelete },
+      ]"
+    />
+  </div>
+
   <DynamicsDataTable
       :data="items"
       :columns="columns"
@@ -19,21 +30,22 @@
     <template #actionsVariant="{row}">
 
     </template>
-
   </DynamicsDataTable>
 </template>
 
 <script setup lang="ts">
-import {h, PropType} from "vue";
+import {h, onMounted, PropType, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import usePermission from "@/composables/usePermission";
 import {Product} from "@/models/Product";
-import {ChevronRight, ChevronDown} from 'lucide-vue-next'
+import {ChevronRight, ChevronDown, Check, X} from 'lucide-vue-next'
 import {useRouter} from "vue-router";
 import {useImageFunctions} from "@/composables/useImageFunctions";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
 import {useProductFunctions} from "@/composables/useProductFunctions";
-
+import {useSelectableColumn} from "@/composables/useSelectableColumn";
+import {Eye, EyeOff} from "lucide-vue-next"
+import BulkActionsMenu from "@/components/dynamics/BulkActionsMenu.vue"
 
 const props = defineProps({
   items: {
@@ -59,7 +71,7 @@ const emits = defineEmits(["deleted", "updated"]);
 const router = useRouter();
 
 
-const {deleteProduct} = useProductFunctions()
+const {deleteProduct, bulkActivateProducts, bulkDeactivateProducts} = useProductFunctions()
 
 const editProduct = (product: Product) => {
   router.push(`/product/update/${product.id}`)
@@ -72,7 +84,12 @@ const deleteProductHandle = async (product: Product) => {
 
 const {getImageByNameProduct} = useImageFunctions()
 
+
+const {selectedIds, selectColumn} = useSelectableColumn()
+
 const columns = [
+  selectColumn,
+
   {
     id: 'expander',
     header: '',
@@ -158,6 +175,17 @@ const columns = [
     accessorKey: "code",
     header: "Код",
   },
+
+  {
+    accessorKey: "is_active",
+    header: "Активен",
+    cell: ({row}: any) => {
+      return row.original.is_active
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
+
   // {
   //   accessorKey: "sku",
   //   header: "Артикул",
@@ -182,8 +210,17 @@ const columns = [
 
 ];
 
-const {hasPermission} = usePermission()
+async function handleActivate(ids: number[]) {
+  console.log("Активировать:", ids)
+  await bulkActivateProducts(ids)
+  emits('updated')
+}
 
+async function handleDeactivate(ids: number[]) {
+  console.log("Деактивировать:", ids)
+  await bulkDeactivateProducts(ids)
+  emits('updated')
+}
 
 </script>
 

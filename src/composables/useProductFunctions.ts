@@ -108,6 +108,39 @@ export function useProductFunctions() {
     }
 
 
+    const bulkActivateProducts = async (ids: number[]) => {
+        if (sending.value) return
+        sending.value = true
+        progress.value = 0
+
+        return await axios.post('products/bulk-activate', {ids})
+            .then(res => {
+                useSuccessHandler().showSuccess(res)
+                return res.data
+            })
+            .catch(e => {
+                useErrorHandler().showError(e)
+            })
+            .finally(() => sending.value = false)
+    }
+
+    const bulkDeactivateProducts = async (ids: number[]) => {
+        if (sending.value) return
+        sending.value = true
+        progress.value = 0
+
+        return await axios.post('products/bulk-deactivate', {ids})
+            .then(res => {
+                useSuccessHandler().showSuccess(res)
+                return res.data
+            })
+            .catch(e => {
+                useErrorHandler().showError(e)
+            })
+            .finally(() => sending.value = false)
+    }
+
+
     return {
         sending,
         progress,
@@ -115,5 +148,9 @@ export function useProductFunctions() {
         getProductsById,
         deleteProduct,
         getProductsSimple,
+
+        bulkActivateProducts,
+        bulkDeactivateProducts,
+
     }
 }

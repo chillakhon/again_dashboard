@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-2">
+  <div class="mt-2 flex ">
     <Pagination
         v-if="total > itemsPerPage"
         v-slot="{ page }"
@@ -15,7 +15,7 @@
 
         <template v-for="(item, index) in items">
           <PaginationListItem v-if="item.type === 'page'" :key="index" :value="item.value" as-child>
-            <Button @click="$emit('currentPage', item.value);" class="w-10 h-10 p-0"
+            <Button @click="$emit('currentPage', item.value);" class="w-9 h-9 p-0"
                     :variant="item.value === page ? 'default' : 'outline'">
               {{ item.value }}
             </Button>
@@ -27,6 +27,28 @@
         <!--      <PaginationLast @click="$emit('currentPage', Math.ceil(total / itemsPerPage))"/>-->
       </PaginationList>
     </Pagination>
+
+
+    <div class="pl-1">
+      <Select
+          v-if="showPerPageOption"
+          :model-value="itemsPerPage.toString()"
+          @update:model-value="handleItemsPerPageChange"
+      >
+        <SelectTrigger class="w-18 h-9">
+          <SelectValue/>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+              v-for="option in itemsPerPageOptions"
+              :key="option"
+              :value="option.toString()"
+          >
+            {{ option }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
+    </div>
   </div>
 </template>
 
@@ -34,6 +56,14 @@
 import {
   Button,
 } from '@/components/ui/button'
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 import {
   Pagination,
@@ -46,7 +76,7 @@ import {
   PaginationPrev,
 } from '@/components/ui/pagination'
 
-const emit = defineEmits(['currentPage'])
+const emit = defineEmits(['currentPage', 'itemsPerPageChange'])
 
 const props = defineProps({
   itemsPerPage: {
@@ -69,6 +99,25 @@ const props = defineProps({
     type: Number,
     default: 1, // Начальная страница
   },
+
+  itemsPerPageOptions: {
+    type: Array as () => number[],
+    default: () => [5, 10, 15, 20, 50, 100, 150, 200],
+  },
+
+  showPerPageOption: {
+    type: Boolean,
+    default: false,
+  }
+
 });
+
+
+const handleItemsPerPageChange = (value: string) => {
+  const newItemsPerPage = parseInt(value);
+  emit('itemsPerPageChange', newItemsPerPage);
+  // При изменении количества элементов на странице, возвращаемся на первую страницу
+  emit('currentPage', 1);
+};
 
 </script>
