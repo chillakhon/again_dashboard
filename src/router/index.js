@@ -137,6 +137,11 @@ const routes = [
                         component: () => import('../components/products/list/ProductsList.vue'),
                     },
                     {
+                        path: '/products/online',
+                        name: 'products-online',
+                        component: () => import('../components/products/list/online/ProductsList.vue'),
+                    },
+                    {
                         path: '/products/create',
                         name: 'products-create',
                         component: () => import('../components/products/create/ProductCreate.vue'),

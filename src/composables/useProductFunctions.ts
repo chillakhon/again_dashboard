@@ -13,6 +13,7 @@ export function useProductFunctions() {
         paginate?: boolean,
         admin?: boolean,
         search?: string,
+        is_active?: number,
     }) => {
         if (sending.value) return
 

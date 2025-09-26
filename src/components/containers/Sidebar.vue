@@ -414,7 +414,7 @@ import {
   PhCodesandboxLogo
 } from '@phosphor-icons/vue';
 
-import {BookMinus, AlarmClockCheck} from 'lucide-vue-next'
+import {BookMinus, AlarmClockCheck, ChartNoAxesGantt} from 'lucide-vue-next'
 import {useStore} from "vuex";
 import {User} from "@/models/user/User";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
@@ -488,6 +488,7 @@ const navigation = computed(() => [
     icon: PhPackage,
     children: [
       {name: 'Каталог товаров', href: '/products/list', icon: PhList},
+      {name: 'Товары онлайн', href: '/products/online', icon: ChartNoAxesGantt},
       {name: 'Цены и остатки', href: '/prices_stock', icon: PhWarehouse},
       {name: 'Отзывы', href: '/products/reviews', icon: PhChatTeardropDots, notification: reviewsCount.value},
     ],
