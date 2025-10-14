@@ -6,6 +6,7 @@ export default class MailSettings {
     password: string | undefined;
     encryption: string | null | undefined;
     from_address: string | null | undefined;
+    notification_email: string | null | undefined;
     created_at: string | undefined;
     updated_at: string | undefined;
 
@@ -17,6 +18,7 @@ export default class MailSettings {
         this.password = undefined;
         this.encryption = null;
         this.from_address = null;
+        this.notification_email = null;
         this.created_at = undefined;
         this.updated_at = undefined;
     }
@@ -30,6 +32,7 @@ export default class MailSettings {
         ms.password = json.password;
         ms.encryption = json.encryption ?? null;
         ms.from_address = json.from_address ?? null;
+        ms.notification_email = json.notification_email ?? null;
         ms.created_at = json.created_at;
         ms.updated_at = json.updated_at;
         return ms;
@@ -44,6 +47,7 @@ export default class MailSettings {
             password: this.password,
             encryption: this.encryption,
             from_address: this.from_address,
+            notification_email: this.notification_email,
         }
     }
 }

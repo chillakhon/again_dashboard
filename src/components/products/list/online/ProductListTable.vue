@@ -36,7 +36,6 @@
 <script setup lang="ts">
 import {h, onMounted, PropType, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
-import usePermission from "@/composables/usePermission";
 import {Product} from "@/models/Product";
 import {ChevronRight, ChevronDown, Check, X} from 'lucide-vue-next'
 import {useRouter} from "vue-router";
@@ -46,7 +45,6 @@ import {useProductFunctions} from "@/composables/useProductFunctions";
 import {useSelectableColumn} from "@/composables/useSelectableColumn";
 import {Eye, EyeOff} from "lucide-vue-next"
 import BulkActionsMenu from "@/components/dynamics/BulkActionsMenu.vue"
-import {Input} from "@/components/ui/input";
 
 const props = defineProps({
   items: {

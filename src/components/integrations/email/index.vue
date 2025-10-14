@@ -78,6 +78,7 @@ const emailForm = ref<any>({
   password: '',
   encryption: 'tls',
   from_address: '',
+  notification_email: '',
   created_at: undefined,
   updated_at: undefined,
 })
@@ -94,9 +95,12 @@ const fields = [
   [
     {name: 'from_address', component: 'text', label: 'Email отправителя', required: true},
 
-    // { name: 'encryption', component: 'select', label: 'Encryption', options: ['tls','ssl', 'none'], required: false },
     {name: 'mailer', component: 'text', label: 'Mailer', required: false},
   ],
+
+  {name: 'notification_email', component: 'text', type: 'email', label: 'Корпоративный email', placeholder: 'Пример: help@again8.ru', required: false},
+
+
 ]
 
 // composable
@@ -122,6 +126,7 @@ const loadSettings = async () => {
         password: ms.password ?? '',
         encryption: ms.encryption ?? 'tls',
         from_address: ms.from_address ?? '',
+        notification_email: ms.notification_email ?? '',
         created_at: ms.created_at,
         updated_at: ms.updated_at,
       }
