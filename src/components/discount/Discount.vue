@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <DynamicTabs :tabs="tabs" v-model="tab" class="w-full">
+    <DynamicTabs :tabs="tabs" v-model="activeTab" class="w-full">
 
       <template #discount class="w-full">
         <DiscountList/>
@@ -9,24 +9,57 @@
       <template #promo>
         <PromoList/>
       </template>
+
+      <template #promoStatistic>
+        <PromoStatistic/>
+      </template>
+
+      <template #referalka>
+        <Referalka/>
+      </template>
+
+      <template #sertifik>
+        <Sertifik/>
+      </template>
     </DynamicTabs>
   </div>
+
 </template>
 
 <script setup lang="ts">
-import DynamicTabs from "@/components/dynamics/shadcn/DynamicTabs.vue";
-import {ref} from "vue";
-import DiscountList from "@/components/discount/DiscountList.vue";
-import PromoList from "@/components/discount/Promo/PromoList.vue";
+import {computed, onMounted} from 'vue';
+import {useStore} from 'vuex';
+import DynamicTabs from '@/components/dynamics/shadcn/DynamicTabs.vue';
+import DiscountList from '@/components/discount/DiscountList.vue';
+import PromoList from '@/components/discount/Promo/PromoList.vue';
+import PromoStatistic from '@/components/discount/PromoStatistic/PromoStatistic.vue';
+// import Referalka from '@/components/discount/Referalka.vue';
+// import Sertifik from '@/components/discount/Sertifik.vue';
 
-const tab = ref('discount');
 
-const tabs = ref([
-  {title: 'Скидки', tab: 'discount'},
-  {title: 'Промокоды', tab: 'promo'},
-  {title: 'Рефералка', tab: 'referalka', disabled: true},
-  {title: 'Сертификаты', tab: 'sertifik', disabled: true},
-])
+const store = useStore();
+
+const activeTab = computed<string>({
+  get: () => store.getters['tabs/activeTab'],
+  set: (value: string) => store.dispatch('tabs/setActiveTab', value),
+});
+
+const tabs = computed(() => store.getters['tabs/tabs']);
+
+// Инициализация tabs при загрузке компонента
+onMounted(() => {
+  const initialTabs = [
+    {title: 'Скидки', tab: 'discount'},
+    {title: 'Промокоды', tab: 'promo'},
+    {title: 'Статистика', tab: 'promoStatistic', disabled: true},
+    {title: 'Рефералка', tab: 'referalka', disabled: true},
+    {title: 'Сертификаты', tab: 'sertifik', disabled: true},
+  ];
+
+  // Инициализируем tabs в store
+  store.dispatch('tabs/initializeTabs', initialTabs);
+});
+
 
 
 </script>

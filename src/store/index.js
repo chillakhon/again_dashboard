@@ -24,6 +24,7 @@ import clientsModule from './modules/clients/clients.js';
 import clientModule from './modules/clients/client.js';
 import clientActionsModule from './modules/clients/actions.js';
 import notifications from "@/store/modules/notifications";
+import tabsModule from "@/store/modules/tabs/tabs";
 
 
 const store = createStore ({
@@ -51,6 +52,9 @@ const store = createStore ({
         clients: clientsModule,
         client: clientModule, 
         clientActions: clientActionsModule,
+
+        tabs: tabsModule,
+
         notifications
     }
 })

@@ -5,7 +5,6 @@
         :actions="[
         { label: 'Активировать', icon: Eye, onClick: handleActivate },
         { label: 'Деактивировать', icon: EyeOff, onClick: handleDeactivate },
-        // { label: 'Удалить', icon: Trash2, onClick: handleDelete },
       ]"
     />
   </div>
@@ -45,6 +44,7 @@ import {useProductFunctions} from "@/composables/useProductFunctions";
 import {useSelectableColumn} from "@/composables/useSelectableColumn";
 import {Eye, EyeOff} from "lucide-vue-next"
 import BulkActionsMenu from "@/components/dynamics/BulkActionsMenu.vue"
+import EditableOrderCell from "@/components/products/list/online/EditableOrderCell.vue";
 
 const props = defineProps({
   items: {
@@ -112,6 +112,20 @@ const columns = [
   {
     accessorKey: "id",
     header: "№",
+  },
+
+
+  {
+    accessorKey: "display_order",
+    header: "Порядок",
+    cell: ({row}: any) => {
+      const product = row.original
+      return h(EditableOrderCell, {
+        productId: product.id,
+        initialOrder: product.display_order,
+        onUpdated: () => emits('updated')
+      })
+    }
   },
 
   {

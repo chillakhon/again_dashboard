@@ -1,5 +1,8 @@
 <template>
-  <div class="flex p-2 bg-background md:rounded-lg md:border h-full">
+
+  <Loader v-if="loading"/>
+
+  <div v-else class="flex p-2 bg-background md:rounded-lg md:border h-full">
 
     <div class="hidden md:flex w-full h-full">
       <div class="flex flex-col h-[85vh]">
@@ -23,8 +26,7 @@
             @has-new-message="handleUpdateConv"
         />
 
-        <div v-else class="flex flex-col items-center justify-center gap-3 bg-muted/20 p-6 border h-[85vh]"
-        >
+        <div v-else class="flex flex-col items-center justify-center gap-3 bg-muted/20 p-6 border h-[85vh]">
           <MessagesSquare class="h-10 w-10 text-muted-foreground"/>
           <h3 class="text-lg font-medium text-muted-foreground">Выберите чат</h3>
           <p class="text-sm text-muted-foreground text-center max-w-md">
@@ -42,7 +44,6 @@
             v-if="!showChat"
             class="h-full border-r"
             :selected-user-id="selectedConversatonId"
-
             :conversations="conversations"
             :selected-user="selectedConversatonId"
             :current-source="currentSourceName"
@@ -73,7 +74,6 @@
               :key="renderChat"
               :conversation="selectedConversation"
               @has-new-message="handleUpdateConv"
-
           />
         </div>
       </Transition>
@@ -92,10 +92,12 @@ import {useChatsFunctions} from "@/composables/useChatsFunctions";
 import CharListConversations from "@/components/dialogs/chats/CharListConversations.vue";
 import {Conversation} from "@/models/Conversation";
 import {useStore} from "vuex";
+import Loader from "@/components/common/Loader.vue";
 
 
 const store = useStore();
 
+const loading = ref(true)
 const renderChat = ref(1)
 const renderListConv = ref(1)
 
@@ -150,8 +152,41 @@ const fetchData = async () => {
 
 onMounted(async () => {
   await fetchData()
+  loading.value = false;
 })
 
+
+onMounted(() => {
+
+  if (!(window as any).Echo) {
+    console.warn('Echo not available');
+    return;
+  }
+
+  // Подписываемся на канал notifications для обновления списка чатов
+  (window as any).Echo.private(`admin.notifications`)
+      .listen('.ConversationUpdated', async (payload: any) => {
+
+        await fetchData();
+        renderListConv.value++;
+      })
+      .error((error: any) => {
+        console.error('Echo subscription error:', error);
+      });
+});
+
+onBeforeUnmount(() => {
+  if ((window as any).Echo) {
+    try {
+      const userId = store.state.auth?.user?.id;
+      if (userId) {
+        (window as any).Echo.leave(`user.${userId}`);
+      }
+    } catch (e) {
+      console.error('Echo unsubscribe error:', e);
+    }
+  }
+});
 
 const selectedConversation = ref<Conversation | null>(null)
 
@@ -163,7 +198,6 @@ watch(
     }
 )
 
-
 watch(
     () => currentSourceName.value.source,
     () => {
@@ -173,7 +207,6 @@ watch(
 
 
 const handleUpdateConv = async () => {
-
   await fetchData()
   renderListConv.value++
 }

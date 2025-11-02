@@ -82,10 +82,15 @@ export function usePromoCodeProductFunctions() {
 
     const getProductsByPromoCode = async (params?: {
         promo_code_id?: number;
+        withVariants?: boolean;
     }): Promise<Product[] | undefined> => {
         sending.value = true;
 
-        return await axios.get(`promo-code-products/products/${params?.promo_code_id}`)
+        return await axios.get(`promo-code-products/products/${params?.promo_code_id}`, {
+            params: {
+                withVariants: params?.withVariants ? 1 : 0
+            }
+        })
             .then(res => res.data.data.map((i: any) => Product.fromJSON(i)) ?? res.data)
             .catch(e => {
                 useErrorHandler().showError(e);

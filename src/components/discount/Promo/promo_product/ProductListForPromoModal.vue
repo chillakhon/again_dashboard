@@ -15,6 +15,7 @@
         <ProductListForPromo
             :selectedList="selectedList"
             @addToSelectList="emits('addToSelectList', $event)"
+            @addToSelectListVariant="emits('addToSelectListVariant', $event)"
         />
 
       </template>
@@ -33,7 +34,7 @@ import {PropType} from "vue";
 import {Product} from "@/models/Product";
 
 
-const emits = defineEmits(["addToSelectList"]);
+const emits = defineEmits(["addToSelectList", "addToSelectListVariant"]);
 
 const props = defineProps({
   selectedList: {

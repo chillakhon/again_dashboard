@@ -2,7 +2,9 @@ import {ref} from "vue"
 import {h} from "vue"
 import {Checkbox} from "@/components/ui/checkbox"
 
-export function useSelectableColumn() {
+export function useSelectableColumn(
+    pagination?: { page?: number; per_page?: number }
+) {
     const selectedIds = ref<number[]>([])
 
     // возвращаем колонку "select"
@@ -31,8 +33,23 @@ export function useSelectableColumn() {
         enableHiding: false,
     }
 
+
+    const indexColumn = {
+        accessorKey: "index",
+        header: "№",
+        cell: ({row}: any) => {
+            const page = Number(pagination?.page ?? 1);
+            const perPage = Number(pagination?.per_page ?? 10);
+            const rowIndex = Number(row?.index ?? 0);
+            return (page - 1) * perPage + rowIndex + 1;
+        },
+        enableSorting: false,
+        enableHiding: false,
+    };
+
     return {
         selectedIds,
         selectColumn,
+        indexColumn,
     }
 }

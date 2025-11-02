@@ -1,12 +1,35 @@
+export class MarketplaceLinks {
+    wb: string | undefined;
+    ozon: string | undefined;
+    zy: string | undefined;
+
+    constructor() {
+        this.wb = ''
+        this.ozon = ''
+        this.zy = ''
+    }
+
+    static fromJSON(json: any): MarketplaceLinks {
+
+        const MPL = new MarketplaceLinks()
+
+        MPL.wb = json.wb
+        MPL.ozon = json.ozon
+        MPL.zy = json.zy
+
+        return MPL
+    }
+}
+
 export class Product {
-
-    // [key: string]: any;
-
     id: number | null;
+    product_id: number | null;
+    display_order: number | null;
     uuid: string | null;
     code: string | null;
     color_id: string | undefined;
     name: string;
+    marketplace_links: MarketplaceLinks | undefined;
     description: string;
     type: string | null;
     default_unit_id: string | null;
@@ -40,10 +63,13 @@ export class Product {
 
     constructor() {
         this.id = null;
+        this.product_id = null;
+        this.display_order = null;
         this.uuid = null;
         this.code = null;
         this.color_id = undefined;
         this.name = '';
+        this.marketplace_links = undefined;
         this.description = '';
         this.type = "simple";
         this.default_unit_id = "1";
@@ -81,7 +107,10 @@ export class Product {
         const uuidGenerate = `variant_generated_${Math.round(Math.random() * 1000)}`;
 
         product.id = json.id ?? null;
+        product.product_id = json.product_id ?? null;
+        product.display_order = json.display_order ?? null;
         product.name = json.name ?? null;
+        product.marketplace_links = MarketplaceLinks.fromJSON(json.marketplace_links ?? {});
         product.code = json.code ?? null;
         product.description = json.description ?? null;
         product.type = json.type ?? "simple";
@@ -113,7 +142,10 @@ export class Product {
         product.colors = json.colors ?? [];
         product.color = json.color ?? {};
         product.color = json.color ?? {};
-        product.variants = json.variants?.length ? json.variants.map((item: any) => Product.fromJSON(item)) : [];
+        product.variants = json.variants?.length ? json.variants.map((item: any) => Product.fromJSON({
+            ...item,
+            product_id: json.id,
+        })) : [];
         // product.imageFiles = json.imageFiles ?? [];
 
         return product;
@@ -168,6 +200,11 @@ export class Product {
             categories: this.categories,
             options: this.options,
             variants: this.variants,
+            marketplace_links: this.marketplace_links ? {
+                wb: this.marketplace_links.wb || null,
+                ozon: this.marketplace_links.ozon || null,
+                zy: this.marketplace_links.zy || null,
+            } : null,
         };
     }
 
@@ -189,6 +226,13 @@ export class Product {
             height: this.height,
             colors: this.colors ?? [],
             color_id: this.color_id ?? null,
+
+            marketplace_links: this.marketplace_links ? {
+                wb: this.marketplace_links.wb || null,
+                ozon: this.marketplace_links.ozon || null,
+                zy: this.marketplace_links.zy || null,
+            } : null,
+
             // images: this.images,
 
             variants: this.variants.length ? this.variants.map((v: Product) => v.toJSONForVariantCreate()) : [],

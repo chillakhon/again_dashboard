@@ -18,6 +18,7 @@
         :items="data"
         :selected-list="selectedList"
         @add-to-select-list="emits('addToSelectList', $event)"
+        @addToSelectListVariant="emits('addToSelectListVariant', $event)"
     />
     <div class="flex items-center justify-end space-x-2 py-1">
       <PaginationTable
@@ -43,7 +44,7 @@ import {Product} from "@/models/Product";
 import DynamicTitle from "@/components/dynamics/DynamicTitle.vue";
 
 
-const emits = defineEmits(["addToSelectList"]);
+const emits = defineEmits(["addToSelectList", "addToSelectListVariant"]);
 
 
 const props = defineProps({
@@ -67,6 +68,7 @@ const paramsSearch = ref({
 const {getProductsSimple} = useProductFunctions()
 
 onMounted(async () => {
+
   await fetchData()
 })
 
@@ -75,7 +77,8 @@ async function fetchData() {
   data.value = await getProductsSimple({
     per_page: itemsPerPage.value,
     page: currentPage.value,
-    search: paramsSearch.value.search
+    search: paramsSearch.value.search,
+    withVariants: true,
   })
       .then(res => {
         totalItems.value = res.meta.total;

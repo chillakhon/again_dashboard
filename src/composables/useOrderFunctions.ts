@@ -33,13 +33,14 @@ export function useOrderFunctions() {
             params: params
         })
             .then(res => {
-                const orders: Order[] = res.data.data.map((item: any) => Order.fromJSON(item))
+                const orders: Order[] = res.data.data
+                    .map((item: any) => Order.fromJSON(item))
                 return {
                     orders: orders,
                     meta: {
-                        page: res.data.current_page,
-                        per_page: res.data.per_page,
-                        total: res.data.total,
+                        page: res.data.meta.current_page,
+                        per_page: res.data.meta.per_page,
+                        total: res.data.meta.total,
                     }
                 }
             })

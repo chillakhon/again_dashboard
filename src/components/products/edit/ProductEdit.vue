@@ -14,6 +14,7 @@
             <PositionSelect :product="product"/>
           </div>
 
+
           <!--        о таваре-->
           <div class="border p-2 rounded-lg">
             <Accordion type="single" collapsible default-value="item-1">
@@ -75,6 +76,11 @@
             </Accordion>
           </div>
 
+
+          <div class="border border-gray-300 rounded-lg p-2">
+            <ProductEditMarketplaceLinks :product="product"/>
+          </div>
+
           <!--        Цены и остатки-->
           <div class="border border-gray-300 rounded-lg p-2">
             <PriceStock :product="product"/>
@@ -130,9 +136,8 @@ import Select from "@/components/dynamics/Dropdown/Select.vue";
 import {useColorsFunctions} from "@/composables/useColorFunctions";
 import {useProductFunctions} from "@/composables/useProductFunctions";
 import {useMoySkladFunctions} from "@/composables/useMoySkladFunctions";
+import ProductEditMarketplaceLinks from "@/components/products/edit/ProductEditMarketplaceLinks.vue";
 
-
-// const {getColors} = useColorsFunctions()
 
 const colors = ref([]);
 

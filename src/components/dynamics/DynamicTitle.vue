@@ -1,23 +1,26 @@
 <template>
   <div class="inline-block">
-    <span class="text-xl p-1 font-medium text-gray-900 dark:text-gray-100 transition-colors">
+    <span
+        :class="[
+        textClasses[variant],
+        sizeClasses[size],
+        'font-medium p-1 transition-colors'
+      ]"
+    >
       {{ title }}
     </span>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface Props {
+  /** Заголовок текста */
   title: string
-  /**
-   * Цветовая тема
-   * @default 'default'
-   */
+  /** Цветовая тема */
   variant?: 'default' | 'primary' | 'muted'
-  /**
-   * Размер текста
-   * @default 'xl'
-   */
+  /** Размер текста */
   size?: 'sm' | 'base' | 'xl' | '2xl'
 }
 
@@ -38,6 +41,15 @@ const sizeClasses = {
   xl: 'text-xl',
   '2xl': 'text-2xl'
 }
+
+// 💡 Вычисляем объединённый класс
+const computedClasses = computed(() => {
+  return [
+    textClasses[props.variant],
+    sizeClasses[props.size],
+    'font-medium p-1 transition-colors'
+  ].join(' ')
+})
 </script>
 
 <style scoped>

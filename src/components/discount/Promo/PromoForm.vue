@@ -30,7 +30,6 @@ import DynamicForm from '@/components/dynamics/DynamicForm.vue'
 import {PromoCode} from "@/models/PromoCode";
 import {DiscountTargetType, PromoCodeTargetOptions} from "@/constants/DiscountType";
 import PromoProductDrawer from "@/components/discount/Promo/promo_product/PromoProductDrawer.vue";
-import {Product} from "@/models/Product";
 
 
 const props = defineProps({
@@ -58,11 +57,19 @@ onMounted(() => {
 
 const buildFormFields = () => {
   formFields.value = [
-    {
-      name: 'isActive',
-      component: 'checkbox',
-      label: 'Активен',
-    },
+    [
+      {
+        name: 'isActive',
+        component: 'checkbox',
+        label: 'Активен',
+      },
+      {
+        name: 'applies_to_all_clients',
+        component: 'checkbox',
+        label: 'Применить ко всем клиентам',
+      },
+    ],
+
     [
 
       {
@@ -83,7 +90,6 @@ const buildFormFields = () => {
       }
 
     ],
-
 
     [
       {
@@ -108,6 +114,7 @@ const buildFormFields = () => {
         optionValue: 'value',
         placeholder: 'Выберите тип'
       },
+
     ],
     [
       {
@@ -146,6 +153,28 @@ const buildFormFields = () => {
           : []),
 
     ],
+
+    {
+      name: 'discount_behavior',
+      component: 'select',
+      label: 'Правило совмещения скидок',
+      required: true,
+      options: [
+        {label: 'Заменяет скидку товара', value: 'replace'},
+        {label: 'Добавляется поверх существующей скидки', value: 'stack'},
+        {label: 'Не применяется к товарам со скидкой', value: 'skip'}
+      ],
+      optionLabel: 'label',
+      optionValue: 'value',
+      placeholder: 'Выберите поведение',
+    //   description: `
+    // - Заменяет — промокод отменяет текущую скидку и применяет свою.
+    // - Добавляется — промокод суммируется с уже действующей скидкой.
+    // - Не применяется — промокод игнорируется, если на товар есть скидка.
+    // `
+    },
+
+
     {
       name: 'image',
       component: 'text',

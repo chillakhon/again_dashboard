@@ -30,7 +30,7 @@ const activeTab = computed({
 
 <template>
   <Tabs v-model="activeTab" :class="['w-[400px]', props.class]">
-    <TabsList class="grid w-full" :style="`grid-template-columns: repeat(${tabs.length}, 1fr)`">
+    <TabsList class="grid w-full overflow-x-auto" :style="`grid-template-columns: repeat(${tabs.length}, 1fr)`">
       <TabsTrigger
           v-for="tab in tabs"
           :key="tab.tab"

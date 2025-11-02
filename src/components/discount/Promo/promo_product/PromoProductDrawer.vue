@@ -6,9 +6,9 @@
         <Button type="button" variant="outline">Выбрать товар</Button>
       </template>
 
-      <PromoProductList
-          :promo-code="props.promoCode"
-      />
+        <PromoProductList
+            :promo-code="props.promoCode"
+        />
 
     </DynamicDrawer>
   </div>

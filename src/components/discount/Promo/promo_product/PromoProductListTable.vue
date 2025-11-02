@@ -15,6 +15,18 @@
              @click="emits('addToSelectList', row.original)"
       />
     </template>
+    <template #actionsVariant="{row}">
+      <X v-if="checkVariants(row.original)"
+         class="cursor-pointer  hover:text-red-600 text-red-500"
+         @click="emits('removeToSelectListVariant', row.original);"
+      />
+      <Check v-else
+             class="cursor-pointer text-green-500 hover:text-green-600"
+             @click="emits('addToSelectListVariant', row)"
+      />
+    </template>
+
+
   </DynamicsDataTable>
 </template>
 
@@ -23,10 +35,10 @@ import {h, PropType} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import usePermission from "@/composables/usePermission";
 import {Product} from "@/models/Product";
-import {X, Check} from "lucide-vue-next"
+import {X, Check, ChevronDown, ChevronRight} from "lucide-vue-next"
 
 
-const emits = defineEmits(["addToSelectList", "removeToSelectList"]);
+const emits = defineEmits(["addToSelectList", "removeToSelectList", "addToSelectListVariant", "removeToSelectListVariant"]);
 
 const props = defineProps({
   items: {
@@ -54,6 +66,25 @@ const props = defineProps({
 
 
 const columns = [
+
+  {
+    id: 'expander',
+    header: '',
+    cell: ({row}: any) => (
+        row.getCanExpand()
+            ? h('button', {
+              onClick: row.getToggleExpandedHandler(),
+              class: 'p-1'
+            }, [
+              row.getIsExpanded()
+                  ? h(ChevronDown, {class: 'w-4 h-4'})
+                  : h(ChevronRight, {class: 'w-4 h-4'})
+            ])
+            : null
+
+    ),
+    meta: {isExpander: true},
+  },
 
   {
     accessorKey: "id",
@@ -94,6 +125,14 @@ const columns = [
 
 ];
 
+
+const checkVariants = (productVariant: Product) => {
+
+  const findParentProduct = props.selectedList.find(p => p.id === productVariant.product_id);
+
+  return findParentProduct?.variants.some(p => p.id === productVariant.id);
+
+}
 
 
 </script>

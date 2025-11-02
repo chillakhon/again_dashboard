@@ -236,7 +236,11 @@ watch(() => conversation.id, (id, oldId) => {
   try {
     currentChannel = (window as any).Echo.private(`conversation.${id}`);
 
+
+    console.log(currentChannel);
+
     currentChannel.listen('.MessageCreated', (payload: any) => {
+      console.log('MessageCreated', payload);
 
       if (!addMessage) return
       // приводим к формату сообщения, который ожидает UI

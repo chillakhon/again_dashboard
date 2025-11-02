@@ -14,6 +14,8 @@ export function useProductFunctions() {
         admin?: boolean,
         search?: string,
         is_active?: number,
+        sort_by?: 'display_order' | 'created_at' | 'name' | 'price'
+        sort_order?: 'asc' | 'desc'
     }) => {
         if (sending.value) return
 
@@ -37,6 +39,7 @@ export function useProductFunctions() {
         per_page?: number,
         page?: number,
         search?: string,
+        withVariants?: boolean,
     }) => {
         if (sending.value) return
 

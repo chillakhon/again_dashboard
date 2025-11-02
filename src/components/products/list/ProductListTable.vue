@@ -157,6 +157,16 @@ const columns = [
         ),
   },
   {
+    header: "Старая цена",
+    accessorKey: "old_price",
+    cell: ({row}: any) =>
+        h(
+            "span",
+            {class: "whitespace-nowrap"},
+            row.original.old_price
+        ),
+  },
+  {
     accessorKey: "cost_price",
     header: "Цена закупки",
     cell: ({row}: any) =>

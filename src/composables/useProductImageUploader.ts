@@ -146,6 +146,7 @@ export function useProductImageUploader() {
 
             // Add product payload
             const payload = product.toJSONForCreate()
+
             for (const [key, value] of Object.entries(payload)) {
                 if (value === null || value === undefined) continue;
 

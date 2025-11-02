@@ -1,20 +1,19 @@
 export const orderStatuses = {
-    new: { value: 'new', label: 'Новый', color: '#ef0000' },
-    processing: { value: 'processing', label: 'В обработке', color: '#ffad00' },
-    approved: { value: 'approved', label: 'Согласован', color: '#00ba13' },
-    shipped: { value: 'shipped', label: 'Отгружен', color: '#4169E1' },
-    completed: { value: 'completed', label: 'Доставлен', color: '#02d8d8' },
-    return_in_progress: { value: 'return_in_progress', label: 'В процессе возврата', color: '#FF69B4' },
-    cancelled: { value: 'cancelled', label: 'Отменён', color: '#B22222' },
+    new: { value: 'new', label: 'Новый', color: '#fb7878' },
+    processing: { value: 'processing', label: 'В обработке', color: '#efd49c' },
+    approved: { value: 'approved', label: 'Согласован', color: '#558f5a' },
+    shipped: { value: 'shipped', label: 'Отгружен', color: '#7391ec' },
+    completed: { value: 'completed', label: 'Доставлен', color: '#6fbaba' },
+    return_in_progress: { value: 'return_in_progress', label: 'В процессе возврата', color: '#ff7d54' },
+    cancelled: { value: 'cancelled', label: 'Отменён', color: '#f88686' },
     returned: { value: 'returned', label: 'Возврат', color: '#A9A9A9' },
 } as const
 
 export const paymentStatuses = {
     pending: {
         value: 'pending',
-        label: 'Ожидает оплаты',
-        // Tailwind gray-500
-        color: '#6B7280',
+        label: 'Ожидает',
+        color: '#979797',
     },
     paid: {
         value: 'paid',
@@ -24,15 +23,15 @@ export const paymentStatuses = {
     },
     failed: {
         value: 'failed',
-        label: 'Неудачная оплата',
+        label: 'Неудачная',
         // Tailwind red-500
-        color: '#EF4444',
+        color: '#ec5353',
     },
     refunded: {
         value: 'refunded',
-        label: 'Возврат средств',
+        label: 'Возврат',
         // Tailwind orange-500
-        color: '#F59E0B',
+        color: '#f1ad41',
     },
 } as const
 

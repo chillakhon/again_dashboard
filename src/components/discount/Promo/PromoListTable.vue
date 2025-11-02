@@ -10,13 +10,15 @@
 </template>
 
 <script setup lang="ts">
-import {h, PropType, ref} from "vue";
+import {h, PropType, ref, onBeforeUnmount} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Check, X} from 'lucide-vue-next';
 import {PromoCode} from "@/models/PromoCode";
 import {usePromoCodeFunctions} from "@/composables/usePromoCodeFunctions";
 import {useDateFormat} from "@/composables/useDateFormat";
 import PromoEdit from "@/components/discount/Promo/PromoEdit.vue";
+import {useStore} from "vuex";
+import {getDiscountTargetLabel} from "@/constants/DiscountType";
 
 const props = defineProps({
   items: {
@@ -26,7 +28,6 @@ const props = defineProps({
   loading: Boolean,
 });
 
-
 const edit = ref({
   title: "Редактирование промокода",
   description: "Измените параметры промокода, включая код, скидку, срок действия и статус",
@@ -35,11 +36,27 @@ const edit = ref({
   loader: false,
 });
 
-
 const emits = defineEmits(["deleted", "updated"]);
 
 const {deletePromoCode, updatePromoCode} = usePromoCodeFunctions();
 const {formatDateToRussian} = useDateFormat();
+
+const store = useStore();
+
+
+// Обработчик клика на код промокода
+const handleCodeClick = (promoCode: PromoCode) => {
+
+  store.commit("tabs/set_activeTab", 'promoStatistic');
+
+  store.commit("tabs/enable_tab", 'promoStatistic');
+
+  store.commit("tabs/set_dynamic_data", {
+    tabName: 'promoStatistic',
+    data: promoCode,
+  })
+
+};
 
 const deletePromoCodeHandle = async (promo: PromoCode) => {
   if (promo.id) {
@@ -51,7 +68,6 @@ const deletePromoCodeHandle = async (promo: PromoCode) => {
 };
 
 const handleUpdate = async (item: PromoCode) => {
-
   const success = await updatePromoCode(item);
 
   if (success) {
@@ -68,6 +84,17 @@ const columns = [
   {
     accessorKey: "code",
     header: "Код",
+    cell: ({row}: any) => {
+      return h(
+          "button",
+          {
+            onClick: () => handleCodeClick(row.original),
+            class: "text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-medium transition-colors",
+            title: "Нажмите для просмотра статистики",
+          },
+          row.original.code
+      );
+    }
   },
 
   {
@@ -122,6 +149,22 @@ const columns = [
     header: "Описание",
   },
 
+  {
+    accessorKey: "applies_to_all_clients",
+    header: "Ко всем клиентам",
+    cell: ({row}: any) => {
+      return row.original.applies_to_all_clients
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
+  {
+    accessorKey: "promo_code_type",
+    header: "Применить",
+    cell: ({row}: any) => {
+      return getDiscountTargetLabel(row.original.promo_code_type);
+    }
+  },
   {
     accessorKey: "isActive",
     header: "Активен",

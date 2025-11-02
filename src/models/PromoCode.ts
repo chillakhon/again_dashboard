@@ -6,6 +6,7 @@ export class PromoCode {
     code: string | undefined;
     discountAmount: number | undefined;
     discountType: 'percentage' | 'fixed' | undefined;
+    discount_behavior: 'replace' | 'stack' | 'skip' | undefined;
     startsAt: string | undefined;
     image: File | string | undefined;
     imageUrl: string | undefined;
@@ -15,6 +16,7 @@ export class PromoCode {
     timesUsed: number | undefined;
     isActive: boolean | undefined;
     applies_to_all_products: boolean | undefined;
+    applies_to_all_clients: boolean | undefined;
     createdAt: string | undefined;
     updatedAt: string | undefined;
     promo_code_type: string | undefined;
@@ -34,10 +36,12 @@ export class PromoCode {
         this.timesUsed = 0;
         this.isActive = true;
         this.applies_to_all_products = false;
+        this.applies_to_all_clients = false;
         this.createdAt = undefined;
         this.updatedAt = undefined;
         this.promo_code_type = undefined;
         this.selected_products = undefined;
+        this.discount_behavior = undefined;
     }
 
     get discountTypeLabel(): string {
@@ -59,6 +63,7 @@ export class PromoCode {
         promo.id = json.id;
         promo.code = json.code;
         promo.discountAmount = json.discount_amount ? Number(json.discount_amount) : 0;
+        promo.discount_behavior = json.discount_behavior
         promo.discountType = json.discount_type;
         promo.startsAt = json.starts_at ?? undefined;
         promo.image = json.image ? `${process.env.VUE_APP_BASE_URL}/promo-code/getImage?path=${json.image}` : undefined;
@@ -68,6 +73,7 @@ export class PromoCode {
         promo.timesUsed = json.times_used ?? 0;
         promo.isActive = !!json.is_active;
         promo.applies_to_all_products = !!json.applies_to_all_products;
+        promo.applies_to_all_clients = !!json.applies_to_all_clients;
         promo.createdAt = json.created_at ?? undefined;
         promo.updatedAt = json.updated_at ?? undefined;
         promo.promo_code_type = json.type;
@@ -79,6 +85,7 @@ export class PromoCode {
         return {
             code: this.code ?? null,
             discount_amount: this.discountAmount ?? null,
+            discount_behavior: this.discount_behavior ?? null,
             discount_type: this.discountType ?? null,
             starts_at: this.startsAt ?? null,
             image: this.image ?? null,
@@ -97,30 +104,35 @@ export class PromoCode {
         formData.append('code', this.code ?? '');
         formData.append('discount_amount', String(this.discountAmount ?? ''));
         formData.append('discount_type', this.discountType ?? '');
+        formData.append('discount_behavior', this.discount_behavior ?? '');
         formData.append('starts_at', this.startsAt ?? '');
         formData.append('description', this.description ?? '');
         formData.append('expires_at', this.expiresAt ?? '');
         formData.append('max_uses', String(this.maxUses ?? ''));
         formData.append('times_used', String(this.timesUsed ?? 0));
         formData.append('is_active', this.isActive ? '1' : '0');
+        formData.append('applies_to_all_clients', this.applies_to_all_clients ? '1' : '0');
 
 
         formData.append('type', String(this.promo_code_type ?? ''))
 
-        if (this.promo_code_type == DiscountTargetType.SPECIFIC) {
-            if (this.selected_products?.length) {
-                this.selected_products.forEach((product: Product) => {
-                    formData.append('product_ids[]', String(product.id));
-                })
-            }
-        }
 
+        if (this.promo_code_type === DiscountTargetType.SPECIFIC && this.selected_products?.length) {
+            this.selected_products.forEach((product: Product) => {
+                if (product.variants?.length) {
+                    product.variants.forEach((variant: Product) => {
+                        formData.append(`products_with_variants[${product.id}][]`, String(variant.id));
+                    });
+                } else {
+                    formData.append(`products_with_variants[${product.id}][]`, '');
+                }
+            });
+        }
 
         if (this.image instanceof File) {
             formData.append('image', this.image, this.image.name);
         } else if (typeof this.image === 'string' && this.image) {
-            // Если сервер ожидает строку с URL или имя файла, можно добавить
-            // formData.append('image', this.image);
+
         }
 
         return formData;
@@ -142,6 +154,7 @@ export class PromoCode {
         cloned.code = this.code;
         cloned.discountAmount = this.discountAmount;
         cloned.discountType = this.discountType;
+        cloned.discount_behavior = this.discount_behavior;
         cloned.startsAt = this.startsAt;
         cloned.description = this.description;
         cloned.expiresAt = this.expiresAt;

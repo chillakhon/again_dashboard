@@ -44,3 +44,11 @@ export const DiscountValueOptions = Object.entries(DiscountValueLabels).map(
         label,
     }),
 );
+
+export const getDiscountTargetLabel = (targetType: DiscountTargetType): string => {
+    return DiscountTargetLabels[targetType] || targetType;
+};
+
+export const getDiscountValueLabel = (valueType: DiscountValueType): string => {
+    return DiscountValueLabels[valueType] || valueType;
+};

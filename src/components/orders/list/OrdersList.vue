@@ -57,7 +57,6 @@ import {X} from "lucide-vue-next"
 import {useStore} from "vuex";
 
 
-
 const store = useStore();
 
 const searchParams = ref({

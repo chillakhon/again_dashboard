@@ -1,6 +1,7 @@
 <template>
-  <div>
-    <div class="rounded-md border" ref="tableRef">
+  <div class="w-full flex flex-col items-end">
+
+    <div class="rounded-md border w-full" ref="tableRef">
       <Loader v-if="loading"/>
       <Table>
         <TableHeader class="text-sm bg-gray-100">
@@ -118,6 +119,35 @@
         </TableBody>
       </Table>
     </div>
+
+
+    <div class="w-full flex justify-between">
+
+
+      <div class="content-end">
+        <ShowTotal
+            class=""
+            v-if="showTotal"
+            :title="showTotal.title"
+            :total="showTotal.total"
+        />
+      </div>
+
+      <PaginationTable
+          :show-per-page-option="!!pagination"
+          :items-per-page-options="[
+            5,10,15,20,50,100,150,200
+        ]"
+          :default-page="pagination?.page"
+          :items-per-page="pagination?.per_page"
+          :total="pagination?.total"
+          @items-per-page-change="pagination.per_page = $event"
+          @current-page="pagination.page = $event;"
+      />
+
+    </div>
+
+
   </div>
 </template>
 
@@ -137,7 +167,10 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import Edit from "@/components/dynamics/DataTable/Edit.vue";
 import AlertDialog from "@/components/dynamics/AlertDialog.vue";
 import Loader from "@/components/common/Loader.vue";
-import {computed, Ref, ref, unref} from "vue";
+import {ref, PropType, watch} from "vue";
+import PaginationTable from "@/components/PaginationTable.vue";
+import {Pagination, ShowTotalType} from "@/types/Types";
+import ShowTotal from "@/components/dynamics/ShowTotal.vue";
 
 
 const props = defineProps({
@@ -169,6 +202,16 @@ const props = defineProps({
     default: true
   },
   subRowsField: String,
+
+  pagination: {
+    type: Object as PropType<Pagination>,
+    default: null
+  },
+  showTotal: {
+    type: Object as PropType<ShowTotalType>,
+    default: null
+  }
+
 });
 
 
@@ -178,7 +221,8 @@ const emits = defineEmits([
   "hard_deleted",
   "restore",
   "show",
-  "edit"
+  "edit",
+  "paginationChange",
 ]);
 
 
@@ -189,7 +233,6 @@ const subRowsField = props.subRowsField || 'variants'
 
 const sorting = ref<SortingState>([]);
 const columnFilters = ref<ColumnFiltersState>([]);
-
 
 const table = useVueTable({
   data,
@@ -212,7 +255,6 @@ const table = useVueTable({
     },
   },
 });
-
 
 const tableRef = ref(null);
 
@@ -310,6 +352,17 @@ const printTable = () => {
     alert("Произошла ошибка при печати");
   }
 };
+
+
+watch(
+    () => props.pagination,
+    () => {
+      console.log(props.pagination);
+      emits("paginationChange")
+    },
+    {deep: true}
+)
+
 
 </script>
 <style>

@@ -11,6 +11,7 @@
       <ProductListForPromoModal
           :selected-list="data"
           @addToSelectList="addProductToData"
+          @addToSelectListVariant="addProductVariantToData"
       />
 
     </div>
@@ -21,6 +22,7 @@
         :items="data"
         :selected-list="data"
         @remove-to-select-list="removeProductFromData"
+        @removeToSelectListVariant="removeProductVariantFromData"
     />
     <div class="flex items-center justify-end space-x-2 py-1">
       <PaginationTable
@@ -94,10 +96,42 @@ const removeProductFromData = (p: Product) => {
   renderTable.value++
 }
 
+const removeProductVariantFromData = (pVariant: Product) => {
+
+
+  props.promoCode.selected_products = props.promoCode?.selected_products?.filter(item => {
+
+    if (item.id == pVariant.product_id) {
+      item.variants = item.variants.filter((item: Product) => item.id !== pVariant.id)
+    }
+
+    return item
+
+  })
+
+  renderTable.value++
+}
+
 const addProductToData = (p: Product) => {
   const find = data.value.find((item: Product) => item.id === p.id)
   if (!find) {
     data.value.push(p)
+    renderTable.value++
+  }
+}
+const addProductVariantToData = (row: any) => {
+
+  const parentP: Product = row.getParentRow()?.original
+  const variantP: Product = row.original
+
+  const find: Product | undefined = data.value.find((item: Product) => item.id === parentP.id)
+
+  if (!find) {
+    parentP.variants = parentP.variants.filter((item: Product) => item.id === variantP.id)
+    data.value.push(parentP)
+    renderTable.value++
+  } else {
+    find.variants.push(variantP)
     renderTable.value++
   }
 }

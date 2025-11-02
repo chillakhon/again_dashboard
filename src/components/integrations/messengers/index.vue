@@ -144,6 +144,9 @@
       </CardContent>
     </Card>
 
+
+    <VKSettings/>
+
   </div>
 </template>
 
@@ -161,6 +164,7 @@ import {Button} from '@/components/ui/button'
 import {useTelegramFunctions} from "@/composables/useTelegramFunctions";
 import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue";
 import {encryptToken} from '@/utils/crypto';
+import VKSettings from "@/features/vk/components/VKSettings.vue";
 
 // Состояния интеграций
 const initialData = {

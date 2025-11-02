@@ -22,8 +22,8 @@
             <AvatarImage
                 :src="item.client?.profile?.image ?? '/icons/web_chat.png'"
             />
-            <AvatarFallback class="text-xs">
-              {{ getInitials(item.client?.profile?.fullName || '??') }}
+            <AvatarFallback class="text-xs text-red-500">
+              {{ getInitials(item.client?.profile?.fullName || item?.source) }}
             </AvatarFallback>
           </Avatar>
           <div class="flex-1 min-w-0">
