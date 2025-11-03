@@ -18,7 +18,7 @@ const enabledTransports = REVERB_SCHEME === 'wss' ? ['wss'] : ['ws'];
 const forceTLS = REVERB_SCHEME === 'wss';
 
 window.Echo = new Echo({
-    broadcaster: 'pusher',
+    broadcaster: 'reverb', //pusher
     key: REVERB_KEY,
     cluster: 'mt1',
     wsHost: REVERB_HOST,
