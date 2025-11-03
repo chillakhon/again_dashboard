@@ -4,6 +4,15 @@ import Cookies from "js-cookie";
 
 window.Pusher = Pusher;
 
+
+console.log('ENV CHECK:', {
+    host: process.env.VUE_APP_REVERB_HOST,
+    port: process.env.VUE_APP_REVERB_PORT,
+    scheme: process.env.VUE_APP_REVERB_SCHEME,
+    api: process.env.VUE_APP_API_BASE_URL
+});
+
+
 const REVERB_KEY = process.env.VUE_APP_REVERB_APP_KEY || '';
 const REVERB_HOST = process.env.VUE_APP_REVERB_HOST || window.location.hostname;
 const REVERB_PORT = Number(process.env.VUE_APP_REVERB_PORT || 443);
