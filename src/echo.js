@@ -13,14 +13,23 @@ const API_BASE = (process.env.VUE_APP_API_BASE_URL || '').replace(/\/$/, '');
 const authEndpoint = API_BASE ? `${API_BASE}/broadcasting/auth` : '/broadcasting/auth';
 const access_token = Cookies.get('access_token');
 
-// Определяем транспорты в зависимости от схемы
-const enabledTransports = REVERB_SCHEME === 'wss' ? ['wss'] : ['ws'];
+// Правильно: транспорты всегда ['ws', 'wss'], а forceTLS зависит от схемы
+const enabledTransports = ['ws', 'wss'];
 const forceTLS = REVERB_SCHEME === 'wss';
 
+console.log('Echo Config:', {
+    REVERB_HOST,
+    REVERB_PORT,
+    REVERB_SCHEME,
+    authEndpoint,
+    forceTLS,
+    enabledTransports,
+    hasToken: access_token
+});
+
 window.Echo = new Echo({
-    broadcaster: 'reverb', //pusher
+    broadcaster: 'reverb',
     key: REVERB_KEY,
-    cluster: 'mt1',
     wsHost: REVERB_HOST,
     wsPort: REVERB_PORT,
     wssPort: REVERB_PORT,
