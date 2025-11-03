@@ -13,10 +13,16 @@ console.log('ENV CHECK:', {
 });
 
 
-const REVERB_KEY = process.env.VUE_APP_REVERB_APP_KEY || '';
-const REVERB_HOST = process.env.VUE_APP_REVERB_HOST || window.location.hostname;
-const REVERB_PORT = Number(process.env.VUE_APP_REVERB_PORT || 443);
-const REVERB_SCHEME = process.env.VUE_APP_REVERB_SCHEME || 'wss';
+const REVERB_KEY = 'sm5hxlforucucz0pyglq';
+const REVERB_HOST = 'againdev.ru';
+const REVERB_PORT = 443;
+const REVERB_SCHEME = 'wss';
+
+
+// const REVERB_KEY = process.env.VUE_APP_REVERB_APP_KEY || '';
+// const REVERB_HOST = process.env.VUE_APP_REVERB_HOST || window.location.hostname;
+// const REVERB_PORT = Number(process.env.VUE_APP_REVERB_PORT || 443);
+// const REVERB_SCHEME = process.env.VUE_APP_REVERB_SCHEME || 'wss';
 const API_BASE = (process.env.VUE_APP_API_BASE_URL || '').replace(/\/$/, '');
 
 const authEndpoint = API_BASE ? `${API_BASE}/broadcasting/auth` : '/broadcasting/auth';
