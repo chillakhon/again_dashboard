@@ -67,7 +67,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 const store = useStore()
 const router = useRouter()
 
-const logo = '/logo.svg';
+const logo = 'logo.svg';
 
 const form = reactive({
   name: '',
