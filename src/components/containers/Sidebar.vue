@@ -449,7 +449,7 @@ const navigateTo = (path) => {
   router.push(path)
 }
 
-const logo = '/logo.svg'
+const logo = 'logo.svg'
 
 // Перенести computed значения для уведомлений в реактивный контекст
 const ordersCount = computed(() => store.state.notifications.counts.orders || 0);
