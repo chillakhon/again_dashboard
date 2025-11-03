@@ -17,16 +17,6 @@ const access_token = Cookies.get('access_token');
 const enabledTransports = ['ws', 'wss'];
 const forceTLS = REVERB_SCHEME === 'wss';
 
-console.log('Echo Config:', {
-    REVERB_HOST,
-    REVERB_PORT,
-    REVERB_SCHEME,
-    authEndpoint,
-    forceTLS,
-    enabledTransports,
-    hasToken: access_token
-});
-
 window.Echo = new Echo({
     broadcaster: 'reverb',
     key: REVERB_KEY,

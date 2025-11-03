@@ -145,6 +145,8 @@ const sourceName = computed(() => {
       return 'WhatsApp'
     case 'web_chat':
       return 'Веб-чат'
+    case 'vk':
+      return 'ВКонтакте'
     default:
       return conversation.source || ''
   }
@@ -187,20 +189,49 @@ async function sendMessage() {
   if (!text || conversation.id === undefined) return
 
   addMessage = false
+
+  // Создаём временное сообщение с уникальным ID
+  const tempId = `temp-${Date.now()}-${Math.random()}`
+  const tempMessage: Message = {
+    id: tempId,
+    content: text,
+    direction: 'outgoing',
+    status: 'sending',
+    created_at: new Date().toISOString(),
+    attachments: [],
+    conversation_id: conversation.id,
+  } as Message
+
+  // Сразу добавляем в UI
+  conversation.messages = conversation.messages || []
+  conversation.messages.push(tempMessage)
+  newMessage.value = ''
+  scrollToBottom()
+
   try {
-    const conv = await conversationReplyById(Number(conversation.id), {
+    // Отправляем на сервер
+    const response = await conversationReplyById(Number(conversation.id), {
       content: text,
       attachments: [],
     })
-    if (conv) {
-      conversation.messages = conversation.messages || []
-      conversation.messages.push(conv)
-      newMessage.value = ''
-      scrollToBottom()
-      emits('hasNewMessage', conversation.id);
+
+    if (response) {
+      // Находим временное сообщение и заменяем его на реальное
+      const tempIndex = conversation.messages.findIndex(m => m.id === tempId)
+      if (tempIndex !== -1) {
+        conversation.messages[tempIndex] = response
+      }
+
+      emits('hasNewMessage', conversation.id)
     }
   } catch (e) {
     console.error('Ошибка отправки:', e)
+
+    // При ошибке меняем статус на failed
+    const messageIndex = conversation.messages.findIndex(m => m.id === tempId)
+    if (messageIndex !== -1) {
+      conversation.messages[messageIndex].status = 'failed'
+    }
   } finally {
     addMessage = true
   }
