@@ -419,6 +419,7 @@ import {useStore} from "vuex";
 import {User} from "@/models/user/User";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 import router from "@/router";
+import {assetPath} from "@/utils/assetPath";
 
 
 const store = useStore()
@@ -449,7 +450,8 @@ const navigateTo = (path) => {
   router.push(path)
 }
 
-const logo = 'logo.svg'
+// const logo = 'logo.svg'
+const logo = assetPath('logo.svg')
 
 // Перенести computed значения для уведомлений в реактивный контекст
 const ordersCount = computed(() => store.state.notifications.counts.orders || 0);

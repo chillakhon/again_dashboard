@@ -15,12 +15,18 @@ import './store/modules/auth/subscriber.js';
 const access_token = Cookies.get('access_token');
 import {startNotificationsPolling} from './notifications-poller'
 
+import {assetPath} from '@/utils/assetPath'
+
+
 store.dispatch('auth/attempt', access_token)
     .then(() => {
         const app = createApp(App)
             .use(store)
             .use(router)
-            .use(axiosPlugin) // <- обязательно регистрируем axios до echo
+            .use(axiosPlugin)
+
+        app.config.globalProperties.$assetPath = assetPath
+
 
         // Инициализация Echo после того как axios.defaults (withCredentials) установлен
         import('./echo') // src/echo.js

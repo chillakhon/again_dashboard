@@ -62,12 +62,15 @@ import {computed, reactive, ref, watch} from 'vue';
 import {useStore} from 'vuex';
 import {useRouter} from 'vue-router';
 import { Checkbox } from '@/components/ui/checkbox'
+import {assetPath} from "@/utils/assetPath";
 
 
 const store = useStore()
 const router = useRouter()
 
-const logo = 'logo.svg';
+// const logo = 'logo.svg';
+const logo = assetPath('logo.svg')
+
 
 const form = reactive({
   name: '',

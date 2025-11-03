@@ -20,7 +20,7 @@
         <div class="flex items-center space-x-2">
           <Avatar class="h-8 w-8">
             <AvatarImage
-                :src="item.client?.profile?.image ?? 'icons/web_chat.png'"
+                :src="item.client?.profile?.image ?? web_chat"
             />
             <AvatarFallback class="text-xs text-red-500">
               {{ getInitials(item.client?.profile?.fullName || item?.source) }}
@@ -77,6 +77,7 @@ import ChatSelectSource from '@/components/dialogs/chats/ChatSelectSource.vue'
 import {Conversation} from '@/models/Conversation'
 import {MessagesSquare} from "lucide-vue-next";
 import {numeric} from "@vuelidate/validators";
+import {assetPath} from "@/utils/assetPath";
 
 const props = defineProps({
   conversations: {
@@ -98,6 +99,9 @@ const props = defineProps({
   }
 
 })
+
+
+const web_chat = assetPath('icons/web_chat.png')
 
 
 const emit = defineEmits(['selectUser', 'changeSource'])

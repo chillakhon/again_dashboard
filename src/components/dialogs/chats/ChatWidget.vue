@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between space-x-2">
         <div class="flex items-center space-x-2">
           <Avatar class="h-8 w-8">
-            <AvatarImage :src="clientImage || 'icons/client.png'"/>
+            <AvatarImage :src="clientImage || clientIcon"/>
             <AvatarFallback>{{ clientName.charAt(0) }}</AvatarFallback>
           </Avatar>
           <div>
@@ -107,9 +107,12 @@ import {
 import {useChatsFunctions} from '@/composables/useChatsFunctions'
 
 import '@/echo';
+import {assetPath} from "@/utils/assetPath";
 
 const props = defineProps<{ conversation: Conversation }>()
 const conversation = props.conversation
+
+const clientIcon = assetPath('icons/client.png')
 
 
 const emits = defineEmits(['hasNewMessage'])
