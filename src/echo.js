@@ -18,8 +18,26 @@ const access_token = Cookies.get('access_token');
 
 
 
+//local params
+// window.Echo = new Echo({
+//     broadcaster: 'pusher',
+//     key: REVERB_KEY,
+//     cluster: 'mt1',
+//     wsHost: REVERB_HOST,
+//     wsPort: REVERB_PORT,
+//     wssPort: REVERB_PORT,
+//     forceTLS: false,
+//     encrypted: false,
+//     enabledTransports: ['ws'],
+//     disableStats: true,
+//     authEndpoint: authEndpoint,
+//     auth: {
+//         headers: {
+//             'Authorization': `Bearer ${access_token}`,
+//         },
+//     },
+// });
 
-// Простая конфигурация
 window.Echo = new Echo({
     broadcaster: 'pusher',
     key: REVERB_KEY,
