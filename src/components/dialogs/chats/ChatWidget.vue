@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between space-x-2">
         <div class="flex items-center space-x-2">
           <Avatar class="h-8 w-8">
-            <AvatarImage :src="clientImage || '/icons/client.png'"/>
+            <AvatarImage :src="clientImage || 'icons/client.png'"/>
             <AvatarFallback>{{ clientName.charAt(0) }}</AvatarFallback>
           </Avatar>
           <div>
