@@ -20,7 +20,7 @@
         <div class="flex items-center space-x-2">
           <Avatar class="h-8 w-8">
             <AvatarImage
-                :src="item.client?.profile?.image ?? '/icons/web_chat.png'"
+                :src="item.client?.profile?.image ?? 'icons/web_chat.png'"
             />
             <AvatarFallback class="text-xs text-red-500">
               {{ getInitials(item.client?.profile?.fullName || item?.source) }}
