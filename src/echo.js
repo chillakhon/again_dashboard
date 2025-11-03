@@ -45,9 +45,9 @@ window.Echo = new Echo({
     wsHost: REVERB_HOST,
     wsPort: REVERB_PORT,
     wssPort: REVERB_PORT,
-    forceTLS: false,
-    encrypted: false,
-    enabledTransports: ['ws'],
+    forceTLS: true,
+    encrypted: true,
+    enabledTransports: ['ws','wss'],
     disableStats: true,
     authEndpoint: authEndpoint,
     auth: {
