@@ -16,6 +16,7 @@ const access_token = Cookies.get('access_token');
 import {startNotificationsPolling} from './notifications-poller'
 
 import {assetPath} from '@/utils/assetPath'
+import {createEchoPlugin} from '@/plugins/echoPlugin'
 
 
 store.dispatch('auth/attempt', access_token)
@@ -27,12 +28,14 @@ store.dispatch('auth/attempt', access_token)
 
         app.config.globalProperties.$assetPath = assetPath
 
-
         // Инициализация Echo после того как axios.defaults (withCredentials) установлен
         import('./echo') // src/echo.js
             .then(() => {
                 app.mount('#app')
                 startNotificationsPolling()
+
+                app.use(createEchoPlugin())
+
             })
             .catch(err => {
                 console.error('Echo init failed:', err)
@@ -40,7 +43,10 @@ store.dispatch('auth/attempt', access_token)
                 app.mount('#app')
                 startNotificationsPolling()
             })
+
+
     })
+
     .catch(() => {
         // В случае ошибки авторизации — всё равно монтируем и пытаемся инициализировать Echo
         const app = createApp(App)

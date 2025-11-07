@@ -48,7 +48,6 @@ export function useChatsFunctions() {
     }
 
     // Получить подробную информацию о конкретном разговоре по его ID, включая сообщения и участников
-
     const getConversationById = async (conversationId: number | string,): Promise<
         Conversation
         | null> => {

@@ -7,7 +7,6 @@ export async function startNotificationsPolling() {
     // Сразу проверяем обновления (без уведомлений, если разрешение ещё не дано)
     store.dispatch('notifications/checkForUpdates');
 
-    // Основной polling каждые 60 секунд
     const interval = setInterval(() => {
         store.dispatch('notifications/checkForUpdates');
     }, 20 * 1000);

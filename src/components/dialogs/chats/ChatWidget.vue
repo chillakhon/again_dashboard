@@ -25,13 +25,18 @@
       </div>
     </CardHeader>
 
+
     <!-- Messages -->
     <CardContent class="flex-1 p-2 overflow-y-auto flex flex-col">
       <div v-if="clientAddress" class="mb-2 text-xs border-b pb-2">
         <p class="text-muted-foreground">Адрес:</p>
         <p class="truncate">{{ clientAddress }}</p>
       </div>
-      <div class="flex-1 overflow-y-auto space-y-1 max-md:max-h-[66vh] max-md:min-h-[66vh]">
+
+      <Loader v-if="isLoadingGetMessage"/>
+      <div class="flex-1 overflow-y-auto space-y-1 max-md:max-h-[66vh] max-md:min-h-[66vh]"
+           v-else
+      >
         <div
             v-for="message in conversation.messages"
             :key="message.id"
@@ -105,15 +110,19 @@ import {
   Send,
 } from 'lucide-vue-next'
 import {useChatsFunctions} from '@/composables/useChatsFunctions'
-
 import '@/echo';
 import {assetPath} from "@/utils/assetPath";
 
-const props = defineProps<{ conversation: Conversation }>()
+import Loader from '@/components/common/Loader.vue'
+
+
+const props = defineProps<{
+  conversation: Conversation
+  isLoadingGetMessage: boolean
+}>()
 const conversation = props.conversation
 
 const clientIcon = assetPath('icons/client.png')
-
 
 const emits = defineEmits(['hasNewMessage'])
 
@@ -137,6 +146,8 @@ const clientAddress = computed(
 const lastMessageTime = computed(
     () => (conversation.last_message_at ? formatTime(conversation.last_message_at) : '')
 )
+
+
 const sourceName = computed(() => {
   switch (conversation.source) {
     case 'telegram':
@@ -270,12 +281,7 @@ watch(() => conversation.id, (id, oldId) => {
   try {
     currentChannel = (window as any).Echo.private(`conversation.${id}`);
 
-
-    console.log(currentChannel);
-
     currentChannel.listen('.MessageCreated', (payload: any) => {
-      console.log('MessageCreated', payload);
-
       if (!addMessage) return
       // приводим к формату сообщения, который ожидает UI
       const incoming: Partial<Message> = {
@@ -298,7 +304,6 @@ watch(() => conversation.id, (id, oldId) => {
         emits('hasNewMessage', id);
       }
 
-
     });
 
   } catch (e) {
@@ -318,6 +323,6 @@ onBeforeUnmount(() => {
     }
   }
 });
-/* ---------- конец WebSocket ---------- */
+
 
 </script>

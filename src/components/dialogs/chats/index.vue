@@ -13,6 +13,8 @@
             :selected-user-id="selectedConversatonId"
             :current-source="currentSourceName"
             @select-user="handleUserSelect"
+            :isLoadingMore="isLoadingMore"
+            @scrolledToEnd="handleScrolledToEnd"
         />
       </div>
 
@@ -23,6 +25,7 @@
             class="h-[85vh]"
             :key="renderChat"
             :conversation="selectedConversation"
+            :isLoadingGetMessage="isLoadingGetMessage"
             @has-new-message="handleUpdateConv"
         />
 
@@ -48,6 +51,9 @@
             :selected-user="selectedConversatonId"
             :current-source="currentSourceName"
             @select-user="handleUserSelect"
+            :isLoadingMore="isLoadingMore"
+            @scrolledToEnd="handleScrolledToEnd"
+
         />
 
         <div
@@ -93,6 +99,8 @@ import CharListConversations from "@/components/dialogs/chats/CharListConversati
 import {Conversation} from "@/models/Conversation";
 import {useStore} from "vuex";
 import Loader from "@/components/common/Loader.vue";
+import {useEchoListener} from "@/composables/Echo/useEchoListener";
+import {ECHO_CHANNELS, ECHO_EVENTS} from "@/config/echoConfig";
 
 
 const store = useStore();
@@ -100,6 +108,13 @@ const store = useStore();
 const loading = ref(true)
 const renderChat = ref(1)
 const renderListConv = ref(1)
+
+const pagination = ref({
+  page: 1,
+  per_page: 20,
+  total: 0,
+})
+
 
 const currentSourceName = ref({source: 'all'})
 
@@ -116,6 +131,7 @@ const handleBack = () => {
 };
 
 const handleUserSelect = (userId: number) => {
+
   selectedConversatonId.value = userId;
   if (isMobile.value) {
     showChat.value = true;
@@ -140,15 +156,39 @@ const {getConversations, getConversationById} = useChatsFunctions()
 
 
 const fetchData = async () => {
-  conversations.value = await getConversations({
-    page: 1,
-    per_page: 20,
-    source: currentSourceName.value.source == 'all' ? '' : currentSourceName.value.source,
-  })
-      .then(res => {
-        return res?.conversation ?? []
-      })
-}
+  pagination.value.page = 1;
+
+  const res = await getConversations({
+    page: pagination.value.page,
+    per_page: pagination.value.per_page,
+    source: currentSourceName.value.source === 'all' ? '' : currentSourceName.value.source,
+  });
+
+  pagination.value.total = res?.meta.total ?? 0;
+  conversations.value = res?.conversation ?? [];
+};
+
+
+const isLoadingMore = ref(false);
+
+const handleScrolledToEnd = async () => {
+  if (isLoadingMore.value) return;
+  if (pagination.value.page * pagination.value.per_page >= pagination.value.total) return;
+
+  isLoadingMore.value = true;
+  pagination.value.page++;
+
+  const res = await getConversations({
+    page: pagination.value.page,
+    per_page: pagination.value.per_page,
+    source: currentSourceName.value.source === 'all' ? '' : currentSourceName.value.source,
+  });
+
+  conversations.value.push(...(res?.conversation ?? []));
+  isLoadingMore.value = false;
+};
+
+
 
 onMounted(async () => {
   await fetchData()
@@ -156,44 +196,29 @@ onMounted(async () => {
 })
 
 
-onMounted(() => {
-
-  if (!(window as any).Echo) {
-    console.warn('Echo not available');
-    return;
-  }
-
-  // Подписываемся на канал notifications для обновления списка чатов
-  (window as any).Echo.private(`admin.notifications`)
-      .listen('.ConversationUpdated', async (payload: any) => {
-
-        await fetchData();
-        renderListConv.value++;
-      })
-      .error((error: any) => {
-        console.error('Echo subscription error:', error);
-      });
-});
-
-onBeforeUnmount(() => {
-  if ((window as any).Echo) {
-    try {
-      const userId = store.state.auth?.user?.id;
-      if (userId) {
-        (window as any).Echo.leave(`user.${userId}`);
-      }
-    } catch (e) {
-      console.error('Echo unsubscribe error:', e);
-    }
+const {isSubscribed: listenerSubscribed} = useEchoListener({
+  channel: ECHO_CHANNELS.ADMIN_NOTIFICATIONS,
+  event: ECHO_EVENTS.CONVERSATION_UPDATED,
+  isPrivate: true,
+  onMessage: async (payload) => {
+    await fetchData();
+    renderListConv.value++;
+  },
+  onError: (error) => {
+    console.error('Ошибка подписки:', error);
   }
 });
 
 const selectedConversation = ref<Conversation | null>(null)
 
+
+const isLoadingGetMessage = ref(false)
 watch(
     () => selectedConversatonId.value,
     async (newVal) => {
+      isLoadingGetMessage.value = true;
       selectedConversation.value = await getConversationById(Number(newVal))
+      isLoadingGetMessage.value = false;
       renderChat.value++
     }
 )

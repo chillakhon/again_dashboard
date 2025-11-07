@@ -6,7 +6,11 @@
           :current-source="currentSource"
       />
     </CardHeader>
-    <div class="overflow-y-auto h-[calc(100%-44px)] pt-1" v-if="props.conversations.length > 0">
+    <div
+        class="overflow-y-auto h-[calc(100%-44px)] pt-1"
+        v-if="props.conversations.length > 0"
+        @scroll="handleScroll"
+    >
       <div
           v-for="item in props.conversations"
           :key="item.id"
@@ -20,7 +24,7 @@
         <div class="flex items-center space-x-2">
           <Avatar class="h-8 w-8">
             <AvatarImage
-                :src="item.client?.profile?.image ?? web_chat"
+                :src="getLogo(item.source ?? '')"
             />
             <AvatarFallback class="text-xs text-red-500">
               {{ getInitials(item.client?.profile?.fullName || item?.source) }}
@@ -52,7 +56,6 @@
       </div>
     </div>
 
-
     <div
         v-else
         class="flex-1 flex flex-col items-center justify-center text-muted-foreground p-4"
@@ -65,6 +68,9 @@
       </p>¬
     </div>
 
+    <Loader v-if="isLoadingMore"/>
+
+
   </Card>
 </template>
 
@@ -76,8 +82,9 @@ import {Card, CardHeader} from '@/components/ui/card'
 import ChatSelectSource from '@/components/dialogs/chats/ChatSelectSource.vue'
 import {Conversation} from '@/models/Conversation'
 import {MessagesSquare} from "lucide-vue-next";
-import {numeric} from "@vuelidate/validators";
 import {assetPath} from "@/utils/assetPath";
+
+import Loader from '@/components/common/Loader.vue'
 
 const props = defineProps({
   conversations: {
@@ -96,15 +103,16 @@ const props = defineProps({
   selectedUserId: {
     type: Number,
     default: null
+  },
+
+  isLoadingMore: {
+    type: Boolean,
+    default: false
   }
 
 })
 
-
-const web_chat = assetPath('icons/web_chat.png')
-
-
-const emit = defineEmits(['selectUser', 'changeSource'])
+const emit = defineEmits(['selectUser', 'changeSource', 'scrolledToEnd'])
 
 const selectedUser = ref<number | null>(props.selectedUserId)
 
@@ -123,5 +131,34 @@ function formatTime(dateString?: string): string {
   return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
 }
 
+
+const getLogo = (source: string): string => {
+  switch (source) {
+    case 'web_chat':
+      return assetPath('icons/chat/web-chat.png')
+    case 'telegram':
+      return assetPath('icons/chat/telegram.svg')
+    case 'whatsapp':
+      return assetPath('icons/chat/whatsapp.svg')
+    case 'vk':
+      return assetPath('icons/chat/vk.svg')
+    default:
+      return ''
+  }
+}
+
+
+function handleScroll(event: Event) {
+  const element = event.target as HTMLElement
+  const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 5
+  const isAtTop = element.scrollTop < 5
+
+  if (isAtBottom) {
+    console.log('Достигнут конец списка')
+    emit('scrolledToEnd')
+  }
+
+
+}
 
 </script>

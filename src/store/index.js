@@ -27,6 +27,7 @@ import notifications from "@/store/modules/notifications";
 import tabsModule from "@/store/modules/tabs/tabs";
 
 
+
 const store = createStore ({
     modules: {
         auth: authModule, 
@@ -54,6 +55,7 @@ const store = createStore ({
         clientActions: clientActionsModule,
 
         tabs: tabsModule,
+
 
         notifications
     }
