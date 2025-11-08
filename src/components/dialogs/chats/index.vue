@@ -12,8 +12,9 @@
             :conversations="conversations"
             :selected-user-id="selectedConversatonId"
             :current-source="currentSourceName"
-            @select-user="handleUserSelect"
             :isLoadingMore="isLoadingMore"
+            :noMoreChats="noMoreChats"
+            @select-user="handleUserSelect"
             @scrolledToEnd="handleScrolledToEnd"
         />
       </div>
@@ -50,8 +51,9 @@
             :conversations="conversations"
             :selected-user="selectedConversatonId"
             :current-source="currentSourceName"
-            @select-user="handleUserSelect"
             :isLoadingMore="isLoadingMore"
+            :noMoreChats="noMoreChats"
+            @select-user="handleUserSelect"
             @scrolledToEnd="handleScrolledToEnd"
 
         />
@@ -79,6 +81,7 @@
               class="flex-1"
               :key="renderChat"
               :conversation="selectedConversation"
+              :isLoadingGetMessage="isLoadingGetMessage"
               @has-new-message="handleUpdateConv"
           />
         </div>
@@ -108,6 +111,8 @@ const store = useStore();
 const loading = ref(true)
 const renderChat = ref(1)
 const renderListConv = ref(1)
+
+
 
 const pagination = ref({
   page: 1,
@@ -170,10 +175,18 @@ const fetchData = async () => {
 
 
 const isLoadingMore = ref(false);
+const noMoreChats = ref(false)
+
 
 const handleScrolledToEnd = async () => {
   if (isLoadingMore.value) return;
-  if (pagination.value.page * pagination.value.per_page >= pagination.value.total) return;
+
+  if (pagination.value.page * pagination.value.per_page >= pagination.value.total) {
+    noMoreChats.value = true
+    return
+  }
+
+
 
   isLoadingMore.value = true;
   pagination.value.page++;
@@ -187,7 +200,6 @@ const handleScrolledToEnd = async () => {
   conversations.value.push(...(res?.conversation ?? []));
   isLoadingMore.value = false;
 };
-
 
 
 onMounted(async () => {

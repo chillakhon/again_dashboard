@@ -54,6 +54,14 @@
           </div>
         </div>
       </div>
+
+      <Loader v-if="isLoadingMore"/>
+
+      <div v-if="noMoreChats" class="text-center text-gray-400 py-2 text-sm mb-4">
+        Больше нет диалогов
+      </div>
+
+
     </div>
 
     <div
@@ -68,14 +76,12 @@
       </p>¬
     </div>
 
-    <Loader v-if="isLoadingMore"/>
-
 
   </Card>
 </template>
 
 <script setup lang="ts">
-import {ref, PropType, watch} from 'vue'
+import {ref, PropType, onMounted, onBeforeUnmount} from 'vue'
 import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar'
 import {Badge} from '@/components/ui/badge'
 import {Card, CardHeader} from '@/components/ui/card'
@@ -106,6 +112,10 @@ const props = defineProps({
   },
 
   isLoadingMore: {
+    type: Boolean,
+    default: false
+  },
+  noMoreChats: {
     type: Boolean,
     default: false
   }
@@ -148,13 +158,33 @@ const getLogo = (source: string): string => {
 }
 
 
+onMounted(() => {
+  window.addEventListener('scroll', handleScrollWindow)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('scroll', handleScrollWindow)
+})
+
+function handleScrollWindow() {
+  const scrollTop = window.scrollY
+  const scrollHeight = document.documentElement.scrollHeight
+  const clientHeight = window.innerHeight
+
+  if (scrollHeight - scrollTop - clientHeight < 5) {
+    emit('scrolledToEnd')
+  }
+}
+
+
 function handleScroll(event: Event) {
   const element = event.target as HTMLElement
   const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 5
   const isAtTop = element.scrollTop < 5
 
+
+  console.log('Достигнут конец списка')
   if (isAtBottom) {
-    console.log('Достигнут конец списка')
     emit('scrolledToEnd')
   }
 

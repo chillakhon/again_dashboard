@@ -39,9 +39,6 @@
 
       <div class="flex items-center px-7 pb-2 space-x-3">
         <Button :disabled="sending" @click="onSave" v-if="vkEnabled">Сохранить</Button>
-<!--        <Button :disabled="sending" variant="outline" @click="onTest">-->
-<!--          Проверить подключение-->
-<!--        </Button>-->
       </div>
 
     </Card>

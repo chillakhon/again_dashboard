@@ -15,79 +15,7 @@
     <Separator/>
 
     <!-- WhatsApp API -->
-    <Card>
-      <CardHeader>
-        <div class="flex items-center space-x-3">
-          <div
-              class="w-10 h-10 rounded-md bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                  d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-6.29 2.869c-.173.246-.5.4-.98.4-.198 0-.372-.025-.545-.074-1.032-.273-2.38-1.176-3.001-2.188-.694-1.141-.925-2.17-.925-2.893.002-.619.148-.908.322-1.118.198-.248.47-.372.718-.372.198 0 .371.025.52.074.446.149.669.644.793.941.124.298.248.694.347.941.099.248.05.372-.025.496-.074.124-.174.272-.347.446-.173.174-.347.372-.397.57-.05.198-.025.372.124.644.149.273.793 1.514 1.213 1.96.42.446.92.694 1.238.817.198.074.372.074.545-.025.174-.099.273-.223.421-.471zM12 2a10 10 0 0 1 10 10 10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2m0 1a9 9 0 0 0-9 9 9 9 0 0 0 9 9 9 9 0 0 0 9-9 9 9 0 0 0-9-9z"/>
-            </svg>
-          </div>
-          <div class="flex-1 flex justify-between items-center">
-            <div>
-              <CardTitle>WhatsApp Business API</CardTitle>
-              <CardDescription>Подключение официального API WhatsApp</CardDescription>
-            </div>
-            <Switch v-model="integrations.whatsapp.enabled"/>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent class="space-y-4" :class="{'opacity-50': !integrations.whatsapp.enabled}">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="space-y-2">
-            <Label for="whatsapp-phone">Номер телефона</Label>
-            <Input
-                id="whatsapp-phone"
-                v-model="integrations.whatsapp.phoneNumber"
-                placeholder="79123456789"
-                :disabled="!integrations.whatsapp.enabled"
-            />
-          </div>
-          <div class="space-y-2">
-            <Label for="whatsapp-token">Токен API</Label>
-            <Input
-                id="whatsapp-token"
-                v-model="integrations.whatsapp.apiToken"
-                type="password"
-                placeholder="Ваш секретный токен"
-                :disabled="!integrations.whatsapp.enabled"
-            />
-          </div>
-        </div>
-        <div class="space-y-2">
-          <Label for="whatsapp-webhook">Webhook URL</Label>
-          <Input
-              id="whatsapp-webhook"
-              v-model="integrations.whatsapp.webhookUrl"
-              placeholder="https://ваш-сайт.ru/api/whatsapp"
-              :disabled="!integrations.whatsapp.enabled"
-          />
-        </div>
-        <div class="flex flex-wrap items-center space-y-3 justify-between pt-4 border-t">
-          <Button
-              class="max-md:w-full"
-              variant="outline"
-              :disabled="!integrations.whatsapp.enabled"
-              @click="testWhatsAppConnection"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-                 stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-            </svg>
-            Проверить подключение
-          </Button>
-          <Button
-              class="max-md:w-full"
-              :disabled="!integrations.whatsapp.enabled || !hasWhatsAppChanges"
-              @click="saveWhatsApp"
-          >
-            Сохранить
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+    <WhatsAppSettings />
 
     <!-- Telegram Bot API -->
     <Card>
@@ -153,8 +81,6 @@
 <script setup lang="ts">
 import {ref, computed} from 'vue'
 import {toast} from '@/components/ui/toast'
-
-// Компоненты shadcn-vue
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from '@/components/ui/card'
 import {Input} from '@/components/ui/input'
 import {Label} from '@/components/ui/label'
@@ -165,6 +91,7 @@ import {useTelegramFunctions} from "@/composables/useTelegramFunctions";
 import ModalWithProgressBar from "@/components/dynamics/ModalWithProgressBar.vue";
 import {encryptToken} from '@/utils/crypto';
 import VKSettings from "@/features/vk/components/VKSettings.vue";
+import WhatsAppSettings from "@/features/whatsapp/components/WhatsAppSettings.vue";
 
 // Состояния интеграций
 const initialData = {

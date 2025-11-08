@@ -283,7 +283,7 @@ const routes = [
                     // },
                     // {
                     //     path: '/dialogs/telegram',
-                    //     name: 'dialogs-telegram',
+                    //        name: 'dialogs-telegram',
                     //     component: () => import('../components/dialogs/telegram/index.vue'),
                     //
                     // }
