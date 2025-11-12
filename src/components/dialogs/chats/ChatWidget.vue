@@ -135,7 +135,15 @@ const clientName = computed(
     () => conversation.client?.profile?.fullName || conversation.client?.name || 'Клиент'
 )
 const clientPhone = computed(
-    () => conversation.client?.profile?.phone || 'Телефон не указан'
+    () => {
+      const phoneClient = conversation.client?.profile?.phone
+
+      if (conversation.source == 'whatsapp') {
+        return conversation.external_id?.split("@")[0]
+      }
+
+      return phoneClient || 'Телефон не указан'
+    }
 )
 const clientImage = computed(
     () => conversation.client?.profile?.image || ''
@@ -158,6 +166,8 @@ const sourceName = computed(() => {
       return 'Веб-чат'
     case 'vk':
       return 'ВКонтакте'
+    case 'email':
+      return 'Почта'
     default:
       return conversation.source || ''
   }

@@ -89,6 +89,10 @@ const fields = [
     {name: 'port', component: 'text', type: 'number', label: 'Port', required: true},
   ],
   [
+    {name: 'imap_host', component: 'text', label: 'IMAP Host', required: false},
+    {name: 'imap_port', component: 'text', type: 'number', label: 'IMAP Port', required: false},
+  ],
+  [
     {name: 'username', component: 'text', label: 'Логин (email)', required: true},
     {name: 'password', component: 'text', type: 'password', label: 'Пароль', required: true},
   ],
@@ -122,13 +126,13 @@ const loadSettings = async () => {
         mailer: ms.mailer ?? 'smtp',
         host: ms.host ?? '',
         port: ms.port ?? 465,
+        imap_host: ms.imap_host ?? '',
+        imap_port: ms.imap_port ?? 993,
         username: ms.username ?? '',
         password: ms.password ?? '',
         encryption: ms.encryption ?? 'tls',
         from_address: ms.from_address ?? '',
         notification_email: ms.notification_email ?? '',
-        created_at: ms.created_at,
-        updated_at: ms.updated_at,
       }
       // включаем/выключаем интеграцию по наличию host и username (можно подправить логику)
       emailEnabled.value = !!emailForm.value.host && !!emailForm.value.username

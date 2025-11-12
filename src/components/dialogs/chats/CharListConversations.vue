@@ -152,6 +152,8 @@ const getLogo = (source: string): string => {
       return assetPath('icons/chat/whatsapp.svg')
     case 'vk':
       return assetPath('icons/chat/vk.svg')
+    case 'email':
+      return assetPath('icons/chat/email.png')
     default:
       return ''
   }
@@ -182,8 +184,6 @@ function handleScroll(event: Event) {
   const isAtBottom = element.scrollHeight - element.scrollTop - element.clientHeight < 5
   const isAtTop = element.scrollTop < 5
 
-
-  console.log('Достигнут конец списка')
   if (isAtBottom) {
     emit('scrolledToEnd')
   }

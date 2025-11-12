@@ -36,7 +36,6 @@ export function useEchoListener(options: EchoListenerOptions) {
             (window as any).Echo[channelMethod](options.channel)
                 .listen(options.event, async (payload: any) => {
                     try {
-                        console.log(44564)
                         await options.onMessage(payload);
                     } catch (error) {
                         console.error(`Ошибка при обработке события ${options.event}:`, error);

@@ -2,6 +2,8 @@ export default class MailSettings {
     mailer: string | null | undefined;
     host: string | undefined;
     port: number | undefined;
+    imap_host: string | undefined;
+    imap_port: number | undefined;
     username: string | undefined;
     password: string | undefined;
     encryption: string | null | undefined;
@@ -14,6 +16,8 @@ export default class MailSettings {
         this.mailer = 'smtp';
         this.host = undefined;
         this.port = undefined;
+        this.imap_host = undefined;
+        this.imap_port = undefined;
         this.username = undefined;
         this.password = undefined;
         this.encryption = null;
@@ -28,6 +32,8 @@ export default class MailSettings {
         ms.mailer = json.mailer ?? null;
         ms.host = json.host;
         ms.port = json.port;
+        ms.imap_host = json.imap_host;
+        ms.imap_port = json.imap_port;
         ms.username = json.username;
         ms.password = json.password;
         ms.encryption = json.encryption ?? null;
@@ -43,6 +49,8 @@ export default class MailSettings {
             mailer: this.mailer,
             host: this.host,
             port: this.port,
+            imap_host: this.imap_host,
+            imap_port: this.imap_port,
             username: this.username,
             password: this.password,
             encryption: this.encryption,

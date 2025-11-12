@@ -11,7 +11,7 @@
 import DynamicForm from "@/components/dynamics/DynamicForm.vue";
 import {ref, watch} from "vue";
 import {FormDynamicFieldType} from "@/types/form";
-import {MessageCircle, Smartphone, Send,MessageSquare} from 'lucide-vue-next';
+import {MessageCircle, Smartphone, Send, MessageSquare, Mail} from 'lucide-vue-next';
 
 
 const emit = defineEmits(['changeSource']);
@@ -40,6 +40,7 @@ const formFields = ref<FormDynamicFieldType[]>([
       {title: 'Vk', value: 'vk', icon: MessageSquare, styleIcon: 'text-blue-800'},
       {title: 'WhatsApp', value: 'whatsapp', icon: Smartphone, styleIcon: 'text-green-500'},
       {title: 'Telegram', value: 'telegram', icon: Send, styleIcon: 'text-blue-400'},
+      {title: 'Почта', value: 'email', icon: Mail, styleIcon: 'text-orange-400'},
     ],
     optionLabel: 'title',
     optionValue: 'value'

@@ -6,7 +6,7 @@ export class Conversation {
     id: number | undefined
     client_id: number | undefined
     external_id: string | undefined
-    source: 'telegram' | 'whatsapp' | 'web_chat' | 'vk' | undefined
+    source: 'telegram' | 'whatsapp' | 'web_chat' | 'vk' | 'email' | undefined
     status: 'new' | 'open' | 'closed' | 'sending' | undefined
     unread_messages_count: number | undefined
     last_message_at: string | undefined
