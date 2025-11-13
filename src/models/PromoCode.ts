@@ -6,6 +6,8 @@ export class PromoCode {
     code: string | undefined;
     discountAmount: number | undefined;
     discountType: 'percentage' | 'fixed' | undefined;
+    // template_type: 'birthday' | 'regular' | undefined;
+    template_type: boolean | undefined;
     discount_behavior: 'replace' | 'stack' | 'skip' | undefined;
     startsAt: string | undefined;
     image: File | string | undefined;
@@ -27,6 +29,7 @@ export class PromoCode {
         this.code = undefined;
         this.discountAmount = undefined;
         this.discountType = undefined;
+        this.template_type = undefined;
         this.startsAt = undefined;
         this.image = undefined;
         this.imageUrl = undefined;
@@ -65,6 +68,7 @@ export class PromoCode {
         promo.discountAmount = json.discount_amount ? Number(json.discount_amount) : 0;
         promo.discount_behavior = json.discount_behavior
         promo.discountType = json.discount_type;
+        promo.template_type = json.template_type === 'birthday';
         promo.startsAt = json.starts_at ?? undefined;
         promo.image = json.image ? `${process.env.VUE_APP_BASE_URL}/promo-code/getImage?path=${json.image}` : undefined;
         promo.description = json.description ?? undefined;
@@ -87,6 +91,7 @@ export class PromoCode {
             discount_amount: this.discountAmount ?? null,
             discount_behavior: this.discount_behavior ?? null,
             discount_type: this.discountType ?? null,
+            template_type: this.template_type ?? null,
             starts_at: this.startsAt ?? null,
             image: this.image ?? null,
             description: this.description ?? null,
@@ -104,6 +109,7 @@ export class PromoCode {
         formData.append('code', this.code ?? '');
         formData.append('discount_amount', String(this.discountAmount ?? ''));
         formData.append('discount_type', this.discountType ?? '');
+        formData.append('template_type', this.template_type ? 'birthday' : 'regular');
         formData.append('discount_behavior', this.discount_behavior ?? '');
         formData.append('starts_at', this.startsAt ?? '');
         formData.append('description', this.description ?? '');
@@ -154,6 +160,7 @@ export class PromoCode {
         cloned.code = this.code;
         cloned.discountAmount = this.discountAmount;
         cloned.discountType = this.discountType;
+        cloned.template_type = this.template_type;
         cloned.discount_behavior = this.discount_behavior;
         cloned.startsAt = this.startsAt;
         cloned.description = this.description;

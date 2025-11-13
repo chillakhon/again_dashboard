@@ -157,7 +157,7 @@ const handleCreate = async () => {
 
   const result = await updateImagesWithProduct(product.value)
 
-  await productsSync({})
+  // await productsSync({})
 
   if (result) {
     await router.push("/products");

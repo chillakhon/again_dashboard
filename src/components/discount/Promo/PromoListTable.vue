@@ -148,7 +148,13 @@ const columns = [
     accessorKey: "description",
     header: "Описание",
   },
-
+  {
+    accessorKey: "promo_code_type",
+    header: "Применить",
+    cell: ({row}: any) => {
+      return getDiscountTargetLabel(row.original.promo_code_type);
+    }
+  },
   {
     accessorKey: "applies_to_all_clients",
     header: "Ко всем клиентам",
@@ -159,12 +165,15 @@ const columns = [
     },
   },
   {
-    accessorKey: "promo_code_type",
-    header: "Применить",
+    accessorKey: "template_type",
+    header: "ДР Промокод",
     cell: ({row}: any) => {
-      return getDiscountTargetLabel(row.original.promo_code_type);
-    }
+      return row.original.template_type
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
   },
+
   {
     accessorKey: "isActive",
     header: "Активен",
