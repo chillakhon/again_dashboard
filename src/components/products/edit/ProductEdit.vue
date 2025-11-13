@@ -92,6 +92,7 @@
           </div>
 
 
+
           <div class="border p-2 rounded-lg font-medium">
             <ProductVariant :product="product"/>
           </div>
