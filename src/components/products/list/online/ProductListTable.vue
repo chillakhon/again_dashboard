@@ -45,6 +45,7 @@ import {useSelectableColumn} from "@/composables/useSelectableColumn";
 import {Eye, EyeOff} from "lucide-vue-next"
 import BulkActionsMenu from "@/components/dynamics/BulkActionsMenu.vue"
 import EditableOrderCell from "@/components/products/list/online/EditableOrderCell.vue";
+import EditableAbsorbencyCell from "@/components/products/list/online/AbsorbencyLevel/EditableAbsorbencyCell.vue";
 
 const props = defineProps({
   items: {
@@ -65,7 +66,7 @@ const props = defineProps({
 
 });
 
-const emits = defineEmits(["deleted", "updated"]);
+const emits = defineEmits(["deleted", "updated", "updated_absorbency_level"]);
 
 const router = useRouter();
 
@@ -116,19 +117,6 @@ const columns = [
 
 
   {
-    accessorKey: "display_order",
-    header: "Порядок",
-    cell: ({row}: any) => {
-      const product = row.original
-      return h(EditableOrderCell, {
-        productId: product.id,
-        initialOrder: product.display_order,
-        onUpdated: () => emits('updated')
-      })
-    }
-  },
-
-  {
     accessorKey: "image",
     header: "Фото",
     cell: ({row}: any) => {
@@ -142,6 +130,40 @@ const columns = [
     }
   },
 
+
+  {
+    accessorKey: "display_order",
+    header: "Порядок",
+    cell: ({row}: any) => {
+      const product = row.original
+      return h(EditableOrderCell, {
+        productId: product.id,
+        initialOrder: product.display_order,
+        onUpdated: () => emits('updated')
+      })
+    }
+  },
+
+
+  {
+    accessorKey: "absorbency_level",
+    header: "Капли",
+    cell: ({row}: any) => {
+      const product = row.original
+      return h(EditableAbsorbencyCell, {
+        productId: product.id,
+        initialAbsorbency: product.absorbency_level ?? 0,
+        onUpdated: (event) => {
+        }
+      })
+    }
+  },
+
+
+
+
+
+
   {
     accessorKey: "name",
     header: "Название",
@@ -149,9 +171,9 @@ const columns = [
       const product = row.original;
 
       return h('span', {
-        class: 'text-blue-500 cursor-pointer hover:underline',
-        onClick: () => editProduct(product)
-      },
+            class: 'text-blue-500 cursor-pointer hover:underline',
+            onClick: () => editProduct(product)
+          },
           `${product.name} ${product?.color ? ' / ' + product.color.name : ''}`
       );
     }

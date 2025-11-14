@@ -25,6 +25,7 @@ export class Product {
     id: number | null;
     product_id: number | null;
     display_order: number | null;
+    absorbency_level: number | null;
     uuid: string | null;
     code: string | null;
     color_id: string | undefined;
@@ -65,6 +66,7 @@ export class Product {
         this.id = null;
         this.product_id = null;
         this.display_order = null;
+        this.absorbency_level = null;
         this.uuid = null;
         this.code = null;
         this.color_id = undefined;
@@ -109,6 +111,7 @@ export class Product {
         product.id = json.id ?? null;
         product.product_id = json.product_id ?? null;
         product.display_order = json.display_order ?? null;
+        product.absorbency_level = json.absorbency_level ?? null;
         product.name = json.name ?? null;
         product.marketplace_links = MarketplaceLinks.fromJSON(json.marketplace_links ?? {});
         product.code = json.code ?? null;
