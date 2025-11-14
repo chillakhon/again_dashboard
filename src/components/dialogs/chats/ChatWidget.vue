@@ -142,9 +142,19 @@ const clientPhone = computed(
         return conversation.external_id?.split("@")[0]
       }
 
+      if (conversation.source  == 'email') {
+
+        console.log(conversation)
+        return  `${conversation.client?.profile?.phone
+            ? `${conversation.client?.profile?.phone} / ` :  ''} ${conversation.external_id}`
+
+      }
+
       return phoneClient || 'Телефон не указан'
     }
 )
+
+
 const clientImage = computed(
     () => conversation.client?.profile?.image || ''
 )

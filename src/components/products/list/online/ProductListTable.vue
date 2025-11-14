@@ -161,9 +161,6 @@ const columns = [
 
 
 
-
-
-
   {
     accessorKey: "name",
     header: "Название",
