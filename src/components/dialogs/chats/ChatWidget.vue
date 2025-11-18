@@ -144,7 +144,7 @@ const clientPhone = computed(
 
       if (conversation.source  == 'email') {
 
-        console.log(conversation)
+        // console.log(conversation)
         return  `${conversation.client?.profile?.phone
             ? `${conversation.client?.profile?.phone} / ` :  ''} ${conversation.external_id}`
 

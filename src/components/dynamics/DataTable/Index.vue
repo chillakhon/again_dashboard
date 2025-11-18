@@ -357,7 +357,6 @@ const printTable = () => {
 watch(
     () => props.pagination,
     () => {
-      console.log(props.pagination);
       emits("paginationChange")
     },
     {deep: true}

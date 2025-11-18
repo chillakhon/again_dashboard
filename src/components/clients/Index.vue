@@ -18,28 +18,29 @@
         v-else
         :key="renderTable"
         :clients="clients"
+        :pagination="pagination"
         @deleted="deleteClient($event)"
         @updated="fetchData"
     />
-    <div
-        class="mt-2 flex justify-end"
-    >
-      <PaginationTable
-          :items-per-page="itemsPerPage"
-          :total="totalItems"
-          :default-page="currentPage"
-          @current-page="
-          currentPage = $event;
-          fetchData();
-        "
-      />
-    </div>
+    <!--    <div-->
+    <!--        class="mt-2 flex justify-end"-->
+    <!--    >-->
+    <!--      <PaginationTable-->
+    <!--          :items-per-page="itemsPerPage"-->
+    <!--          :total="totalItems"-->
+    <!--          :default-page="currentPage"-->
+    <!--          @current-page="-->
+    <!--          currentPage = $event;-->
+    <!--          fetchData();-->
+    <!--        "-->
+    <!--      />-->
+    <!--    </div>-->
   </div>
 </template>
 
 <script setup lang="ts">
 import axios from "axios";
-import {ref, onMounted} from "vue"
+import {ref, onMounted, watch} from "vue"
 import PaginationTable from "@/components/PaginationTable.vue";
 import ClientsTable from "@/components/clients/Table.vue";
 import ClientsAdd from "@/components/clients/Add/Index.vue";
@@ -47,12 +48,17 @@ import Loader from "@/components/common/Loader.vue";
 import {Client} from "@/models/Client";
 import BackButton from "@/components/BackButton.vue";
 import ClientSearch from "@/components/clients/ClientSearch.vue";
+import {Pagination} from "@/types/Types";
 
 const clients = ref<Client[]>([]);
 const isLoading = ref(true);
-const currentPage = ref(1);
-const totalItems = ref(0);
-const itemsPerPage = ref(15);
+
+
+const pagination = ref<Pagination>({
+  page: 1,
+  per_page: 15,
+  total: 0,
+});
 
 const renderTable = ref(1)
 
@@ -74,8 +80,8 @@ const deleteClient = (client: Client) => {
 async function fetchData() {
 
   const p = {
-    page: currentPage.value,
-    per_page: itemsPerPage.value,
+    page: pagination.value.page,
+    per_page: pagination.value.per_page,
     search: filters.value.search,
     birth_date_from: filters.value.birth_date.start ?? null,
     birth_date_to: filters.value.birth_date.end ?? null,
@@ -88,7 +94,7 @@ async function fetchData() {
 
     if (response.data?.clients) {
       clients.value = response.data.clients.data.map((item: any) => Client.fromJSON(item));
-      totalItems.value = response.data.clients.total;
+      pagination.value.total = response.data.clients.total;
     }
   } catch (error) {
     console.error("Error fetching clients:", error);
@@ -105,8 +111,19 @@ onMounted(() => {
 
 
 const handleSearch = async () => {
-  currentPage.value = 1;
+  pagination.value.page = 1;
   await fetchData()
 }
+
+
+watch(
+    () => pagination.value,
+    () => {
+      fetchData()
+    },
+    {
+      deep: true,
+    }
+)
 
 </script>

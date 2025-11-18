@@ -4,11 +4,12 @@
       :columns="columns"
       :edit="edit"
       :loading="loading"
+      :pagination="pagination"
       @save_changes="handlingUpdate($event)"
       @deleted="
       useClientFunctions().deleteClient($event.id);
-      emits('deleted', $event);
-    ">
+      emits('deleted', $event)"
+  >
 
     <template #addActions="{item}">
       <PromoCodeClientModal
@@ -28,6 +29,7 @@ import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Client} from "@/models/Client";
 import PromoCodeClientModal from "@/components/clients/Promo/PromoCodeClientModal.vue";
 import {useDateFormat} from "@/composables/useDateFormat";
+import {Pagination} from "@/types/Types";
 
 const props = defineProps({
   clients: {
@@ -35,6 +37,9 @@ const props = defineProps({
     default: () => []
   },
   loading: Boolean,
+  pagination: {
+    type: Object as PropType<Pagination>,
+  }
 });
 
 const emits = defineEmits(["deleted", "updated"]);
@@ -61,10 +66,7 @@ const edit = ref({
 const columns = [
   {
     accessorKey: "id",
-    header: "No",
-    cell: (cell: any) => {
-      return (cell.row.index += 1);
-    },
+    header: "ID",
   },
   {
     accessorKey: "profile.fullName",
@@ -95,14 +97,14 @@ const columns = [
     accessorKey: "profile.birthday",
     header: "Дата рождения",
     cell: (row: any) => {
-      return h('span', { class: 'whitespace-nowrap' }, formatDateToRussian(row.getValue(), false ));
+      return h('span', {class: 'whitespace-nowrap'}, formatDateToRussian(row.getValue(), false));
     },
   },
   {
     accessorKey: "created_at",
     header: "Дата регистрации",
     cell: (row: any) => {
-      return h('span', { class: 'whitespace-nowrap' }, formatDateToRussian(row.getValue()));
+      return h('span', {class: 'whitespace-nowrap'}, formatDateToRussian(row.getValue()));
     },
   },
 
