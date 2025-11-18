@@ -48,8 +48,6 @@ const emits = defineEmits(["deleted", "updated"]);
 const {formatDateToRussian} = useDateFormat()
 
 async function handlingUpdate(data: Client) {
-  console.log(data);
-  // return
 
   await useClientFunctions().updateClient(data)
   emits('updated')
@@ -64,6 +62,18 @@ const edit = ref({
 });
 
 const columns = [
+  {
+    accessorKey: "id",
+    header: "№",
+    cell: ({row}: any) => {
+      const currentPage = Number(props.pagination?.page ?? 1);
+      const perPage = Number(props.pagination?.per_page ?? 10);
+
+      const rowIndex = Number(row?.index ?? 0);
+
+      return (currentPage - 1) * perPage + rowIndex + 1;
+    }
+  },
   {
     accessorKey: "id",
     header: "ID",

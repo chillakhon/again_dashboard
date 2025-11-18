@@ -1,8 +1,6 @@
 <template>
   <div>
     <div class="md:flex justify-between md:mb-2">
-      <!--      <BackButton title="Все клиенты"/>-->
-
       <ClientSearch
           :filter="filters"
           @search="handleSearch"
@@ -22,31 +20,16 @@
         @deleted="deleteClient($event)"
         @updated="fetchData"
     />
-    <!--    <div-->
-    <!--        class="mt-2 flex justify-end"-->
-    <!--    >-->
-    <!--      <PaginationTable-->
-    <!--          :items-per-page="itemsPerPage"-->
-    <!--          :total="totalItems"-->
-    <!--          :default-page="currentPage"-->
-    <!--          @current-page="-->
-    <!--          currentPage = $event;-->
-    <!--          fetchData();-->
-    <!--        "-->
-    <!--      />-->
-    <!--    </div>-->
   </div>
 </template>
 
 <script setup lang="ts">
 import axios from "axios";
 import {ref, onMounted, watch} from "vue"
-import PaginationTable from "@/components/PaginationTable.vue";
 import ClientsTable from "@/components/clients/Table.vue";
 import ClientsAdd from "@/components/clients/Add/Index.vue";
 import Loader from "@/components/common/Loader.vue";
 import {Client} from "@/models/Client";
-import BackButton from "@/components/BackButton.vue";
 import ClientSearch from "@/components/clients/ClientSearch.vue";
 import {Pagination} from "@/types/Types";
 
