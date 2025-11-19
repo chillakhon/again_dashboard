@@ -53,7 +53,6 @@ async function handlingUpdate(data: Client) {
   emits('updated')
 }
 
-
 const edit = ref({
   title: "Редактирование клиента",
   description: "Измените данные клиента",
