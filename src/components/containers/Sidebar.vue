@@ -411,7 +411,8 @@ import {
   PhWarehouse,
   PhX,
   PhUsers,
-  PhCodesandboxLogo
+  PhCodesandboxLogo,
+  PhLineSegments
 } from '@phosphor-icons/vue';
 
 import {BookMinus, AlarmClockCheck, ChartNoAxesGantt} from 'lucide-vue-next'
@@ -501,6 +502,7 @@ const navigation = computed(() => [
     icon: PhUserList,
     children: [
       {name: 'Все клиенты', href: '/clients/list', icon: PhUserList},
+      {name: 'Сегменты', href: '/segments', icon: PhLineSegments},
       {name: 'Скидки и промокоды', href: '/clients/discounts', icon: PhUnite},
     ]
   },

@@ -9,6 +9,15 @@ export interface Pagination {
     total: number;
 }
 
+/**
+ * Мета-информация для пагинации (Laravel standard)
+ */
+export interface PaginationMeta {
+    page: number;
+    per_page: number;
+    total: number;
+}
+
 export interface ShowTotalType {
     title: string;
     total: number;

@@ -2,7 +2,6 @@
   <div class="w-full flex flex-col items-end">
 
     <div class="rounded-md border w-full" ref="tableRef">
-      <Loader v-if="loading"/>
       <Table>
         <TableHeader class="text-sm bg-gray-100">
           <TableRow
@@ -29,7 +28,21 @@
           </TableRow>
         </TableHeader>
         <TableBody class="text-xs text-gray-600">
-          <template v-if="table.getRowModel().rows.length">
+
+          <template v-if="loading">
+            <TableRow>
+              <TableCell :colspan="table.getAllLeafColumns().length + 1" class="text-center p-4">
+
+                <div class="inline-flex items-center gap-2 text-muted-foreground">
+                  <Spinner/>
+                  Загрузка данных...
+                </div>
+
+              </TableCell>
+            </TableRow>
+          </template>
+
+          <template v-else-if="table.getRowModel().rows.length">
             <template v-for="row in table.getRowModel().rows" :key="row.id">
 
               <TableRow v-if="row.depth === 0" :data-state="row.getIsSelected() && 'selected'">
@@ -171,6 +184,7 @@ import {ref, PropType, watch} from "vue";
 import PaginationTable from "@/components/PaginationTable.vue";
 import {Pagination, ShowTotalType} from "@/types/Types";
 import ShowTotal from "@/components/dynamics/ShowTotal.vue";
+import {Spinner} from "@/components/ui/spinner";
 
 
 const props = defineProps({

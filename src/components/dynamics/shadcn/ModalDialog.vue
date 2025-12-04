@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="">
     <Dialog v-model:open="internalOpen">
 
       <DialogTrigger as-child>

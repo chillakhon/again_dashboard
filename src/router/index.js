@@ -32,58 +32,7 @@ const routes = [
                 name: 'Dashboard',
                 component: () => import('../views/dashboard/DashboardView.vue'),
             },
-            // {
-            //     path: '/warehouses',
-            //     name: 'warehouses',
-            //     component: () => import('../views/warehouses/WarehousesView.vue'),
-            //     children: [
-            //         {
-            //             path: '/warehouses/materials/list',
-            //             name: 'materials-list',
-            //             component: () => import('../components/warehouses/materials/list/MaterialsList.vue'),
-            //         },
-            //         {
-            //             path: '/warehouses/materials/create',
-            //             name: 'materials-create',
-            //             component: () => import('../components/warehouses/materials/create/MaterialCreate.vue'),
-            //         },
-            //         {
-            //             path: '/warehouses/recipes/list',
-            //             name: 'recipes-list',
-            //             component: () => import('../components/warehouses/recipes/list/RecipesList.vue'),
-            //         },
-            //         {
-            //             path: '/warehouses/recipes/create',
-            //             name: 'recipes-create',
-            //             component: () => import('../components/warehouses/recipes/create/RecipeCreate.vue'),
-            //         },
-            //         {
-            //             path: '/warehouses/recipes/edit/:id',
-            //             name: 'recipes-edit',
-            //             component: () => import('../components/warehouses/recipes/edit/RecipeEdit.vue'),
-            //         },
-            //         {
-            //             path: '/warehouses/production/list',
-            //             name: 'production-list',
-            //             component: () => import('../components/warehouses/production/MoySkladForm.vue'),
-            //         },
-            //         {
-            //             path: '/warehouses/production/create',
-            //             name: 'production-create',
-            //             component: () => import('../components/warehouses/production/Add/SlideForm.vue'),
-            //         },
-            //         {
-            //             path: '/warehouses/production/edit/:id',
-            //             name: 'production-edit',
-            //             component: () => import('../components/warehouses/production/edit/MoySkladForm.vue'),
-            //         },
-            //         {
-            //             path: '/warehouses/tech_operations',
-            //             name: 'tech_operations',
-            //             component: () => import('../components/warehouses/tech_operations/MoySkladForm.vue'),
-            //         },
-            //     ]
-            // },
+
             {
                 path: '/orders',
                 name: 'orders',
@@ -201,11 +150,7 @@ const routes = [
                         name: 'clients-list',
                         component: () => import('../components/clients/Index.vue'),
                     },
-                    // {
-                    //     path: '/clients/create',
-                    //     name: 'clients-create',
-                    //     component: () => import('../components/clients/create/ClientCreate.vue'),
-                    // },
+
                     {
                         path: '/clients/discounts',
                         name: 'clients-discounts',
@@ -213,6 +158,37 @@ const routes = [
                     },
                 ]
             },
+
+            {
+                path: '/segments',
+                name: 'segments',
+                redirect: '/segments/list',
+                children: [
+                    // Список сегментов
+                    {
+                        path: 'list',
+                        name: 'segments-list',
+                        component: () => import('@/features/segment/components/list/index.vue'),
+                        meta: {
+                            title: 'Сегменты клиентов',
+                            requiresAuth: true,
+                        }
+                    },
+
+                    // Детальный просмотр сегмента
+                    {
+                        path: ':id',
+                        name: 'segments-detail',
+                        component: () => import('@/features/segment/components/detail/index.vue'),
+                        props: true,
+                        meta: {
+                            title: 'Детали сегмента',
+                            requiresAuth: true,
+                        }
+                    },
+                ]
+            },
+
             {
                 path: '/integrations',
                 name: 'integrations',
