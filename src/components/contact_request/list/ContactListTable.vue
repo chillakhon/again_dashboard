@@ -15,10 +15,10 @@
 import {h, PropType, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import ContactRequest from "@/models/ContactRequest";
-import {useStatuses} from "@/composables/useStatuses";
 import {useContactRequestFunctions} from "@/composables/useContactRequestFunctions";
 import {useDateFormat} from "@/composables/useDateFormat";
 import ContactEdit from "@/components/contact_request/ContactEdit.vue";
+import {useStatusFunctions} from "@/composables/useStatusFunctions";
 
 const props = defineProps({
   items: {
@@ -30,7 +30,7 @@ const props = defineProps({
 
 const emits = defineEmits(["deleted", "updated"]);
 
-const {getStatus} = useStatuses();
+const {getStatus} = useStatusFunctions();
 const {deleteContactRequest, updateContactRequest} = useContactRequestFunctions();
 
 

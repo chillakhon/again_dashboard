@@ -1,6 +1,6 @@
 import {Product} from "@/models/Product";
 import {ReviewAttribute} from "@/models/ReviewAttribute";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 
 
 

@@ -6,133 +6,159 @@
       :edit="edit"
       :pagination="pagination"
       :show-print-button="false"
-      @save_changes="handlingUpdate($event)"
-      @deleted="
-      useClientFunctions().deleteClient($event.id);
-      emits('deleted', $event)"
+      @save_changes="emits('updateEmit', $event)"
+      @deleted="emits('deleteEmit', $event)"
   >
 
     <template #addActions="{item}">
-      <PromoCodeClientModal
-          :client="item"
-      />
+
+      <button
+          @click="handleRecalculate(item)"
+          v-if="(item as Segment).recalculate_frequency !== 'manual'"
+          aria-disabled="true"
+          class="inline-flex items-center justify-center cursor-pointer text-gray-400 hover:text-gray-500"
+      >
+        <RefreshCcw size="17"/>
+      </button>
+
+      <button
+          @click="handleExport(item.id)"
+          aria-disabled="true"
+          class="inline-flex items-center justify-center cursor-pointer text-gray-400 hover:text-gray-500"
+      >
+        <Download size="17"/>
+      </button>
+
     </template>
 
   </DynamicsDataTable>
 </template>
 
 <script setup lang="ts">
-import ClientsEdit from '@/components/clients/Edit/Index.vue'
-import {h, PropType, ref} from "vue";
-import {useClientFunctions} from "@/composables/useClientFunctions";
+import {h, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
-import PromoCodeClientModal from "@/components/clients/Promo/PromoCodeClientModal.vue";
-import {useDateFormat} from "@/composables/useDateFormat";
 import {PaginationMeta} from "@/types/Types";
 import {Segment} from "@/features/segment/types/segment.types";
-
-const props = defineProps({
-  segments: {
-    type: Array as PropType<Segment[]>,
-    default: () => []
-  },
-
-  pagination: {
-    type: Object as PropType<PaginationMeta>,
-  },
-
-  loading: Boolean,
-
-});
-
-const emits = defineEmits(["deleted", "updated"]);
+import {Check, X, RefreshCcw, Download} from "lucide-vue-next";
+import {usePriceFormatter} from "@/composables/usePriceFormatter";
+import {getRecalculateLabel} from "@/features/segment/types";
+import SegmentEdit from "@/features/segment/components/edit/SegmentEdit.vue";
+import {useSegments} from "@/features/segment/composables/useSegments";
+import {useTableColumns} from "@/composables/Table/useTableColumns";
+import router from "@/router";
 
 
-const {formatDateToRussian} = useDateFormat()
-
-async function handlingUpdate(data: Segment) {
-
-  // await useClientFunctions().updateClient(data)
-  emits('updated')
+interface segmentProps {
+  segments: Segment[];
+  pagination: PaginationMeta;
+  loading: boolean;
 }
 
+const props = defineProps<segmentProps>();
+
+const emits = defineEmits<{
+  deleteEmit: (segment: Segment) => void,
+  updateEmit: (segment: Segment) => void,
+  recalculatedEmit: any,
+}>();
+
+
+const {formatPrice} = usePriceFormatter()
+const {recalculateSegment, exportSegment} = useSegments()
+
 const edit = ref({
-  title: "Редактирование клиента",
-  description: "Измените данные клиента",
-  component: ClientsEdit,
+  title: "Редактирование сегмента",
+  description: "Измените данные сегмента",
+  component: SegmentEdit,
   loader: false,
+  dynamicStyle: "md:min-w-[50%]"
 });
 
+
+const handleRecalculate = async (segment: Segment) => {
+
+  try {
+    await recalculateSegment(segment.id)
+    emits('recalculatedEmit')
+  } catch (error) {
+    console.error(error);
+  }
+
+}
+
+
+const handleExport = async (id: number) => {
+  try {
+    await exportSegment(id)
+  } catch {
+  }
+}
+
+const {createIndexColumn, createClickableColumn} = useTableColumns()
+
 const columns = [
+
+  createIndexColumn(props.pagination),
+
+  createClickableColumn(
+      'name',
+      'Название',
+      (s: Segment) => {
+        router.push(`/segments/${s.id}`);
+      }
+  ),
+
   {
-    accessorKey: "id",
-    header: "№",
+    accessorKey: "clients_count",
+    header: "Клиентов",
+  },
+
+  {
+    accessorKey: "statistics.total_amount",
+    header: "Общая сумма",
     cell: ({row}: any) => {
-      const currentPage = Number(props.pagination?.page ?? 1);
-      const perPage = Number(props.pagination?.per_page ?? 10);
-
-      const rowIndex = Number(row?.index ?? 0);
-
-      return (currentPage - 1) * perPage + rowIndex + 1;
-    }
+      const amount = row.original.statistics?.total_amount || 0;
+      return formatPrice(amount)
+    },
   },
   {
-    accessorKey: "id",
-    header: "ID",
-  },
-  {
-    accessorKey: "profile.fullName",
-    header: "Клиент",
-    cell: (row: any) => {
-      return row.row?.original?.profile?.fullName || '—';
-    }
+    accessorKey: "statistics.average_check",
+    header: "Средний чек",
+    cell: ({row}: any) => {
+      const avg = row.original.statistics?.average_check || 0;
+      return formatPrice(avg)
+
+    },
   },
 
-  // {
-  //   accessorKey: "profile.phone",
-  //   header: "Телефон",
-  //   cell: ({row}: any) =>
-  //       h(
-  //           "span",
-  //           {class: "whitespace-nowrap"},
-  //           row.original?.profile?.phone
-  //       ),
-  // },
-  //
-  // {
-  //   accessorKey: "email",
-  //   header: "Почта",
-  // },
-  //
-  //
-  // {
-  //   accessorKey: "profile.birthday",
-  //   header: "Дата рождения",
-  //   cell: (row: any) => {
-  //     return h('span', {class: 'whitespace-nowrap'}, formatDateToRussian(row.getValue(), false));
-  //   },
-  // },
-  // {
-  //   accessorKey: "created_at",
-  //   header: "Дата регистрации",
-  //   cell: (row: any) => {
-  //     return h('span', {class: 'whitespace-nowrap'}, formatDateToRussian(row.getValue()));
-  //   },
-  // },
-  //
-  // {
-  //   accessorKey: "profile.address",
-  //   header: "Адрес",
-  // },
-  // {
-  //   accessorKey: "isActive",
-  //   header: "Активен",
-  //   cell: (row: any) => {
-  //     return row.getValue()
-  //         ? h(Check, {class: "h-4 w-4 text-green-500"})
-  //         : h(X, {class: "h-4 w-4 text-red-500"});
-  //   },
-  // },
+  {
+    accessorKey: "promo_codes_count",
+    header: "Промокодов",
+  },
+
+  {
+    accessorKey: "is_active",
+    header: "Активен",
+    cell: ({row}: any) => {
+      return row.original.is_active
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
+  {
+    accessorKey: "recalculate_frequency",
+    header: "Пересчёт",
+    cell: ({row}: any) => {
+      const recalculate = row.original.recalculate_frequency
+      return getRecalculateLabel(recalculate)
+    },
+  },
+
+  {
+    accessorKey: "last_recalculated_at",
+    header: "Последний пересчёт",
+  },
+
 ];
 </script>
 

@@ -1,10 +1,10 @@
-import type { PaginationMeta } from '@/types/Types'
+import type {PaginationMeta} from '@/types/Types'
 import type {
     Segment,
     SegmentClient,
     SegmentDetail,
     SegmentStatistics,
-} from './segment.types'
+} from './index'
 
 /**
  * Список сегментов с пагинацией

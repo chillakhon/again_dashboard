@@ -9,7 +9,6 @@
       :show-submit-button="props.showSubmitButton"
       @submit-form="emit('submitForm')"
   />
-  {{props.formData}}
 </template>
 
 <script setup lang="ts">

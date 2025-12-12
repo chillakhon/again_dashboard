@@ -98,7 +98,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import axios from 'axios'
-import {Client} from '@/models/Client'
+import {Client} from '@/models/client/Client'
 import DatePicker from "@/components/dynamics/DatePicker.vue";
 
 interface ClientLevel {

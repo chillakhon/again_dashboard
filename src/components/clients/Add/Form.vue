@@ -63,7 +63,7 @@ import DatePicker from '@/components/dynamics/DatePicker.vue'
 import {Loader2} from 'lucide-vue-next'
 
 import axios from 'axios'
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 
 interface ClientLevel {
   id: number

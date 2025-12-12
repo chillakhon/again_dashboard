@@ -35,7 +35,7 @@ import {Check, X, CircleCheckBig} from 'lucide-vue-next';
 import {PromoCode} from "@/models/PromoCode";
 import {useDateFormat} from "@/composables/useDateFormat";
 import AlertDialog from "@/components/dynamics/AlertDialog.vue"
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 import {usePromoCodeClientFunctions} from "@/composables/usePromoCodeClientFunctions";
 import {PromoCodeClient} from "@/models/PromoCodeClient";
 

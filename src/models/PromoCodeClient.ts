@@ -1,5 +1,5 @@
 import {PromoCode} from '@/models/PromoCode';
-import {Client} from '@/models/Client'; // Предполагаем, что у тебя есть такой класс
+import {Client} from '@/models/client/Client'; // Предполагаем, что у тебя есть такой класс
 
 export class PromoCodeClient {
     id: number | undefined;

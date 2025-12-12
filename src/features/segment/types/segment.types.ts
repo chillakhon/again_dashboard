@@ -1,3 +1,7 @@
+import {PromoCode} from "@/types/promo-code";
+import {SegmentClient} from "@/features/segment/types";
+
+
 /**
  * Основная модель сегмента
  */
@@ -16,7 +20,7 @@ export interface Segment {
 
     // Связи (загружаются только при необходимости)
     clients?: SegmentClient[]
-    promo_codes?: PromoCodeBrief[]
+    promo_codes?: SegmentPromoCodeBrief[]
 
     // Статистика (только в списке)
     statistics?: SegmentBriefStatistics
@@ -56,43 +60,24 @@ export interface FormattedSegmentConditions {
     }
 }
 
-/**
- * Клиент в сегменте
- */
-export interface SegmentClient {
-    id: number
-    email: string
-    profile: {
-        first_name: string | null
-        last_name: string | null
-        full_name: string | null
-        phone: string | null
-        birthday: string | null
-        address: string | null
-    }
-    orders_count: number
-    total_amount: number
-    average_check: number
-    added_to_segment_at: string | null
-    registered_at: string
-    segments?: string[]
-    promo_codes?: string[]
-}
+
 
 /**
  * Краткая информация о промокоде
  */
-export interface PromoCodeBrief {
-    id: number
-    code: string
-    description: string | null
-    discount_amount: number
-    discount_type: 'percentage' | 'fixed'
+export interface SegmentPromoCodeBrief extends Pick<
+    PromoCode,
+    | 'id'
+    | 'code'
+    | 'description'
+    | 'discount_amount'
+    | 'discount_type'
+    | 'expires_at'
+    | 'is_active'
+    | 'image_url'
+> {
     discount_type_label: string
-    expires_at: string | null
-    is_active: boolean
     auto_apply: boolean
-    image_url: string | null
 }
 
 /**

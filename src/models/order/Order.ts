@@ -1,9 +1,5 @@
-interface Client {
-    id: number;
-    full_name: string;
-    email: string;
-    phone: string;
-}
+import {Client} from "@/models/client/Client";
+import {Product} from "@/models/Product";
 
 interface DeliveryMethod {
     name: string;
@@ -11,11 +7,6 @@ interface DeliveryMethod {
     type: string | null;
 }
 
-interface Product {
-    id: number;
-    name: string;
-    image: string | null;
-}
 
 interface OrderItem {
     id: number;
@@ -78,16 +69,16 @@ export default class Order {
         order.delivery_method = json.delivery_method || {name: "", description: "", type: null};
         order.delivery_target = json.delivery_target;
         order.delivery_target_id = json.delivery_target_id;
-        order.discount_amount = json.discount_amount ||0;
-        order.total_amount_original = json.total_amount_original ||0;
-        order.total_promo_discount = json.total_promo_discount ||0;
-        order.total_items_discount = json.total_items_discount ||0;
+        order.discount_amount = json.discount_amount || 0;
+        order.total_amount_original = json.total_amount_original || 0;
+        order.total_promo_discount = json.total_promo_discount || 0;
+        order.total_items_discount = json.total_items_discount || 0;
         order.is_paid = !!json.is_paid;
         order.items = json.items || [];
         order.items_count = json.items_count || 0;
         order.payment_status = json.payment_status || "pending";
         order.status = json.status || "new";
-        order.total_amount = json.total_amount ||0;
+        order.total_amount = json.total_amount || 0;
         order.notes = json.notes || "";
         return order;
     }

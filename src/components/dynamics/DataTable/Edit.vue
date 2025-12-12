@@ -20,9 +20,9 @@
       </DialogHeader>
 
       <component
+          :key="renderContent"
           :is="edit.component"
           :item="editItem"
-          :key="renderContent"
       />
 
       <DialogFooter>
@@ -44,7 +44,7 @@
 
 <script setup>
 import {Pencil, Loader2} from "lucide-vue-next";
-import {ref} from "vue"
+import {ref, watch} from "vue"
 import {
   Dialog,
   DialogContent,
@@ -69,8 +69,6 @@ const props = defineProps({
 
 
 const editItem = ref(cloneDeep(props.item))
-
-
 const emits = defineEmits(["save_changes"]);
 
 const dialogOpen = ref(false);
@@ -86,6 +84,14 @@ const saveChanges = () => {
   closeDialog();
   renderContent.value++;
 };
+
+
+watch(dialogOpen, (isOpen) => {
+  if (isOpen) {
+    editItem.value = cloneDeep(props.item)
+  }
+})
+
 </script>
 
 <style scoped></style>

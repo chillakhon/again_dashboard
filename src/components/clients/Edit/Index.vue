@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import ClientsEditForm from "@/components/clients/Edit/Form.vue";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 
 const props = defineProps({
   item: {

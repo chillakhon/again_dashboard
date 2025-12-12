@@ -25,7 +25,6 @@
 import {ref, onMounted, computed} from 'vue';
 import DynamicsFilter from '@/components/dynamics/Filter/Index.vue';
 import Button from '@/components/ui/button/Button.vue';
-import {useStatuses} from "@/composables/useStatuses";
 import {X} from "lucide-vue-next";
 
 const props = defineProps<{

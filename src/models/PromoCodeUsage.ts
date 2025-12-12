@@ -1,6 +1,6 @@
 import {PromoCode} from '@/models/PromoCode';
-import {Client} from '@/models/Client';
-import Order from '@/models/Order'; // Предполагаем, что у вас есть модель Order
+import {Client} from '@/models/client/Client';
+import Order from '@/models/order/Order'; // Предполагаем, что у вас есть модель Order
 
 export class PromoCodeUsage {
     id: number | undefined;

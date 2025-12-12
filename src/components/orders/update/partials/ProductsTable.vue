@@ -139,7 +139,7 @@ import TableRow from '@/components/ui/table/TableRow.vue'
 import { useDateFormat } from '@/composables/useDateFormat'
 // Other components
 import Badge from '@/components/ui/badge/Badge.vue'
-import type Order from "@/models/Order";
+import type Order from "@/models/order/Order";
 import {onMounted} from "vue";
 
 const { formatDateToRussian } = useDateFormat()

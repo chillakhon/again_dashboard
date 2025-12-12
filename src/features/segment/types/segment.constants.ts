@@ -33,6 +33,12 @@ export const RECALCULATE_FREQUENCY_OPTIONS = [
     {value: 'manual', label: 'Вручную'},
 ] as const
 
+
+export const getRecalculateLabel = (value: string) => {
+    const option = RECALCULATE_FREQUENCY_OPTIONS.find(opt => opt.value === value)
+    return option?.label ?? ''
+}
+
 /**
  * Опции для экспорта (колонки)
  */

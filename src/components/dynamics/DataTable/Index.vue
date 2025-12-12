@@ -3,7 +3,7 @@
 
     <div class="rounded-md border w-full" ref="tableRef">
       <Table>
-        <TableHeader class="text-sm bg-gray-100">
+        <TableHeader class="text-xs bg-gray-100">
           <TableRow
               v-for="headerGroup in table.getHeaderGroups()"
               :key="headerGroup.id"
@@ -75,6 +75,7 @@
                       <div class="flex space-x-2 justify-end">
 
                         <slot name="addActions" :item="row.original"/>
+
 
                         <Edit
                             v-if="editPermission"
@@ -180,9 +181,9 @@ import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/c
 import Edit from "@/components/dynamics/DataTable/Edit.vue";
 import AlertDialog from "@/components/dynamics/AlertDialog.vue";
 import Loader from "@/components/common/Loader.vue";
-import {ref, PropType, watch} from "vue";
+import {ref, PropType, watch, computed} from "vue";
 import PaginationTable from "@/components/PaginationTable.vue";
-import {Pagination, ShowTotalType} from "@/types/Types";
+import {Pagination, PaginationMeta, ShowTotalType} from "@/types/Types";
 import ShowTotal from "@/components/dynamics/ShowTotal.vue";
 import {Spinner} from "@/components/ui/spinner";
 
@@ -218,7 +219,7 @@ const props = defineProps({
   subRowsField: String,
 
   pagination: {
-    type: Object as PropType<Pagination>,
+    type: Object as PropType<Pagination | PaginationMeta>,
     default: null
   },
   showTotal: {
@@ -240,7 +241,7 @@ const emits = defineEmits([
 ]);
 
 
-let data = props.data;
+const data = computed(() => props.data ?? [])
 let columns = props.columns;
 
 const subRowsField = props.subRowsField || 'variants'
@@ -375,6 +376,16 @@ watch(
     },
     {deep: true}
 )
+
+// watch(
+//     () => props.loading,
+//     (value) => {
+//       if (!value) {
+//         console.log(value);
+//         renderTable.value++
+//       }
+//     }
+// )
 
 
 </script>

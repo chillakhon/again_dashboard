@@ -8,19 +8,19 @@ import type {
 /**
  * Конвертировать Segment в SegmentFormData (для редактирования)
  */
-export function segmentToFormData(segment: Segment): CreateSegmentRequest {
+export function segmentToFormData(segment: Segment): SegmentFormData {
     return {
         name: segment.name,
         description: segment.description ?? '',
         is_active: segment.is_active,
         recalculate_frequency: segment.recalculate_frequency,
-        conditions: {
-            period: (segment.conditions?.period as any) ?? '',
-            min_orders_count: segment.conditions?.min_orders_count ?? null,
-            max_orders_count: segment.conditions?.max_orders_count ?? null,
-            min_total_amount: segment.conditions?.min_total_amount ?? null,
-            min_average_check: segment.conditions?.min_average_check ?? null,
-        },
+
+        // Распаковываем conditions
+        period: (segment.conditions?.period ?? segment.conditions?.period ??  '') as 'all_time' | 'last_month' | 'last_6_months' | 'last_year' | '',
+        min_orders_count: segment.conditions?.min_orders_count ?? null,
+        max_orders_count: segment.conditions?.max_orders_count ?? null,
+        min_total_amount: segment.conditions?.min_total_amount ?? null,
+        min_average_check: segment.conditions?.min_average_check ?? null,
     }
 }
 

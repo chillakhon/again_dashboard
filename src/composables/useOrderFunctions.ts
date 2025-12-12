@@ -1,8 +1,9 @@
 import {ref} from 'vue'
 import axios from 'axios'
 import {useErrorHandler} from "@/composables/useErrorHandler";
-import Order from "@/models/Order";
+import Order from "@/models/order/Order";
 import {useSuccessHandler} from "@/composables/useSuccessHandler";
+import {OrderUpdateForm, OrderApiResponseUpdate} from "@/types/order";
 
 export function useOrderFunctions() {
     const sending = ref(false)
@@ -17,6 +18,7 @@ export function useOrderFunctions() {
         search?: string,
         date_from?: string,
         date_to?: string,
+        payment_status: string
     }): Promise<{
         orders: Order[],
         meta: {
@@ -68,21 +70,22 @@ export function useOrderFunctions() {
     }
 
 
-    const getOrderById = async (orderId: number | string): Promise<Order | null> => {
+    const getOrderById = async (orderId: number | string): Promise<Order> => {
 
         return await axios.get(`orders/${orderId}`)
             .then(res => {
-                return Order.fromJSON(res.data);
+
+                return Order.fromJSON(res.data.order);
             })
             .catch(e => {
                 sending.value = false
                 useErrorHandler().showError(e)
-                return null
+                throw e
             })
             .finally(() => sending.value = false)
     }
 
-    const updateOrder = async (orderId: number | string, formData: object): Promise<any> => {
+    const updateOrder = async (orderId: number | string, formData: OrderUpdateForm): Promise<OrderApiResponseUpdate> => {
         sending.value = true
         return await axios.put(`orders/${orderId}`, formData)
             .then(res => {
@@ -92,7 +95,7 @@ export function useOrderFunctions() {
             .catch(e => {
                 sending.value = false
                 useErrorHandler().showError(e)
-                return null
+                throw e
             })
             .finally(() => sending.value = false)
     }

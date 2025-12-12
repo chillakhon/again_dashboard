@@ -13,9 +13,8 @@
 import {ref, onMounted} from 'vue'
 import DynamicForm from '@/components/dynamics/DynamicForm.vue'
 
-import {MoyskladSettings} from "@/models/MoyskladSettings";
 import ContactRequest from "@/models/ContactRequest";
-import {useStatuses} from "@/composables/useStatuses";
+import {useStatusFunctions} from "@/composables/useStatusFunctions";
 
 const props = defineProps({
   formData: {
@@ -33,7 +32,7 @@ const emit = defineEmits(['submitForm'])
 const renderForm = ref(1)
 const formFields = ref<any[]>([])
 
-const {getStatuses} = useStatuses()
+const {getStatuses} = useStatusFunctions()
 
 
 onMounted(async () => {

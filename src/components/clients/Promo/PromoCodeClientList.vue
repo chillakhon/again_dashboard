@@ -48,7 +48,7 @@ import PromoAddModal from "@/components/discount/Promo/PromoAddModal.vue";
 import PromoSearch from "@/components/discount/Promo/PromoSearch.vue";
 import {usePromoCodeFunctions} from "@/composables/usePromoCodeFunctions";
 import {PromoCode} from "@/models/PromoCode";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 import {usePromoCodeClientFunctions} from "@/composables/usePromoCodeClientFunctions";
 import PromoCodeClientAddModal from "@/components/clients/Promo/PromoCodeClientAddModal.vue";
 import {PromoCodeClient} from "@/models/PromoCodeClient";

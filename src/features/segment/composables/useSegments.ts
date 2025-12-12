@@ -4,7 +4,7 @@ import {ref} from 'vue'
 import axios from 'axios'
 import {useErrorHandler} from '@/composables/useErrorHandler'
 import {useSuccessHandler} from '@/composables/useSuccessHandler'
-import type {
+import {
     Segment,
     SegmentClient,
     SegmentStatistics,
@@ -15,7 +15,7 @@ import type {
     FilterSegmentClientsParams,
     ExportSegmentParams,
     SegmentListResponse,
-    SegmentClientsResponse,
+    SegmentClientsResponse, SegmentDetail,
 } from '../types'
 
 export function useSegments() {
@@ -65,13 +65,13 @@ export function useSegments() {
     /**
      * Получить сегмент по ID
      */
-    const getSegmentById = async (segmentId: number | string): Promise<Segment | undefined> => {
+    const getSegmentById = async (segmentId: number | string): Promise<SegmentDetail | undefined> => {
         if (sending.value) return
 
         sending.value = true
         progress.value = 0
 
-        return await axios.get<{ success: boolean; data: Segment }>(`segments/${segmentId}`)
+        return await axios.get<{ success: boolean; data: SegmentDetail }>(`segments/${segmentId}`)
             .then(res => {
                 return res.data.data
             })
@@ -223,6 +223,27 @@ export function useSegments() {
         return await axios.get<SegmentClientsResponse>(`segments/${segmentId}/clients`, {params})
             .then(res => {
                 return res.data // Возвращаем { data: SegmentClient[], meta: PaginationMeta }
+            })
+            .catch(e => {
+                useErrorHandler().showError(e)
+                throw e
+            })
+            .finally(() => {
+                sending.value = false
+            })
+    }
+    const getSegmentAvailableClients = async (
+        segmentId: number | string,
+        params?: FilterSegmentClientsParams
+    ): Promise<SegmentClientsResponse | undefined> => {
+        if (sending.value) return
+
+        sending.value = true
+        progress.value = 0
+
+        return await axios.get<SegmentClientsResponse>(`segments/${segmentId}/available-clients`, {params})
+            .then(res => {
+                return res.data
             })
             .catch(e => {
                 useErrorHandler().showError(e)
@@ -456,6 +477,7 @@ export function useSegments() {
 
         // Клиенты
         getSegmentClients,
+        getSegmentAvailableClients,
         attachClients,
         detachClients,
 

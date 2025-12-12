@@ -87,7 +87,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import axios from 'axios'
-import { Client } from '@/models/Client'
+import { Client } from '@/models/client/Client'
 
 interface ClientLevel {
   id: number

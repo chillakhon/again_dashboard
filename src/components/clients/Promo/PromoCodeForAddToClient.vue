@@ -48,7 +48,7 @@ import PromoSearch from "@/components/discount/Promo/PromoSearch.vue";
 import {usePromoCodeFunctions} from "@/composables/usePromoCodeFunctions";
 import {PromoCode} from "@/models/PromoCode";
 import PromoListTableForAddToClient from "@/components/clients/Promo/PromoListTableForAddToClient.vue";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 
 const data = ref<PromoCode[]>();
 const totalItems = ref(0);

@@ -17,3 +17,9 @@ export * from './segment.factories'
 export * from './segment.mappers'
 
 export * from './segment.search.types'
+
+export * from './segment-helpers'
+
+export * from './segment.promo.code'
+
+export * from './segment.client'

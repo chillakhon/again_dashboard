@@ -1,5 +1,5 @@
 <template>
-  <Toaster/>
+  <!--  <Toaster/>-->
   <Loader v-if="isLoading"/>
   <div v-else>
     <div class="flex items-center space-x-2">
@@ -8,7 +8,7 @@
     </div>
 
     <DynamicForm
-        v-model="formData"
+        v-model="order"
         submit-button-text="Сохранить"
         :fields="formFields"
         :show-submit-button="true"
@@ -21,25 +21,23 @@
 <script setup lang="ts">
 import {onMounted, ref} from 'vue';
 import BackButton from "@/components/BackButton.vue";
-import Order from "@/models/Order";
+import Order from "@/models/order/Order";
 import {useRoute, useRouter} from "vue-router";
 import Loader from "@/components/common/Loader.vue";
 import DynamicForm from "@/components/dynamics/DynamicForm.vue";
 import {useOrderFunctions} from "@/composables/useOrderFunctions";
-import {useStatuses} from "@/composables/useStatuses";
 import {useDateFormat} from "@/composables/useDateFormat";
+import {useStatusFunctions} from "@/composables/useStatusFunctions";
+import {orderToFormData} from "@/types/order";
 
 const isLoading = ref<boolean>(true);
 const route = useRoute();
-const order = ref<Order | null>(null)
+const order = ref<Order>()
 
 
 const router = useRouter();
-
-const {getStatuses} = useStatuses()
+const {getStatuses} = useStatusFunctions()
 const {getOrderById, updateOrder} = useOrderFunctions()
-
-const formData = ref<any>({})
 
 const formFields = ref<any[]>(
     [
@@ -64,13 +62,13 @@ const formFields = ref<any[]>(
           optionLabel: 'label',
           optionValue: 'value'
         },
-        {
-          name: 'created_at',
-          component: 'date',
-          label: '',
-          required: false,
-          placeholder: 'Дата',
-        },
+        // {
+        //   name: 'created_at',
+        //   component: 'date',
+        //   label: '',
+        //   required: false,
+        //   placeholder: 'Дата',
+        // },
       ],
 
       {
@@ -90,9 +88,9 @@ onMounted(async () => {
 });
 
 async function getOrder(id: any) {
-  order.value = await getOrderById(id);
 
-  formData.value = order.value?.toJSONForUpdate();
+
+  order.value = await getOrderById(id)
 
   isLoading.value = false;
 }
@@ -101,16 +99,19 @@ async function handleUpdate() {
 
   if (!order.value?.id) return
 
-  const result = await updateOrder(order.value?.id, formData.value);
+  const FD = orderToFormData(order.value);
 
-  if (result?.success) {
+  try {
+
+    await updateOrder(order.value?.id, FD);
     await router.push('/orders/list');
+    isLoading.value = false;
+
+  } catch (e) {
+    console.error(e);
   }
 
-  console.log(result)
 
-
-  isLoading.value = false;
 }
 
 </script>

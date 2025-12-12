@@ -1,9 +1,10 @@
 <template>
   <Dialog v-model:open="dialogOpen">
-    <DialogTrigger as-child>
-      <slot name="button"/>
-    </DialogTrigger>
-
+    <button :disabled="disabled">
+      <DialogTrigger as-child>
+        <slot name="button"/>
+      </DialogTrigger>
+    </button>
     <DialogContent
         :class="dynamicStyle"
         class="w-full max-h-[95vh] overflow-y-auto flex flex-col items-start"
@@ -45,6 +46,7 @@ const props = defineProps({
     default: '',
   },
   dynamicStyle: String,
+  disabled: Boolean,
 })
 
 const dialogOpen = ref(false)

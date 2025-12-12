@@ -1,4 +1,4 @@
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 
 export default class ContactRequest {
     id: number | undefined;

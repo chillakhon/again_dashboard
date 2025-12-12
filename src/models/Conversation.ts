@@ -1,4 +1,4 @@
-import {Client} from '@/models/Client' // или определи локально
+import {Client} from '@/models/client/Client' // или определи локально
 import {User} from '@/models/user/User'     // если есть
 import {Message} from '@/models/Message'
 

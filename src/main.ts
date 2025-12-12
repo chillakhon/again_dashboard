@@ -14,9 +14,9 @@ import './store/modules/auth/subscriber.js';
 
 const access_token = Cookies.get('access_token');
 import {startNotificationsPolling} from './notifications-poller'
-
 import {assetPath} from '@/utils/assetPath'
 import {createEchoPlugin} from '@/plugins/echoPlugin'
+import {useStatusFunctions} from "@/composables/useStatusFunctions";
 
 
 store.dispatch('auth/attempt', access_token)
@@ -43,6 +43,9 @@ store.dispatch('auth/attempt', access_token)
                 app.mount('#app')
                 startNotificationsPolling()
             })
+
+        useStatusFunctions().getAllStatuses()
+
 
 
     })

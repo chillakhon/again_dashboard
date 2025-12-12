@@ -46,9 +46,14 @@ const hasActiveFilters = computed(() => {
 const filterColumns = ref([
   {
     type: "text",
-    placeholder: "Поиск по email или имени клиента...",
+    placeholder: "Поиск...",
     field: "search",
   },
+  // {
+  //   label: 'Активно',
+  //   type: "checkbox",
+  //   field: "is_active",
+  // },
 
 ]);
 
@@ -56,7 +61,6 @@ const filterColumns = ref([
 const debounce = useDebounceFn(() => {
   emits("search");
 }, 500)
-
 
 watch(
     () => props.filter.search,

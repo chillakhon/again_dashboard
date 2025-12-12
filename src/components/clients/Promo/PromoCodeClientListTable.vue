@@ -30,7 +30,7 @@ import {Check, CircleX, X} from 'lucide-vue-next';
 import {useDateFormat} from "@/composables/useDateFormat";
 import {PromoCodeClient} from "@/models/PromoCodeClient";
 import AlertDialog from "@/components/dynamics/AlertDialog.vue";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 import {usePromoCodeClientFunctions} from "@/composables/usePromoCodeClientFunctions";
 
 const props = defineProps({

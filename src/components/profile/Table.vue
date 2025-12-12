@@ -19,7 +19,7 @@ import {Check, X} from "lucide-vue-next";
 import {h, PropType, ref} from "vue";
 import {useClientFunctions} from "@/composables/useClientFunctions";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 
 const props = defineProps({
   clients: {

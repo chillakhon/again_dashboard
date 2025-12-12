@@ -1,5 +1,6 @@
 <template>
   <SegmentFormModal
+      :key="renderModal"
       :form-data="formData"
       @submit-form="handleCreate"
   />
@@ -9,20 +10,40 @@
 import SegmentFormModal from "@/features/segment/components/form/SegmentFormModal.vue";
 import {
   createSegmentFormData,
-  CreateSegmentRequest,
   formDataToCreateRequest,
-  SegmentFormData
+  CreateSegmentRequest,
+  SegmentFormData, Segment
 } from "@/features/segment/types";
-import {ref} from "vue";
+
+import {ref, defineEmits} from "vue";
 import {useSegments} from "@/features/segment/composables/useSegments";
 
-const formData = ref<SegmentFormData>(createSegmentFormData());
+
+const emit = defineEmits<{
+  (e: 'createEmit', segment: Segment): void
+}>()
 
 const {createSegment} = useSegments()
 
+const formData = ref<SegmentFormData>(createSegmentFormData());
+const renderModal = ref(1)
+
 const handleCreate = async (): Promise<void> => {
-  const prepareFData: CreateSegmentRequest = formDataToCreateRequest(formData.value)
-  await createSegment(prepareFData)
+
+  try {
+    const prepareFData: CreateSegmentRequest = formDataToCreateRequest(formData.value)
+
+    const segment = await createSegment(prepareFData)
+
+    if (segment) {
+      renderModal.value++
+      emit('createEmit', segment)
+      formData.value = createSegmentFormData()
+    }
+
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 </script>

@@ -31,9 +31,10 @@ import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import usePermission from "@/composables/usePermission";
 import {RouterLink, useRouter} from "vue-router";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
-import Order from "@/models/Order";
-import {useStatuses} from "@/composables/useStatuses";
+import Order from "@/models/order/Order";
 import {useOrderFunctions} from "@/composables/useOrderFunctions";
+import {useDateFormat} from "@/composables/useDateFormat";
+import {useStatusFunctions} from "@/composables/useStatusFunctions";
 
 
 const props = defineProps({
@@ -47,7 +48,7 @@ const props = defineProps({
 const emits = defineEmits(["deleted", "updated"]);
 
 const router = useRouter();
-
+const {formatDateToRussian} = useDateFormat()
 
 const handlerEdit = (row: Order) => {
 
@@ -55,15 +56,13 @@ const handlerEdit = (row: Order) => {
 }
 
 
-const {getStatus} = useStatuses()
+const {getStatus} = useStatusFunctions()
+
 
 const columns = [
   {
     accessorKey: "id",
-    header: "No",
-    cell: (cell: any) => {
-      return (cell.row.index += 1);
-    },
+    header: "ID",
   },
 
   {
@@ -84,22 +83,14 @@ const columns = [
   {
     accessorKey: "created_at",
     header: "Создан",
-    cell: ({ row }: any) =>
-        h(
-            "span",
-            { class: "whitespace-nowrap" },
-            row.original.created_at
-        ),
+    cell: ({row}: any) => {
+      return formatDateToRussian(row.original.created_at)
+    }
+
   },
   {
     accessorKey: "total_amount",
     header: "Сумма",
-    cell: ({ row }: any) =>
-        h(
-            "span",
-            { class: "whitespace-nowrap" },
-            row.original.total_amount
-        ),
   },
   {
     accessorKey: "client.full_name",
@@ -113,18 +104,15 @@ const columns = [
       const value = String(raw).trim()
       const status = getStatus('order', value)
 
-      const bg = status?.color ?? '#8a8a8a'
-      const label = status?.label ?? 'Неизвестный статус'
-
       return h(
           'span',
           {
-            style: {backgroundColor: bg},
+            style: {backgroundColor: status?.color},
             class: 'px-2 py-1 rounded text-white whitespace-nowrap',
-            title: label,
-            'aria-label': label,
+            title: status?.label,
+            'aria-label': status?.label,
           },
-          label
+          status?.label
       )
     },
   },
@@ -137,10 +125,10 @@ const columns = [
 
       return h('span',
           {
-            style: {backgroundColor: status.color},
+            style: {backgroundColor: status?.color},
             class: `px-2 py-1 rounded text-white whitespace-nowrap`,
           },
-          status.label
+          status?.label
       )
     },
   },
@@ -152,10 +140,8 @@ const columns = [
 
 ];
 
-const {hasPermission} = usePermission()
 
 const {deleteOrder} = useOrderFunctions()
-
 
 const handleDeleted = async (order: Order) => {
 

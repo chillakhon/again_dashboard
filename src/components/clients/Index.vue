@@ -29,7 +29,7 @@ import {ref, onMounted, watch} from "vue"
 import ClientsTable from "@/components/clients/Table.vue";
 import ClientsAdd from "@/components/clients/Add/Index.vue";
 import Loader from "@/components/common/Loader.vue";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 import ClientSearch from "@/components/clients/ClientSearch.vue";
 import {Pagination} from "@/types/Types";
 

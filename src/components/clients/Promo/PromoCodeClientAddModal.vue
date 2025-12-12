@@ -25,7 +25,7 @@ import DialogModal from "@/components/dynamics/shadcn/DialogModal.vue";
 import {ref} from "vue";
 import {PromoCode} from "@/models/PromoCode";
 import {usePromoCodeFunctions} from "@/composables/usePromoCodeFunctions";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 import PromoCodeForAddToClient from "@/components/clients/Promo/PromoCodeForAddToClient.vue";
 
 const props = defineProps({

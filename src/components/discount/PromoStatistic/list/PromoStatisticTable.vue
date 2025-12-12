@@ -25,7 +25,6 @@
 import {h, PropType, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
-import {useStatuses} from "@/composables/useStatuses";
 import {PromoCodeUsage} from "@/models/PromoCodeUsage";
 import {Pagination, ShowTotalType} from "@/types/Types";
 import {useDateFormat} from "@/composables/useDateFormat";
@@ -33,6 +32,7 @@ import {usePriceFormatter} from "@/composables/usePriceFormatter";
 import {useSelectableColumn} from "@/composables/useSelectableColumn";
 import ProductShowModal from "@/components/products/ProductShowModal.vue";
 import PromoStatisticShowModal from "@/components/discount/PromoStatistic/Show/PromoStatisticShowModal.vue";
+import {useStatusFunctions} from "@/composables/useStatusFunctions";
 
 const router = useRouter();
 
@@ -53,7 +53,7 @@ const props = defineProps({
 
 const emits = defineEmits(["deleted", "updated", "paginationChange", "viewDetails"]);
 
-const {getStatus} = useStatuses();
+const {getStatus} = useStatusFunctions();
 const {formatDateToRussian} = useDateFormat();
 const {formatPrice} = usePriceFormatter();
 

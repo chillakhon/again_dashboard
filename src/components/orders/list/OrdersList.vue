@@ -1,9 +1,9 @@
 <template>
   <div class="flex justify-between mb-2 md:space-x-4 max-md:flex-col">
-    <DynamicTitle
-        title="Заказы"
-        variant="primary"
-    />
+    <!--    <DynamicTitle-->
+    <!--        title="Заказы"-->
+    <!--        variant="primary"-->
+    <!--    />-->
 
     <div class="w-full  flex md:space-x-2 max-md:space-y-2 max-md:flex-col">
       <OrderSearch
@@ -47,15 +47,13 @@ import {ref, onMounted, computed} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import Loader from "@/components/common/Loader.vue";
 import {useRouter, useRoute} from "vue-router";
-import Order from "@/models/Order"
+import Order from "@/models/order/Order"
 import OrderListTable from "@/components/orders/list/OrderListTable.vue";
 import {useOrderFunctions} from "@/composables/useOrderFunctions";
-import DynamicTitle from "@/components/dynamics/DynamicTitle.vue";
 import OrderSearch from "@/components/orders/list/OrderSearch.vue";
 import Button from "@/components/ui/button/Button.vue";
 import {X} from "lucide-vue-next"
 import {useStore} from "vuex";
-
 
 const store = useStore();
 
@@ -66,6 +64,7 @@ const searchParams = ref({
   },
   search: '',
   status: '',
+  payment_status: ''
 })
 
 
@@ -91,10 +90,12 @@ const itemsPerPage = ref(15);
 onMounted(async () => {
   await fetchData()
   await store.dispatch('notifications/markOrdersChecked');
-
 })
 
 const {getOrders} = useOrderFunctions()
+
+
+
 
 async function fetchData() {
 
@@ -109,7 +110,8 @@ async function fetchData() {
     per_page: itemsPerPage.value,
     search: searchParams.value.search,
     date_from: searchParams.value.datePicker.start,
-    date_to: searchParams.value.datePicker.end
+    date_to: searchParams.value.datePicker.end,
+    payment_status: searchParams.value.payment_status
   })
 
   orders.value = result?.orders ?? []

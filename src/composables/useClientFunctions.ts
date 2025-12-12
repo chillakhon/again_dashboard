@@ -1,6 +1,11 @@
 import axios from "axios";
 import {toast} from "vue-sonner";
-import {Client} from "@/models/Client";
+import {Client as ClientModel} from "@/models/client/Client";
+import {Client as ClientType} from "@/types/client"; // Импортируем тип
+
+
+import {ref} from "vue";
+import {PaginationMeta} from "@/types/Types";
 
 interface ClientFormData {
     id?: number;
@@ -11,7 +16,65 @@ interface ClientFormData {
     [key: string]: any;
 }
 
+
+interface ClientFilterParams {
+    page: number;
+    per_page: number;
+    search?: string;
+}
+
+
+interface ClientResponse {
+    clients: ClientType[];
+    meta: PaginationMeta;
+}
+
 export function useClientFunctions() {
+
+    const sending = ref(false)
+
+
+    const getClients = async (page: number = 1, perPage: number = 10): Promise<{
+        clients: ClientModel[],
+        total: number
+    } | null> => {
+        try {
+            const response = await axios.get(`/clients?page=${page}&per_page=${perPage}`);
+            return {
+                clients: response.data.data.map((item: any) => ClientModel.fromJSON(item)),
+                total: response.data.total
+            };
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast.error(error.response?.data?.message || "Ошибка при загрузке списка");
+            } else {
+                toast.error("Ошибка сети");
+                console.error("Error fetching clients:", error);
+            }
+            return null;
+        }
+    };
+
+    const getClientsByParams = async (params: ClientFilterParams): Promise<ClientResponse> => {
+        sending.value = true;
+        return await axios.get(`/clients`, {
+            params: params,
+        })
+            .then((res) => {
+                return {
+                    clients: res.data.clients?.data ?? [],
+                    meta: {
+                        total: res.data.clients?.total ?? 0,
+                    },
+                }
+            })
+            .catch(e => {
+                throw e
+            })
+            .finally(() => sending.value = false)
+    };
+
+
     const addClient = async (client: ClientFormData): Promise<void> => {
         try {
             const response = await axios.post('/clients', client);
@@ -30,7 +93,7 @@ export function useClientFunctions() {
         }
     };
 
-    const updateClient = async (client: Client): Promise<Client | null> => {
+    const updateClient = async (client: ClientModel): Promise<ClientModel | null> => {
         try {
             if (!client.id) {
                 toast.error("ID клиента не указан");
@@ -67,10 +130,10 @@ export function useClientFunctions() {
         }
     };
 
-    const getClient = async (clientId: number): Promise<Client | null> => {
+    const getClient = async (clientId: number): Promise<ClientModel | null> => {
         try {
             const response = await axios.get(`/clients/${clientId}`);
-            return Client.fromJSON(response.data.data);
+            return ClientModel.fromJSON(response.data.data);
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 toast.error(error.response?.data?.message || "Ошибка при загрузке");
@@ -82,29 +145,8 @@ export function useClientFunctions() {
         }
     };
 
-    const getClients = async (page: number = 1, perPage: number = 10): Promise<{
-        clients: Client[],
-        total: number
-    } | null> => {
-        try {
-            const response = await axios.get(`/clients?page=${page}&per_page=${perPage}`);
-            return {
-                clients: response.data.data.map((item: any) => Client.fromJSON(item)),
-                total: response.data.total
-            };
-        } catch (error) {
-            if (axios.isAxiosError(error)) {
-                toast.error(error.response?.data?.message || "Ошибка при загрузке списка");
-            } else {
-                toast.error("Ошибка сети");
-                console.error("Error fetching clients:", error);
-            }
-            return null;
-        }
-    };
 
-
-    function prepareClientDataForValidation(client: Client) {
+    function prepareClientDataForValidation(client: ClientModel) {
         return {
             first_name: client.profile?.first_name ?? null,
             last_name: client.profile?.last_name ?? null,
@@ -122,6 +164,8 @@ export function useClientFunctions() {
         updateClient,
         deleteClient,
         getClient,
-        getClients
+        getClients,
+        getClientsByParams,
+        sending
     };
 }

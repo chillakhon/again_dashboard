@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import ModalDialog from "@/components/dynamics/shadcn/ModalDialog.vue";
 import {Tickets} from "lucide-vue-next"
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 import PromoCodeClientList from "@/components/clients/Promo/PromoCodeClientList.vue";
 
 const props = defineProps({

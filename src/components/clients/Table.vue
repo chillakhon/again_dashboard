@@ -26,10 +26,11 @@ import {Check, X, Tickets} from "lucide-vue-next";
 import {h, PropType, ref} from "vue";
 import {useClientFunctions} from "@/composables/useClientFunctions";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
-import {Client} from "@/models/Client";
+import {Client} from "@/models/client/Client";
 import PromoCodeClientModal from "@/components/clients/Promo/PromoCodeClientModal.vue";
 import {useDateFormat} from "@/composables/useDateFormat";
 import {Pagination} from "@/types/Types";
+import {useTableColumns} from "@/composables/Table/useTableColumns";
 
 const props = defineProps({
   clients: {
@@ -60,19 +61,10 @@ const edit = ref({
   loader: false,
 });
 
+const {createIndexColumn} = useTableColumns()
 const columns = [
-  {
-    accessorKey: "id",
-    header: "№",
-    cell: ({row}: any) => {
-      const currentPage = Number(props.pagination?.page ?? 1);
-      const perPage = Number(props.pagination?.per_page ?? 10);
 
-      const rowIndex = Number(row?.index ?? 0);
-
-      return (currentPage - 1) * perPage + rowIndex + 1;
-    }
-  },
+  createIndexColumn(props.pagination),
   {
     accessorKey: "id",
     header: "ID",
