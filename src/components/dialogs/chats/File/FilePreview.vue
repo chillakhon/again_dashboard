@@ -2,23 +2,25 @@
   <Transition name="slide-up">
     <div
         v-if="files.length > 0"
-        class="border-t border-gray-200 bg-white px-4 py-3"
+        class="border-t bg-muted/30 px-2 py-2"
     >
       <!-- Header -->
       <div class="flex items-center justify-between mb-2">
-        <span class="text-sm text-gray-600 font-medium">
+        <span class="text-xs text-muted-foreground font-medium">
           Файлов: {{ files.length }}
         </span>
-        <button
+        <Button
+            variant="ghost"
+            size="sm"
+            class="h-6 text-xs text-destructive hover:text-destructive"
             @click="emit('clearAll')"
-            class="text-xs text-red-500 hover:text-red-600 font-medium"
         >
           Очистить все
-        </button>
+        </Button>
       </div>
 
       <!-- Files list -->
-      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-thin">
+      <div class="flex gap-2 overflow-x-auto pb-1">
         <div
             v-for="file in files"
             :key="file.id"
@@ -27,7 +29,7 @@
           <!-- Image preview -->
           <div
               v-if="file.type === 'image' && file.preview"
-              class="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 border border-gray-200 "
+              class="relative w-16 h-16 rounded-md overflow-hidden bg-muted border"
           >
             <img
                 :src="file.preview"
@@ -36,19 +38,19 @@
             />
 
             <!-- Remove button -->
-            <button
+            <Button
+                variant="destructive"
+                size="icon"
                 @click="emit('remove', file.id)"
-                class="absolute top-1 right-1 w-5 h-5 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-colors"
+                class="absolute top-1 right-1 w-5 h-5 rounded-full p-0"
             >
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              <X class="w-3 h-3"/>
+            </Button>
 
             <!-- Upload progress -->
             <div
                 v-if="file.uploadProgress !== undefined && file.uploadProgress < 100"
-                class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center"
+                class="absolute inset-0 bg-black/50 flex items-center justify-center"
             >
               <span class="text-white text-xs font-medium">{{ file.uploadProgress }}%</span>
             </div>
@@ -56,63 +58,52 @@
             <!-- Error overlay -->
             <div
                 v-if="file.error"
-                class="absolute inset-0 bg-red-500 bg-opacity-80 flex items-center justify-center"
+                class="absolute inset-0 bg-destructive/80 flex items-center justify-center"
+                :title="file.error"
             >
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <AlertCircle class="w-5 h-5 text-white"/>
             </div>
           </div>
 
           <!-- Audio/File preview -->
           <div
               v-else
-              class="relative w-20 h-20 rounded-lg bg-gray-100 border border-gray-200 flex flex-col items-center justify-center p-2"
+              class="relative w-16 h-16 rounded-md bg-muted border flex flex-col items-center justify-center p-1"
           >
             <!-- Icon -->
             <div class="mb-1">
               <!-- Audio icon -->
-              <svg
+              <Music
                   v-if="file.type === 'audio'"
-                  class="w-8 h-8 text-blue-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-              </svg>
+                  class="w-6 h-6 text-blue-500"
+              />
 
               <!-- File icon -->
-              <svg
+              <FileText
                   v-else
-                  class="w-8 h-8 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-              >
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
+                  class="w-6 h-6 text-muted-foreground"
+              />
             </div>
 
             <!-- File name (truncated) -->
-            <span class="text-xs text-gray-600 text-center line-clamp-1 w-full px-1">
-              {{ truncateFileName(file.name, 10) }}
+            <span class="text-[0.6rem] text-muted-foreground text-center line-clamp-1 w-full px-1">
+              {{ truncateFileName(file.name, 8) }}
             </span>
 
             <!-- Remove button -->
-            <button
+            <Button
+                variant="destructive"
+                size="icon"
                 @click="emit('remove', file.id)"
-                class="absolute top-1 right-1 w-5 h-5 bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center text-white shadow-lg transition-colors"
+                class="absolute top-1 right-1 w-5 h-5 rounded-full p-0"
             >
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              <X class="w-3 h-3"/>
+            </Button>
 
             <!-- Upload progress -->
             <div
                 v-if="file.uploadProgress !== undefined && file.uploadProgress < 100"
-                class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded-lg"
+                class="absolute inset-0 bg-black/50 flex items-center justify-center rounded-md"
             >
               <span class="text-white text-xs font-medium">{{ file.uploadProgress }}%</span>
             </div>
@@ -120,17 +111,15 @@
             <!-- Error overlay -->
             <div
                 v-if="file.error"
-                class="absolute inset-0 bg-red-500 bg-opacity-80 flex items-center justify-center rounded-lg"
+                class="absolute inset-0 bg-destructive/80 flex items-center justify-center rounded-md"
                 :title="file.error"
             >
-              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+              <AlertCircle class="w-5 h-5 text-white"/>
             </div>
           </div>
 
           <!-- File size -->
-          <div class="text-xs text-gray-500 text-center mt-1">
+          <div class="text-[0.6rem] text-muted-foreground text-center mt-1">
             {{ formatFileSize(file.size) }}
           </div>
         </div>
@@ -139,11 +128,9 @@
       <!-- Error message -->
       <div
           v-if="hasErrors"
-          class="mt-2 text-xs text-red-600 flex items-start gap-1"
+          class="mt-2 text-xs text-destructive flex items-start gap-1"
       >
-        <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
+        <AlertCircle class="w-3 h-3 flex-shrink-0 mt-0.5"/>
         <span>Некоторые файлы не были загружены</span>
       </div>
     </div>
@@ -151,9 +138,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { PendingFile } from '~/features/LiveChat/types'
-import { formatFileSize } from '~/features/LiveChat/types'
+import {computed} from 'vue'
+import {Button} from '@/components/ui/button'
+import {X, AlertCircle, Music, FileText} from 'lucide-vue-next'
+import type {PendingFile} from '@/types/chat'
+import {formatFileSize} from '@/types/chat'
 
 interface Props {
   files: PendingFile[]
@@ -184,25 +173,6 @@ const truncateFileName = (name: string, maxLength: number): string => {
 </script>
 
 <style scoped>
-/* Custom scrollbar */
-.scrollbar-thin::-webkit-scrollbar {
-  height: 4px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-track {
-  background: #f3f4f6;
-  border-radius: 2px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 2px;
-}
-
-.scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
-}
-
 /* Slide up animation */
 .slide-up-enter-active,
 .slide-up-leave-active {
@@ -225,5 +195,24 @@ const truncateFileName = (name: string, maxLength: number): string => {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.3);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
 }
 </style>

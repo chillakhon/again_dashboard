@@ -6,7 +6,7 @@
 
     <div class="hidden md:flex w-full h-full">
       <div class="flex flex-col h-[85vh]">
-        <CharListConversations
+        <ChatListConversations
             class="h-full w-80 border-r"
             :key="renderListConv"
             :conversations="conversations"
@@ -44,7 +44,7 @@
     <div class="md:hidden w-full h-full">
       <Transition name="slide-fade" mode="out-in">
 
-        <CharListConversations
+        <ChatListConversations
             v-if="!showChat"
             class="h-full border-r"
             :selected-user-id="selectedConversatonId"
@@ -98,7 +98,7 @@ import {ref, onMounted, onBeforeUnmount, watch} from 'vue';
 import {Button} from '@/components/ui/button';
 import {ChevronLeft, MessagesSquare} from 'lucide-vue-next';
 import {useChatsFunctions} from "@/composables/useChatsFunctions";
-import CharListConversations from "@/components/dialogs/chats/CharListConversations.vue";
+import ChatListConversations from "@/components/dialogs/chats/ChatListConversations.vue";
 import {Conversation} from "@/models/Conversation";
 import {useStore} from "vuex";
 import Loader from "@/components/common/Loader.vue";

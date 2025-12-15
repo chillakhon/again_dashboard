@@ -4,16 +4,18 @@ import {Message} from '@/models/Message'
 
 export class Conversation {
     id: number | undefined
-    client_id: number | undefined
-    external_id: string | undefined
+    client_id?: number | undefined
+    external_id?: string | undefined
     source: 'telegram' | 'whatsapp' | 'web_chat' | 'vk' | 'email' | undefined
     status: 'new' | 'open' | 'closed' | 'sending' | undefined
-    unread_messages_count: number | undefined
-    last_message_at: string | undefined
-    created_at: string | undefined
-    updated_at: string | undefined
-    source_data: any | null | undefined
-    assigned_to: number | null | undefined
+    unread_messages_count?: number | undefined
+    last_message_at?: string | undefined
+    created_at?: string | undefined
+    updated_at?: string | undefined
+    source_data?: any | null | undefined
+    assigned_to?: number | null | undefined
+
+
 
     // Вложенные объекты
     client: Client | undefined
@@ -37,6 +39,7 @@ export class Conversation {
         this.source_data = undefined
         this.assigned_to = undefined
 
+
         this.client = undefined
         this.assigned_user = undefined
         this.last_message = undefined
@@ -59,6 +62,8 @@ export class Conversation {
         convo.updated_at = json.updated_at
         convo.source_data = json.source_data
         convo.assigned_to = json.assigned_to ?? null
+
+
 
         convo.client = json.client ? Client.fromJSON(json.client) : undefined
         convo.assigned_user = json.assigned_user ? User.fromJSON(json.assigned_user) : null

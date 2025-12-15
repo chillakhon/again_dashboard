@@ -1,4 +1,4 @@
-// models/Message.ts
+import {Attachment} from "@/types/chat";
 
 export type MessageStatus =
     | 'sending'
@@ -17,7 +17,7 @@ export class Message {
     status: MessageStatus | undefined
     created_at: string | undefined
     updated_at: string | undefined
-    attachments: any | null | undefined
+    attachments: Attachment[] | undefined
 
     constructor() {
         this.id = undefined
@@ -48,7 +48,21 @@ export class Message {
 
         msg.created_at = json.created_at
         msg.updated_at = json.updated_at
-        msg.attachments = json.attachments ?? undefined
+
+        msg.attachments = Array.isArray(json.attachments)
+            ? json.attachments.map((att: any) => ({
+                id: att.id,
+                message_id: att.message_id,
+                type: att.type,
+                url: att.url,
+                file_name: att.file_name,
+                file_size: att.file_size,
+                file_path: att.file_path,
+                mime_type: att.mime_type,
+                created_at: att.created_at,
+            }))
+            : undefined
+
         return msg
     }
 }

@@ -4,6 +4,7 @@ import {useErrorHandler} from "@/composables/useErrorHandler";
 import {useSuccessHandler} from "@/composables/useSuccessHandler";
 import {Conversation} from "@/models/Conversation";
 import {Message} from "@/models/Message";
+import {PendingFile} from "@/types/chat";
 
 export function useChatsFunctions() {
     const sending = ref(false)
@@ -47,10 +48,12 @@ export function useChatsFunctions() {
             .finally(() => sending.value = false)
     }
 
-    // Получить подробную информацию о конкретном разговоре по его ID, включая сообщения и участников
-    const getConversationById = async (conversationId: number | string,): Promise<
+    // Получить подробную информацию о конкретном разговоре
+    const getConversationById = async (conversationId: number | string): Promise<
         Conversation
-        | null> => {
+        | null
+    > => {
+
         if (sending.value) return null
 
         sending.value = true
@@ -70,32 +73,74 @@ export function useChatsFunctions() {
             })
             .finally(() => sending.value = false)
     }
+
+
     const conversationReplyById = async (
         conversationId: string | number,
-        formData: {
-            content: string,
-            attachments: []
-        }): Promise<
-        Message
-        | null> => {
+        content: string,
+        files?: PendingFile[]
+    ): Promise<Message | null> => {
         if (sending.value) return null
 
         sending.value = true
         progress.value = 0
 
-        return await axios.post(`conversations/${conversationId}/reply`, formData)
-            .then(res => {
-                return Message.fromJSON(res.data.data)
-            })
+        try {
+            // Если есть файлы - используем FormData
+            if (files && files.length > 0) {
+                const formData = new FormData()
 
-            .catch(e => {
-                sending.value = false
-                useErrorHandler().showError(e)
 
-                return null
 
-            })
-            .finally(() => sending.value = false)
+
+                // Добавляем текст (может быть пустым если только файлы)
+                const messageContent = content.trim()
+                formData.append('content', messageContent)
+
+                // Добавляем файлы
+                files.forEach((pendingFile, index) => {
+                    formData.append(`attachments[${index}]`, pendingFile.file)
+                })
+
+                // Отправляем FormData
+                const response = await axios.post(
+                    `conversations/${conversationId}/reply`,
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        },
+                        onUploadProgress: (progressEvent: AxiosProgressEvent) => {
+                            if (progressEvent.total) {
+                                progress.value = Math.round(
+                                    (progressEvent.loaded * 100) / progressEvent.total
+                                )
+                            }
+                        }
+                    }
+                )
+
+                return Message.fromJSON(response.data.data)
+            }
+
+            // Если нет файлов - отправляем JSON как раньше
+            const response = await axios.post(
+                `conversations/${conversationId}/reply`,
+                {
+                    content: content,
+                    attachments: []
+                }
+            )
+
+            return Message.fromJSON(response.data.data)
+
+        } catch (e) {
+            useErrorHandler().showError(e)
+            return null
+        } finally {
+            sending.value = false
+            progress.value = 0
+        }
     }
 
 

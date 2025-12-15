@@ -11,43 +11,27 @@
     />
 
     <!-- Button -->
-    <button
+    <Button
         type="button"
+        variant="ghost"
+        size="icon"
         :disabled="disabled"
         @click="openFilePicker"
-        class="w-14 h-14 rounded-lg flex items-center justify-center transition-colors"
-        :class="[
-          disabled
-            ? 'text-gray-300 cursor-not-allowed'
-            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700'
-        ]"
+        class="h-8 w-8"
         :title="title"
     >
-      <!-- Paperclip icon -->
-      <svg
-          class="w-10 h-10"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-      >
-        <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"
-        />
-      </svg>
-    </button>
+      <Paperclip class="h-5 w-5"/>
+    </Button>
 
     <!-- Error tooltip -->
     <Transition name="fade">
       <div
           v-if="error"
-          class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-red-500 text-white text-xs rounded-lg whitespace-nowrap shadow-lg"
+          class="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-destructive text-destructive-foreground text-xs rounded-lg whitespace-nowrap shadow-lg z-50"
       >
         {{ error }}
         <div
-            class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-red-500"></div>
+            class="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-destructive"></div>
       </div>
     </Transition>
   </div>
@@ -55,13 +39,16 @@
 
 <script setup lang="ts">
 import {ref, computed} from 'vue'
-import type {PendingFile} from '~/features/LiveChat/types'
+import {Button} from '@/components/ui/button'
+import {Paperclip} from 'lucide-vue-next'
 import {
   validateFile,
   getAttachmentTypeFromMime,
   MAX_FILES_COUNT,
-  ALLOWED_FILE_TYPES
-} from '~/features/LiveChat/types'
+  ALLOWED_FILE_TYPES,
+  createImagePreview,
+  PendingFile
+} from '@/types/chat'
 
 interface Props {
   disabled?: boolean
@@ -128,7 +115,11 @@ const handleFileSelect = async (event: Event) => {
     // Создаем preview для изображений
     let preview: string | undefined
     if (file.type.startsWith('image/')) {
-      preview = await createImagePreview(file)
+      try {
+        preview = await createImagePreview(file)
+      } catch (e) {
+        console.error('Ошибка создания превью:', e)
+      }
     }
 
     // Формируем объект PendingFile
@@ -150,23 +141,6 @@ const handleFileSelect = async (event: Event) => {
 
   // Сбрасываем input
   resetInput()
-}
-
-// Создание preview для изображения
-const createImagePreview = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader()
-
-    reader.onload = (e) => {
-      resolve(e.target?.result as string)
-    }
-
-    reader.onerror = () => {
-      reject(new Error('Ошибка чтения файла'))
-    }
-
-    reader.readAsDataURL(file)
-  })
 }
 
 // Показать ошибку
