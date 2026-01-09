@@ -3,6 +3,8 @@
       :data="items"
       :columns="columns"
       :custom-actions="true"
+      :loading="loading"
+      :pagination="pagination"
       sub-rows-field="children"
   >
     <template #actions="{row}">
@@ -14,7 +16,7 @@
 
       <CategoryEditModal
           :item="row.original"
-          @update="emits('updated')"
+          @updated="emits('updated', $event)"
       />
 
       <IconButtons
@@ -35,7 +37,7 @@
 
       <CategoryEditModal
           :item="row.original"
-          @update="emits('updated')"
+          @updated="emits('updated', $event)"
       />
 
       <IconButtons
@@ -51,40 +53,42 @@
 </template>
 
 <script setup lang="ts">
-import {h, PropType, ref} from "vue";
+import {h, ref} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
-import usePermission from "@/composables/usePermission";
-import {Category} from "@/models/Category";
-import {ChevronRight, ChevronDown} from 'lucide-vue-next'
-import {useRouter} from "vue-router";
+import {ChevronRight, ChevronDown, Check, X} from 'lucide-vue-next'
 import IconButtons from "@/components/dynamics/IconButtons.vue";
 import CategoryEditModal from "@/components/category/CategoryEditModal.vue";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
 import ProductShowModal from "@/components/products/ProductShowModal.vue";
 import {Product} from "@/models/Product";
+import {PaginationMeta} from "@/types/Types";
+import {Category} from "@/types/category";
 
 
-const props = defineProps({
-  items: {
-    type: Array as PropType<Category[]>,
-    default: () => []
-  },
-  loading: Boolean,
-});
+interface Props {
+  items: Category[];
+  loading?: boolean;
+  pagination?: PaginationMeta
+}
 
-const emits = defineEmits(["deleted", "updated"]);
+defineProps<Props>();
+
+const emits = defineEmits<{
+  (e: 'updated', category: Category): void;
+  (e: 'deleted', category: Category): void;
+}>();
 
 const products = ref<Product[]>([]);
 
 const {deleteCategory, getProductsByCategory} = useCategoryFunctions()
 
-const router = useRouter();
 
-
-const deleteCategoryHandle = async (category: Category) => {
-  const success = await deleteCategory(category.id, {})
-  if (success) {
-    emits('deleted')
+const deleteCategoryHandle = (category: Category) => {
+  try {
+    deleteCategory(category.id)
+        .then(() => emits('deleted', category))
+  } catch (e) {
+    console.log(e)
   }
 };
 
@@ -127,15 +131,62 @@ const columns = [
     header: "Описание",
   },
 
+
+  {
+    accessorKey: "show_in_catalog_menu",
+    header: "В меню",
+    cell: ({row}: any) => {
+      return row.original.show_in_catalog_menu
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
+
+  {
+    accessorKey: "show_as_home_banner",
+    header: "Баннер",
+    cell: ({row}: any) => {
+      return row.original.show_as_home_banner
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
+  {
+    accessorKey: "is_new_product",
+    header: "Для новинки",
+    cell: ({row}: any) => {
+      return row.original.is_new_product
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
+
+  {
+    accessorKey: "menu_order",
+    header: "Порядок",
+  },
+
+  {
+    accessorKey: "banner_image",
+    header: "Фото",
+    cell: ({row}: any) => {
+      if (row.original.banner_url) {
+        return h('img', {
+          src: row.original.banner_url,
+          alt: row.original.name,
+          class: 'w-16 h-10 object-cover rounded'
+        })
+      }
+      return h('span', {class: 'text-gray-400 text-sm'}, '−')
+    }
+  },
+
 ];
-
-const {hasPermission} = usePermission()
-
 
 const getProducts = async (item: Category) => {
   products.value = await getProductsByCategory({category_id: item.id})
       .then(res => {
-        return res.products.map(product => Product.fromJSON(product));
+        return res.products.map((product: any) => Product.fromJSON(product));
       })
 }
 

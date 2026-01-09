@@ -2,21 +2,19 @@ import {ref} from 'vue'
 import axios from 'axios'
 import {useErrorHandler} from "@/composables/useErrorHandler";
 import {useSuccessHandler} from "@/composables/useSuccessHandler";
-import {Category} from "@/models/Category";
+import {
+    CategoryListResponse,
+    CategoryFilterQuery,
+    CategoryFormData,
+    categoryToFormData,
+    CategoryCreateResponse, CategoryUpdateResponse
+} from "@/types/category";
 
 export function useCategoryFunctions() {
     const sending = ref(false)
     const progress = ref(0)
 
-    const getCategories = async (params: {
-        id?: number | string,
-        per_page?: number,
-        page?: number,
-        paginate?: boolean,
-        name?: string,
-        slug?: string,
-        get_children?: boolean,
-    }): Promise<Category[]> => {
+    const getCategories = async (params: CategoryFilterQuery): Promise<CategoryListResponse> => {
 
         sending.value = true
         progress.value = 0
@@ -25,7 +23,7 @@ export function useCategoryFunctions() {
             params: params
         })
             .then(res => {
-                return res.data.map((item: any) => Category.fromJSON(item))
+                return res.data
             })
             .catch(e => {
                 sending.value = false
@@ -57,72 +55,60 @@ export function useCategoryFunctions() {
             .finally(() => sending.value = false)
     }
 
-    const deleteCategory = async (categoryId: any, params: {
-        per_page?: number,
-        page?: number,
-        paginate?: boolean,
-        admin?: boolean,
-    }) => {
+    const deleteCategory = async (id: number) => {
         if (sending.value) return
 
         sending.value = true
         progress.value = 0
 
-        return await axios.delete(`categories/${categoryId}`, {
-            params: params
-        })
+        return await axios.delete(`categories/${id}`,)
             .then(res => {
                 useSuccessHandler().showSuccess(res)
                 return res.data
             })
             .catch(e => {
-                sending.value = false
                 useErrorHandler().showError(e)
+                throw e
             })
             .finally(() => sending.value = false)
     }
 
-    const createCategory = async (data: {
-        name: string,
-        description?: string,
-        parent_id?: number | null,
-        product_ids?: number[]
-    }) => {
-        if (sending.value) return
+    const createCategory = async (params: CategoryFormData): Promise<CategoryCreateResponse> => {
 
         sending.value = true
         progress.value = 0
 
-        return await axios.post('categories', data)
+        const formData = categoryToFormData(params)
+
+        return await axios.post('categories', formData)
             .then(res => {
                 useSuccessHandler().showSuccess(res)
                 return res.data
             })
             .catch(e => {
-                sending.value = false
                 useErrorHandler().showError(e)
+                throw e
             })
             .finally(() => sending.value = false)
     }
 
-    const updateCategory = async (categoryId: number | string, data: {
-        name: string,
-        description?: string,
-        parent_id?: number | null,
-        product_ids?: number[]
-    }) => {
-        if (sending.value) return
+    const updateCategory = async (categoryId: number | string, params: CategoryFormData): Promise<CategoryUpdateResponse> => {
 
         sending.value = true
         progress.value = 0
 
-        return await axios.put(`categories/${categoryId}`, data)
+        const formData = categoryToFormData(params)
+
+        formData.append('_method', 'PUT')
+
+        return await axios.post(`categories/${categoryId}`, formData)
             .then(res => {
                 useSuccessHandler().showSuccess(res)
                 return res.data
             })
             .catch(e => {
                 useErrorHandler().showError(e)
+                throw e
             })
             .finally(() => sending.value = false)
     }

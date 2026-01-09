@@ -5,6 +5,8 @@
         :actions="[
         { label: 'Активировать', icon: Eye, onClick: handleActivate },
         { label: 'Деактивировать', icon: EyeOff, onClick: handleDeactivate },
+        { label: 'Пометить новинками', icon: Star, onClick: handleMarkAsNew },
+        { label: 'Убрать из новинок', icon: StarOff, onClick: handleUnmarkAsNew },
       ]"
     />
   </div>
@@ -23,17 +25,15 @@
               ]"
           :context="row.original"
       />
-
     </template>
 
-    <template #actionsVariant="{row}">
-
+    <template #actionsVariant="">
     </template>
   </DynamicsDataTable>
 </template>
 
 <script setup lang="ts">
-import {h, onMounted, PropType, ref} from "vue";
+import {h} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Product} from "@/models/Product";
 import {ChevronRight, ChevronDown, Check, X} from 'lucide-vue-next'
@@ -42,48 +42,42 @@ import {useImageFunctions} from "@/composables/useImageFunctions";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
 import {useProductFunctions} from "@/composables/useProductFunctions";
 import {useSelectableColumn} from "@/composables/useSelectableColumn";
-import {Eye, EyeOff} from "lucide-vue-next"
+import {Eye, EyeOff, Star, StarOff} from "lucide-vue-next"
 import BulkActionsMenu from "@/components/dynamics/BulkActionsMenu.vue"
 import EditableOrderCell from "@/components/products/list/online/EditableOrderCell.vue";
 import EditableAbsorbencyCell from "@/components/products/list/online/AbsorbencyLevel/EditableAbsorbencyCell.vue";
+import EditableFitTypeCell from "@/components/products/list/online/EditCell/EditableFitTypeCell.vue";
+import {useProductAttributeFunctions} from "@/composables/Product/useProductAttributeFunctions";
 
-const props = defineProps({
-  items: {
-    type: Array as PropType<Product[]>,
-    default: () => []
-  },
-  loading: Boolean,
+interface Props {
+  items: Product[];
+  loading: boolean;
+  showActionButton: boolean;
+  showPrint: boolean;
+}
 
-  showActionButton: {
-    type: Boolean,
-    default: true
-  },
-
-  showPrint: {
-    type: Boolean,
-    default: true
-  }
-
-});
+withDefaults(defineProps<Props>(), {
+  showActionButton: true,
+  showPrint: true,
+})
 
 const emits = defineEmits(["deleted", "updated", "updated_absorbency_level"]);
 
 const router = useRouter();
 
-
 const {deleteProduct, bulkActivateProducts, bulkDeactivateProducts} = useProductFunctions()
+const {bulkUpdateAttributes} = useProductAttributeFunctions()
 
 const editProduct = (product: Product) => {
   router.push(`/product/update/${product.id}`)
 };
+
 const deleteProductHandle = async (product: Product) => {
   await deleteProduct(product.id, {})
   emits('deleted')
 };
 
-
 const {getImageByNameProduct} = useImageFunctions()
-
 
 const {selectedIds, selectColumn} = useSelectableColumn()
 
@@ -109,13 +103,10 @@ const columns = [
     meta: {isExpander: true},
   },
 
-
   {
     accessorKey: "id",
     header: "№",
   },
-
-
   {
     accessorKey: "image",
     header: "Фото",
@@ -125,41 +116,10 @@ const columns = [
       return h('img', {
         src: getImageByNameProduct(imageName, 'md'),
         alt: imageName,
-        class: 'w-10 h-10 object-cover rounded', // можно настроить
+        class: 'w-10 h-10 object-cover rounded',
       });
     }
   },
-
-
-  {
-    accessorKey: "display_order",
-    header: "Порядок",
-    cell: ({row}: any) => {
-      const product = row.original
-      return h(EditableOrderCell, {
-        productId: product.id,
-        initialOrder: product.display_order,
-        onUpdated: () => emits('updated')
-      })
-    }
-  },
-
-
-  {
-    accessorKey: "absorbency_level",
-    header: "Капли",
-    cell: ({row}: any) => {
-      const product = row.original
-      return h(EditableAbsorbencyCell, {
-        productId: product.id,
-        initialAbsorbency: product.absorbency_level ?? 0,
-        onUpdated: (event) => {
-        }
-      })
-    }
-  },
-
-
 
   {
     accessorKey: "name",
@@ -176,6 +136,54 @@ const columns = [
     }
   },
 
+  {
+    accessorKey: "display_order",
+    header: "Порядок",
+    cell: ({row}: any) => {
+      const product = row.original
+      return h(EditableOrderCell, {
+        productId: product.id,
+        initialOrder: product.display_order,
+        onUpdated: () => emits('updated')
+      })
+    }
+  },
+
+  {
+    accessorKey: "absorbency_level",
+    header: "Капли",
+    cell: ({row}: any) => {
+      const product = row.original
+      return h(EditableAbsorbencyCell, {
+        productId: product.id,
+        initialAbsorbency: product.absorbency_level ?? 0,
+      })
+    }
+  },
+
+  {
+    accessorKey: "fit_type",
+    header: "Посадка",
+    cell: ({row}: any) => {
+      const product = row.original
+      return h(EditableFitTypeCell, {
+        productId: product.id,
+        initialFitType: product.fit_type || null,
+        onUpdated: (newValue) => {
+          product.fit_type = newValue
+        }
+      })
+    }
+  },
+  {
+    accessorKey: "is_new",
+    header: "Новинка",
+    cell: ({row}: any) => {
+      return row.original.is_new
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
   {
     accessorKey: "stock_quantity",
     header: "Остаток",
@@ -197,7 +205,6 @@ const columns = [
         ),
   },
 
-
   {
     accessorKey: 'old_price',
     header: 'Цена до скидки',
@@ -217,9 +224,9 @@ const columns = [
           : h(X, {class: "h-4 w-4 text-red-500"});
     },
   },
-
 ];
 
+// Существующие функции
 async function handleActivate(ids: number[]) {
   await bulkActivateProducts(ids)
   emits('updated')
@@ -227,6 +234,26 @@ async function handleActivate(ids: number[]) {
 
 async function handleDeactivate(ids: number[]) {
   await bulkDeactivateProducts(ids)
+  emits('updated')
+}
+
+async function handleMarkAsNew(ids: number[]) {
+  await bulkUpdateAttributes({
+    product_ids: ids,
+    attributes: {
+      is_new: true
+    }
+  })
+  emits('updated')
+}
+
+async function handleUnmarkAsNew(ids: number[]) {
+  await bulkUpdateAttributes({
+    product_ids: ids,
+    attributes: {
+      is_new: false
+    }
+  })
   emits('updated')
 }
 

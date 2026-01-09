@@ -47,7 +47,7 @@ export class Product {
     min_order_quantity: number | null;
     max_order_quantity: number | null;
     is_featured: boolean | null;
-    is_new: boolean | null;
+    is_new?: boolean;
     discount_price: number | null;
     old_price: number | string;
     weight: string;
@@ -88,7 +88,7 @@ export class Product {
         this.min_order_quantity = 1;
         this.max_order_quantity = 1;
         this.is_featured = false;
-        this.is_new = true;
+        this.is_new = undefined;
         this.discount_price = null;
         this.old_price = '';
         this.weight = "";
@@ -130,7 +130,7 @@ export class Product {
         product.min_order_quantity = json.min_order_quantity ?? 1;
         product.max_order_quantity = json.max_order_quantity ?? 1;
         product.is_featured = json.is_featured ?? false;
-        product.is_new = json.is_new ?? true;
+        product.is_new = json.is_new;
         product.discount_price = json.discount_price ?? null;
         product.old_price = json.old_price ?? '';
         product.weight = json.weight ?? "";

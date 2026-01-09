@@ -1,4 +1,4 @@
-import {Attachment} from "@/types/chat";
+import {Attachment} from "@/types/conversation";
 
 export type MessageStatus =
     | 'sending'

@@ -1,18 +1,17 @@
 <template>
-  <DialogModal>
+  <DialogModal
+      ref="modalRef"
+  >
     <template #button>
       <Button variant="outline" class="max-md:w-full">Добавить</Button>
     </template>
 
     <template #content>
-<!--      <Loader v-if="sending"/>-->
       <CategoryForm
-          :key="renderCreated"
           :formData="category"
           @submit-form="handleSaveToServe"
       />
     </template>
-
   </DialogModal>
 </template>
 
@@ -20,29 +19,38 @@
 import {Button} from "@/components/ui/button";
 import DialogModal from "@/components/dynamics/shadcn/DialogModal.vue";
 import CategoryForm from "@/components/category/CategoryForm.vue";
-import {Category} from "@/models/Category";
 import {ref} from "vue";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
+import {Category, CategoryFormData, initialCategoryFormData} from "@/types/category";
 
-const emit = defineEmits(["created"]);
+const emit = defineEmits<{
+  (e: 'created', category: Category): void;
+}>();
 
 
-const renderCreated = ref(1)
+const modalRef = ref<{
+  closeModal: () => void;
+} | null>(null)
 
-const category = ref<Category>(Category.fromJSON({}));
+const category = ref<CategoryFormData>(initialCategoryFormData);
 
 const {createCategory, sending} = useCategoryFunctions()
 
+const handleSaveToServe = () => {
 
-const handleSaveToServe = async () => {
+  try {
+    createCategory(category.value)
+        .then(res => {
+          emit("created", res.data)
+          modalRef.value?.closeModal()
+        })
 
-  await createCategory(category.value.toJSON())
+  } catch (e) {
+    console.log(e)
+  }
 
-  emit('created')
 
 }
-
-
 
 
 </script>

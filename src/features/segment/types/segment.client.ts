@@ -9,7 +9,6 @@ export interface SegmentClient extends Client {
     average_check: number
     added_to_segment_at: string | null
     registered_at: string
-    segments?: string[]
     promo_codes?: string[]
 }
 

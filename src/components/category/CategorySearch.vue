@@ -24,15 +24,16 @@ import DynamicsFilter from '@/components/dynamics/Filter/Index.vue';
 import {useDebounceFn} from "@vueuse/core";
 import {Button} from "@/components/ui/button";
 import {X} from "lucide-vue-next"
+import {CategoryFilterQuery} from "@/types/category";
 
 
-const props = defineProps<{
-  filter: {
-    search: string,
-  },
-}>();
+interface Props {
+  filter: CategoryFilterQuery;
+}
 
-const emits = defineEmits(["search", "clearFilters"]);
+const props = defineProps<Props>();
+
+const emits = defineEmits(["search"]);
 
 
 const hasActiveFilters = computed(() => {

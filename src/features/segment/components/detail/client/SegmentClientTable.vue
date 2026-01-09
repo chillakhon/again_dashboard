@@ -38,7 +38,6 @@
 
 <script setup lang="ts">
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
-import {useDateFormat} from "@/composables/useDateFormat";
 import {SegmentClient, type SegmentClientManager} from "@/features/segment/types";
 import {useTableColumns} from "@/composables/Table/useTableColumns";
 import {usePriceFormatter} from "@/composables/usePriceFormatter";
@@ -56,7 +55,6 @@ interface PropsData {
 
 const props = defineProps<PropsData>();
 
-const {formatDateToRussian} = useDateFormat();
 const {createIndexColumn} = useTableColumns();
 const {formatPrice} = usePriceFormatter()
 

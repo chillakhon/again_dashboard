@@ -1,5 +1,6 @@
-// Message Model
 import type {Attachment} from './file'
+import {Client} from "@/types/client";
+import {ChatSource} from "@/types/conversation/source";
 
 export interface Message {
     // Идентификаторы
@@ -11,7 +12,7 @@ export interface Message {
     direction: 'incoming' | 'outgoing'
     status: 'sending' | 'sent' | 'delivered' | 'read' | 'failed'
 
-    content_type?: 'text' | 'image' | 'file' | 'audio' | 'video'  // ← добавили
+    content_type?: 'text' | 'image' | 'file' | 'audio' | 'video'
 
     // Временные метки
     created_at: string // ISO8601
@@ -36,57 +37,31 @@ export interface User {
     last_seen_at?: string
 }
 
-// Client Profile
-export interface ClientProfile {
-    id: number
-    client_id: number
-    fullName: string
-    phone: string
-    image: string | null
-    address: string | null
-    bio?: string
-    avatar_url?: string
-}
-
-// Client Model
-export interface Client {
-    id: number
-    name: string
-    email?: string
-    phone?: string
-    external_id: string
-    source: 'vk' | 'telegram' | 'whatsapp' | 'web_chat'
-    created_at: string
-    updated_at: string
-
-    // Relations
-    profile?: ClientProfile
-    conversations?: Conversation[]
-}
 
 // Conversation Model
 export interface Conversation {
     // Основное
     id: number
     client_id: number
-    source: 'vk' | 'telegram' | 'whatsapp' | 'web_chat'
+    source: ChatSource
 
     // Статус
     status: 'active' | 'archived' | 'closed'
-    unread_count: number
+    unread_messages_count: number
 
     // Назначение
     assigned_to?: number | null
 
     // Временные метки
-    last_message_at: string | null
+    last_message?: Message | null
+    last_message_at?: string | null
     created_at: string
-    updated_at: string
+    updated_at: string | null
 
     // Relations
-    client: Client
-    messages: Message[]
-    assigned_user?: User
+    client: Client | null
+    messages: Message[] | null
+    assigned_user?: User | null
 }
 
 // WebSocket Events
@@ -100,11 +75,3 @@ export interface MessageStatusUpdatedEvent {
     status: Message['status']
 }
 
-// UI State types
-export type ChatSource = 'vk' | 'telegram' | 'whatsapp' | 'web_chat'
-
-export interface SourceLink {
-    source: ChatSource
-    url: string
-    label: string
-}

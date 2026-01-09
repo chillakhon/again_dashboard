@@ -9,84 +9,90 @@
       />
 
       <CategoryAddModal
-          :key="renderCreated"
-          @created="fetchData(); renderCreated++"
+          @created="handleCreate"
       />
 
     </div>
-    <Loader v-if="isLoading"/>
 
     <CategoryListTable
-        v-else
-        :key="renderTable"
         :items="data"
-        @deleted="fetchData()"
-        @updated="fetchData()"
+        :pagination="pagination"
+        :loading="sending"
+        @deleted="handleDelete"
+        @updated="handleUpdate"
     />
-
-    <div class="flex items-center justify-end space-x-2 py-4">
-      <PaginationTable
-          :total="totalItems"
-          :default-page="currentPage"
-          :items-per-page="itemsPerPage"
-          :sibling-count="1"
-          :show-edges="true"
-          @current-page="currentPage = $event; fetchData()"
-      />
-    </div>
-
 
   </div>
 
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted} from 'vue';
-import PaginationTable from "@/components/PaginationTable.vue";
-import Loader from "@/components/common/Loader.vue";
+import {ref, onMounted, computed, watch} from 'vue';
 import CategorySearch from "@/components/category/CategorySearch.vue";
 import CategoryListTable from "@/components/category/CategoryListTable.vue";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
-import {Category} from "@/models/Category";
 import CategoryAddModal from "@/components/category/CategoryAddModal.vue";
-
-const data = ref<Category[]>();
-const totalItems = ref(0);
-const currentPage = ref(1);
-const itemsPerPage = ref(15);
-const isLoading = ref(true)
-const renderTable = ref(1)
-const renderCreated = ref(1)
+import {Category, CategoryFilterQuery} from "@/types/category";
+import {PaginationMeta} from "@/types/Types";
 
 
-const paramsSearch = ref({
-  search: '',
+const data = ref<Category[]>([]);
+
+const pagination = ref<PaginationMeta>({
+  page: 1,
+  per_page: 15,
+  total: 0,
 })
 
-const {getCategories} = useCategoryFunctions()
-
-onMounted(async () => {
-  await fetchData()
+const paramsSearch = ref<CategoryFilterQuery>({
+  search: undefined,
 })
+
+const {getCategories, sending} = useCategoryFunctions()
+
+const queryParams = computed<CategoryFilterQuery>(() => ({
+  ...paramsSearch.value,
+  page: pagination.value.page,
+  per_page: pagination.value.per_page,
+}))
 
 async function fetchData() {
-  isLoading.value = true
-  data.value = await getCategories({
-    per_page: itemsPerPage.value,
-    page: currentPage.value,
-    paginate: true,
-    name: paramsSearch.value.search,
-  })
+  await getCategories(queryParams.value)
+      .then((res) => {
+        pagination.value.total = res.meta.total ?? 0
+        data.value = res.data
+      })
+}
 
+onMounted(() => {
+  fetchData()
+})
 
-  isLoading.value = false
-  renderTable.value++
+const handleSearch = () => {
+  pagination.value.page = 1
+  fetchData()
 }
 
 
-const handleSearch = async () => {
-  currentPage.value = 1;
-  await fetchData()
+const handleCreate = (c: Category) => {
+
+  data.value = [...data.value, c]
+
 }
+const handleUpdate = (c: Category) => {
+
+  data.value = data.value.map(item => item.id == c.id ? c : item)
+
+}
+const handleDelete = (c: Category) => {
+
+  data.value = data.value.filter(item => item.id !== c.id)
+
+}
+
+watch(
+    () => [pagination.value.page, pagination.value.per_page],
+    () => fetchData()
+)
 
 </script>

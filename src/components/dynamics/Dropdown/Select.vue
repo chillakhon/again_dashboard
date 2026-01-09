@@ -79,11 +79,12 @@ import { Label } from '@/components/ui/label'
 import { X } from 'lucide-vue-next'
 
 interface SelectOption {
-  value: string
-  label: string
+  value?: string
+  label?: string
   disabled?: boolean
   icon?: object | string
   styleIcon?: string
+  [key: string]: any
 }
 
 const props = defineProps<{

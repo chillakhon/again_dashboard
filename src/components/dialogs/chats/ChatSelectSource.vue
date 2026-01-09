@@ -9,22 +9,19 @@
 
 <script setup lang="ts">
 import DynamicForm from "@/components/dynamics/DynamicForm.vue";
-import {ref, watch} from "vue";
+import {ref} from "vue";
 import {FormDynamicFieldType} from "@/types/form";
 import {MessageCircle, Smartphone, Send, MessageSquare, Mail} from 'lucide-vue-next';
+import {ChatSourceObj} from "@/types/conversation";
 
 
 const emit = defineEmits(['changeSource']);
 
-const props = defineProps({
-  currentSource: {
-    type: Object,
-    required: true,
-    default: {
-      source: 'all'
-    }
-  }
-})
+interface Props {
+  currentSource: ChatSourceObj;
+}
+
+const props = defineProps<Props>()
 
 
 const formFields = ref<FormDynamicFieldType[]>([
@@ -46,7 +43,6 @@ const formFields = ref<FormDynamicFieldType[]>([
     optionValue: 'value'
   },
 ])
-
 
 
 </script>

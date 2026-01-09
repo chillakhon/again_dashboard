@@ -141,8 +141,8 @@
 import {computed} from 'vue'
 import {Button} from '@/components/ui/button'
 import {X, AlertCircle, Music, FileText} from 'lucide-vue-next'
-import type {PendingFile} from '@/types/chat'
-import {formatFileSize} from '@/types/chat'
+import type {PendingFile} from '@/types/conversation'
+import {formatFileSize} from '@/types/conversation'
 
 interface Props {
   files: PendingFile[]

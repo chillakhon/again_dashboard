@@ -1,19 +1,17 @@
-<!-- @/components/dialogs/chats/ChatWidget.vue -->
-
 <template>
-  <Card class="w-full h-full shadow-none border-0 md:border-l rounded-none flex flex-col">
+  <Card class="w-full h-full shadow-none border-0 md:border-l md:border-r rounded-none flex flex-col ">
     <!-- Header -->
     <CardHeader class="border-b p-2">
       <div class="flex items-center justify-between space-x-2">
         <div class="flex items-center space-x-2">
           <Avatar class="h-8 w-8">
-            <AvatarImage :src="clientImage || clientIcon"/>
-            <AvatarFallback>{{ clientName.charAt(0) }}</AvatarFallback>
+            <AvatarImage :src="conversation.client?.profile?.image || clientIcon"/>
+            <AvatarFallback>{{ conversation.client?.profile?.full_name }}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle class="text-sm font-medium">{{ clientName }}</CardTitle>
+            <CardTitle class="text-sm font-medium">{{ conversation.client?.profile?.full_name || 'Клиент' }}</CardTitle>
             <CardDescription class="flex items-center gap-1 text-xs">
-              <span>{{ clientPhone }}</span>
+              <span>{{ conversation.client?.profile?.phone }}</span>
               <Badge variant="outline" class="h-4 px-1 text-[0.6rem] capitalize">
                 {{ sourceName }}
               </Badge>
@@ -22,16 +20,16 @@
         </div>
         <div class="text-right text-xs">
           <div class="font-medium">ID {{ conversation.id }}</div>
-          <div class="text-muted-foreground">{{ lastMessageTime }}</div>
+          <div class="text-muted-foreground">{{ formatTime(conversation.last_message_at) }}</div>
         </div>
       </div>
     </CardHeader>
 
     <!-- Messages -->
     <CardContent class="flex-1 p-2 overflow-y-auto flex flex-col">
-      <div v-if="clientAddress" class="mb-2 text-xs border-b pb-2">
+      <div v-if="conversation.client?.profile?.address" class="mb-2 text-xs border-b pb-2">
         <p class="text-muted-foreground">Адрес:</p>
-        <p class="truncate">{{ clientAddress }}</p>
+        <p class="truncate">{{ conversation.client?.profile?.address }}</p>
       </div>
 
       <Loader v-if="isLoadingGetMessage"/>
@@ -89,9 +87,7 @@
       </div>
     </CardContent>
 
-    <!-- Input -->
     <div class="border-t">
-      <!-- ← ДОБАВИЛИ: File Preview -->
       <FilePreview
           :files="pendingFiles"
           @remove="handleRemoveFile"
@@ -145,8 +141,6 @@ import {Avatar, AvatarImage, AvatarFallback} from '@/components/ui/avatar'
 import {Badge} from '@/components/ui/badge'
 import {Input} from '@/components/ui/input'
 import {Button} from '@/components/ui/button'
-import type {Conversation} from '@/models/Conversation'
-import type {Message} from '@/models/Message'
 import {
   Clock,
   Check,
@@ -164,59 +158,29 @@ import Loader from '@/components/common/Loader.vue'
 import FileUploadButton from './File/FileUploadButton.vue'
 import FilePreview from './File/FilePreview.vue'
 import AttachmentItem from './File/AttachmentItem.vue'
-import type {PendingFile} from '@/types/chat'
+import type {Conversation, PendingFile} from '@/types/conversation'
+import {Message} from "@/types/conversation";
 
 const props = defineProps<{
   conversation: Conversation
   isLoadingGetMessage: boolean
 }>()
-const conversation = props.conversation
-
-const clientIcon = assetPath('icons/client.png')
 
 const emits = defineEmits(['hasNewMessage'])
 
 const {conversationReplyById} = useChatsFunctions()
 
+
+const clientIcon = assetPath('icons/client.png')
+
 const newMessage = ref('')
 const messagesEndRef = ref<HTMLDivElement | null>(null)
 const isSending = ref(false) // ← ДОБАВИЛИ
 
-// ← ДОБАВИЛИ: состояние для файлов
 const pendingFiles = ref<PendingFile[]>([])
 
-const clientName = computed(
-    () => conversation.client?.profile?.fullName || conversation.client?.name || 'Клиент'
-)
-const clientPhone = computed(
-    () => {
-      const phoneClient = conversation.client?.profile?.phone
-
-      if (conversation.source == 'whatsapp') {
-        return conversation.external_id?.split("@")[0]
-      }
-
-      if (conversation.source == 'email') {
-        return `${conversation.client?.profile?.phone
-            ? `${conversation.client?.profile?.phone} / ` : ''} ${conversation.external_id}`
-      }
-
-      return phoneClient || 'Телефон не указан'
-    }
-)
-
-const clientImage = computed(
-    () => conversation.client?.profile?.image || ''
-)
-const clientAddress = computed(
-    () => conversation.client?.profile?.address || ''
-)
-const lastMessageTime = computed(
-    () => (conversation.last_message_at ? formatTime(conversation.last_message_at) : '')
-)
-
 const sourceName = computed(() => {
-  switch (conversation.source) {
+  switch (props.conversation.source) {
     case 'telegram':
       return 'Telegram'
     case 'whatsapp':
@@ -228,7 +192,7 @@ const sourceName = computed(() => {
     case 'email':
       return 'Почта'
     default:
-      return conversation.source || ''
+      return props.conversation.source || ''
   }
 })
 
@@ -238,7 +202,7 @@ function scrollToBottom(behavior: ScrollBehavior = 'smooth') {
   })
 }
 
-function formatTime(datetime: string | undefined): string {
+function formatTime(datetime: any): string {
   if (!datetime) return ''
   const date = new Date(datetime)
   return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})
@@ -261,7 +225,6 @@ function getStatusIcon(status: string | undefined) {
   }
 }
 
-// ← ДОБАВИЛИ: обработчики для файлов
 const handleFilesSelected = (files: PendingFile[]) => {
   pendingFiles.value.push(...files)
 }
@@ -281,14 +244,13 @@ const handleFileError = (error: string) => {
 
 let addMessage = true
 
-// ← ОБНОВИЛИ: sendMessage с поддержкой файлов
 async function sendMessage() {
   const text = newMessage.value.trim()
   const files = [...pendingFiles.value]
 
   // Должен быть текст ИЛИ файлы
   if (!text && files.length === 0) return
-  if (conversation.id === undefined) return
+  if (props.conversation.id === undefined) return
 
   isSending.value = true
   addMessage = false
@@ -302,36 +264,36 @@ async function sendMessage() {
     status: 'sending',
     created_at: new Date().toISOString(),
     attachments: [],
-    conversation_id: conversation.id,
+    conversation_id: props.conversation.id,
   } as Message
 
-  conversation.messages = conversation.messages || []
-  conversation.messages.push(tempMessage)
+  props.conversation.messages = props.conversation.messages || []
+  props.conversation.messages.push(tempMessage)
   newMessage.value = ''
   pendingFiles.value = [] // ← Очищаем файлы
   scrollToBottom()
 
   try {
     const response = await conversationReplyById(
-        Number(conversation.id),
+        Number(props.conversation.id),
         text || '',
         files
     )
 
     if (response) {
-      const tempIndex = conversation.messages.findIndex(m => m.id === tempId)
+      const tempIndex = props.conversation.messages.findIndex(m => m.id === tempId)
       if (tempIndex !== -1) {
-        conversation.messages[tempIndex] = response
+        props.conversation.messages[tempIndex] = response
       }
 
-      emits('hasNewMessage', conversation.id)
+      emits('hasNewMessage', props.conversation.id)
     }
   } catch (e) {
     console.error('Ошибка отправки:', e)
 
-    const messageIndex = conversation.messages.findIndex(m => m.id === tempId)
+    const messageIndex = props.conversation.messages.findIndex(m => m.id === tempId)
     if (messageIndex !== -1) {
-      conversation.messages[messageIndex].status = 'failed'
+      props.conversation.messages[messageIndex].status = 'failed'
     }
   } finally {
     isSending.value = false
@@ -343,7 +305,7 @@ onMounted(() =>
     scrollToBottom('auto')
 )
 
-watch(() => conversation.messages?.length, () => scrollToBottom())
+watch(() => props.conversation.messages?.length, () => scrollToBottom())
 
 const urlPattern = /(\bhttps?:\/\/[^\s<>]+[^\s<.,:;"')\]\s])/g
 
@@ -355,7 +317,7 @@ function linkify(text = ''): string {
 /* ---------- WebSocket подписка ---------- */
 let currentChannel: any = null;
 
-watch(() => conversation.id, (id, oldId) => {
+watch(() => props.conversation.id, (id, oldId) => {
 
   if (oldId && (window as any).Echo) {
     try {
@@ -381,11 +343,11 @@ watch(() => conversation.id, (id, oldId) => {
         attachments: payload.attachments ?? []
       };
 
-      conversation.messages = conversation.messages || [];
+      props.conversation.messages = props.conversation.messages || [];
 
-      const exists = conversation.messages.some(m => String(m.id) === String(incoming.id));
+      const exists = props.conversation.messages.some(m => String(m.id) === String(incoming.id));
       if (!exists) {
-        conversation.messages.push(incoming as Message);
+        props.conversation.messages.push(incoming as Message);
         nextTick(() => scrollToBottom());
         emits('hasNewMessage', id);
       }
@@ -400,7 +362,7 @@ watch(() => conversation.id, (id, oldId) => {
 });
 
 onBeforeUnmount(() => {
-  const id = conversation.id;
+  const id = props.conversation.id;
   if (id && (window as any).Echo) {
     try {
       (window as any).Echo.leave(`private-conversation.${id}`);

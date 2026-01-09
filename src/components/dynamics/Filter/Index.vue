@@ -2,7 +2,7 @@
   <form @submit.prevent="emits('search')" class="flex gap-3 w-full">
     <div class="flex flex-wrap gap-3 w-full">
       <DynamicsFilterColumn
-          class="min-w-[250px] flex-1"
+          class="min-w-[230px] flex-1"
           v-for="(column, index) in columns"
           :key="index"
           :column="column"

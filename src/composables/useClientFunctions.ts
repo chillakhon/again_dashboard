@@ -1,20 +1,13 @@
 import axios from "axios";
 import {toast} from "vue-sonner";
 import {Client as ClientModel} from "@/models/client/Client";
-import {Client as ClientType} from "@/types/client"; // Импортируем тип
-
+import {Client as ClientType, ClientFormData} from "@/types/client"; // Импортируем тип
 
 import {ref} from "vue";
 import {PaginationMeta} from "@/types/Types";
-
-interface ClientFormData {
-    id?: number;
-    user_id?: number | null;
-    client_level_id?: number | null;
-    bonus_balance?: string;
-
-    [key: string]: any;
-}
+import {useErrorHandler} from "@/composables/useErrorHandler";
+import {useSuccessHandler} from "@/composables/useSuccessHandler";
+import {data} from "autoprefixer";
 
 
 interface ClientFilterParams {
@@ -95,16 +88,12 @@ export function useClientFunctions() {
 
     const updateClient = async (client: ClientModel): Promise<ClientModel | null> => {
         try {
-            if (!client.id) {
-                toast.error("ID клиента не указан");
-                return null;
-            }
 
             const response = await axios.put(`/clients/${client.id}`, prepareClientDataForValidation(client));
 
             toast.success(response.data.message || "Данные клиента обновлены");
 
-            return response.data?.data || null; // Предполагаем, что данные в response.data.data
+            return response.data?.data || null;
         } catch (error) {
             if (axios.isAxiosError(error)) {
                 toast.error(error.response?.data?.message || "Ошибка при обновлении");
@@ -159,6 +148,21 @@ export function useClientFunctions() {
     }
 
 
+    const editClientCorrect = async (id: number | string, client: ClientFormData): Promise<ClientType> => {
+        sending.value = true;
+        return await axios.put(`clients/${id}`, client)
+            .then((res) => {
+                useSuccessHandler().showSuccess(res)
+                return res.data.client;
+            })
+            .catch(e => {
+                console.error(e);
+                useErrorHandler().showError(e)
+                throw e;
+            })
+            .finally(() => sending.value = true)
+    }
+
     return {
         addClient,
         updateClient,
@@ -166,6 +170,7 @@ export function useClientFunctions() {
         getClient,
         getClients,
         getClientsByParams,
+        editClientCorrect,
         sending
     };
 }

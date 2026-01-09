@@ -188,6 +188,35 @@ const routes = [
                     },
                 ]
             },
+            {
+                path: '/gift-card',
+                name: 'gift-card',
+                redirect: '/gift-card/list',
+                children: [
+                    // Список сегментов
+                    {
+                        path: 'list',
+                        name: 'gift-card-list',
+                        component: () => import('@/features/gift-card/components/list/index.vue'),
+                        meta: {
+                            title: 'Подарочные карты',
+                            requiresAuth: true,
+                        }
+                    },
+
+                    // Детальный просмотр сегмента
+                    {
+                        path: ':id',
+                        name: '/gift-card-detail',
+                        component: () => import('@/features/gift-card/components/detail/index.vue'),
+                        props: true,
+                        meta: {
+                            title: 'Детали Подарочные карты',
+                            requiresAuth: true,
+                        }
+                    },
+                ]
+            },
 
             {
                 path: '/integrations',

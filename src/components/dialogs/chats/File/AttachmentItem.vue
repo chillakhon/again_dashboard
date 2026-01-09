@@ -108,8 +108,8 @@
 import {ref} from 'vue'
 import {Button} from '@/components/ui/button'
 import {Play, Pause, Download, FileText, ZoomIn} from 'lucide-vue-next'
-import type {Attachment} from '@/types/chat'
-import {formatFileSize} from '@/types/chat'
+import type {Attachment} from '@/types/conversation'
+import {formatFileSize} from '@/types/conversation'
 
 interface Props {
   attachment: Attachment

@@ -8,7 +8,7 @@
           <!--          </div>-->
 
           <div class="w-9 h-9">
-            <img :src="assetPath('icons/chat/whatsapp.svg')">
+            <img :src="assetPath('icons/conversation/whatsapp.svg')">
           </div>
 
           <div class="flex-1">

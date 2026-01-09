@@ -46,41 +46,6 @@
 
     </div>
 
-    <!-- Поля клиента -->
-    <!--    <div class="grid grid-cols-2 gap-3">-->
-    <!--      <div class="space-y-2">-->
-    <!--        <Label for="level_id">Уровень клиента</Label>-->
-    <!--        <Select v-model="clientData.client_level_id">-->
-    <!--          <SelectTrigger>-->
-    <!--            <SelectValue placeholder="Выберите уровень" />-->
-    <!--          </SelectTrigger>-->
-    <!--          <SelectContent>-->
-    <!--            <SelectGroup>-->
-    <!--              <SelectItem-->
-    <!--                  v-for="level in clientLevels"-->
-    <!--                  :key="level.id"-->
-    <!--                  :value="level.id"-->
-    <!--              >-->
-    <!--                {{ level.name }}-->
-    <!--              </SelectItem>-->
-    <!--            </SelectGroup>-->
-    <!--          </SelectContent>-->
-    <!--        </Select>-->
-    <!--      </div>-->
-    <!--      <div class="space-y-2">-->
-    <!--        <Label for="bonus_balance">Бонусный баланс</Label>-->
-    <!--        <Input-->
-    <!--            id="bonus_balance"-->
-    <!--            type="number"-->
-    <!--            v-model="clientData.bonus_balance"-->
-    <!--            placeholder="0.00"-->
-    <!--            min="0"-->
-    <!--            step="0.01"-->
-    <!--        />-->
-    <!--&lt;!&ndash;        <p v-if="errors.bonus_balance" class="text-sm text-red-500">{{ errors.bonus_balance }}</p>&ndash;&gt;-->
-    <!--      </div>-->
-    <!--    </div>-->
-
   </form>
 </template>
 
@@ -125,13 +90,13 @@ const clientLevels = ref<ClientLevel[]>([])
 
 // Загрузка уровней клиентов
 onMounted(async () => {
-  try {
-    const response = await axios.get('/client-levels')
-    clientLevels.value = response.data.data
-  } catch (error) {
-    console.error('Error loading client levels:', error)
-    toast.error('Не удалось загрузить уровни клиентов')
-  }
+  // try {
+  //   const response = await axios.get('/client-levels')
+  //   clientLevels.value = response.data.data
+  // } catch (error) {
+  //   console.error('Error loading client levels:', error)
+  //   toast.error('Не удалось загрузить уровни клиентов')
+  // }
 })
 
 

@@ -3,7 +3,6 @@ import {toast} from "vue-sonner";
 import {Discount} from "@/models/Discount";
 import {useErrorHandler} from "@/composables/useErrorHandler";
 import {useSuccessHandler} from "@/composables/useSuccessHandler";
-import {Category} from "@/models/Category";
 import {ref} from "vue";
 import {DiscountValueType} from "@/constants/DiscountType";
 

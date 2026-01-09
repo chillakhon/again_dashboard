@@ -48,7 +48,7 @@ import {
   ALLOWED_FILE_TYPES,
   createImagePreview,
   PendingFile
-} from '@/types/chat'
+} from '@/types/conversation'
 
 interface Props {
   disabled?: boolean

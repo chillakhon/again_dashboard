@@ -1,5 +1,6 @@
 <template>
   <DialogModal
+      :key="renderModal"
       @dialog-open="dialogOpen"
   >
     <template #button>
@@ -9,35 +10,40 @@
     </template>
 
     <template #content>
-<!--      <Loader v-if="sending"/>-->
       <CategoryForm
-          :formData="category"
+          :formData="categoryFormData"
           submit-button-name="Сохранить"
           @submit-form="handleSaveToServe"
       />
     </template>
-
   </DialogModal>
 </template>
 
 <script setup lang="ts">
 import DialogModal from "@/components/dynamics/shadcn/DialogModal.vue";
 import CategoryForm from "@/components/category/CategoryForm.vue";
-import {Category} from "@/models/Category";
 import {ref} from "vue";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
+import {Category, CategoryFormData, categoryFormUpdate} from "@/types/category";
 
-const emit = defineEmits(["update"]);
 
-const props = defineProps({
-  item: {
-    type: Category,
-    required: true
-  }
-})
+interface Props {
+  item: Category;
+}
 
-const category = ref<Category>(props.item);
+const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'updated', category: Category): void
+}>();
+
+
+const renderModal = ref(1)
+
+const categoryFormData = ref<CategoryFormData>(
+    categoryFormUpdate(props.item)
+);
 
 const {sending, updateCategory, getProductsByCategory} = useCategoryFunctions()
 
@@ -45,7 +51,7 @@ const {sending, updateCategory, getProductsByCategory} = useCategoryFunctions()
 const dialogOpen = async (param: boolean) => {
   if (param) {
 
-    category.value.productIds = await getProductsByCategory({category_id: category.value.id})
+    categoryFormData.value.product_ids = await getProductsByCategory({category_id: categoryFormData.value.id!})
         .then(res => {
           return res.products?.map((product: any) => product.id);
         })
@@ -53,13 +59,18 @@ const dialogOpen = async (param: boolean) => {
 }
 
 
-const handleSaveToServe = async () => {
+const handleSaveToServe = () => {
+  try {
+    updateCategory(
+        categoryFormData.value.id!,
+        categoryFormData.value
+    ).then(res => {
+      emit("updated", res.data);
+      renderModal.value++
+    })
 
-
-  const result = await updateCategory(category.value.id, category.value.toJSON())
-
-  if (result) {
-    emit('update')
+  } catch (e) {
+    console.log(e)
   }
 
 }

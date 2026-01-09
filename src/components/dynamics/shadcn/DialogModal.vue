@@ -59,4 +59,13 @@ watch(() => dialogOpen.value, (newValue) => {
   }
 })
 
+
+const closeModal = () => {
+  dialogOpen.value = false
+}
+
+defineExpose({
+  closeModal,
+  openModal: () => (dialogOpen.value = true),
+})
 </script>

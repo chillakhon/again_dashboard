@@ -1,10 +1,7 @@
 import {ref} from 'vue'
 import axios, {AxiosProgressEvent} from 'axios'
 import {useErrorHandler} from "@/composables/useErrorHandler";
-import {useSuccessHandler} from "@/composables/useSuccessHandler";
-import {Conversation} from "@/models/Conversation";
-import {Message} from "@/models/Message";
-import {PendingFile} from "@/types/chat";
+import {Conversation, ConversationApiResponse, PendingFile, Message} from "@/types/conversation";
 
 export function useChatsFunctions() {
     const sending = ref(false)
@@ -14,11 +11,8 @@ export function useChatsFunctions() {
         per_page?: number,
         page?: number,
         source?: string
-    }): Promise<{
-        meta: { page: number; per_page: number, total: number };
-        conversation: Conversation[]
-    } | null> => {
-        if (sending.value) return null
+        search?: string
+    }): Promise<ConversationApiResponse> => {
 
         sending.value = true
         progress.value = 0
@@ -26,50 +20,29 @@ export function useChatsFunctions() {
         return await axios.get('conversations', {
             params: params
         })
-            .then(res => {
-                const result = res.data?.data
-                return {
-                    meta: {
-                        page: result.current_page ?? 1,
-                        per_page: result.per_page ?? 15,
-                        total: result.total ?? 0
-                    },
-                    conversation: result.data.map((i: any) => Conversation.fromJSON(i))
-                }
-            })
+            .then(res => res.data)
 
             .catch(e => {
-                sending.value = false
                 useErrorHandler().showError(e)
-
-                return null
-
+                console.error(e)
+                throw e
             })
             .finally(() => sending.value = false)
     }
 
     // Получить подробную информацию о конкретном разговоре
-    const getConversationById = async (conversationId: number | string): Promise<
-        Conversation
-        | null
-    > => {
-
-        if (sending.value) return null
+    const getConversationByIdWithMessages = async (id: number | string):
+        Promise<Conversation> => {
 
         sending.value = true
         progress.value = 0
 
-        return await axios.get(`conversations/${conversationId}`)
-            .then(res => {
-                return Conversation.fromJSON(res.data.data)
-            })
+        return await axios.get(`conversations/${id}`)
+            .then(res => res.data)
 
             .catch(e => {
-                sending.value = false
                 useErrorHandler().showError(e)
-
-                return null
-
+                throw e
             })
             .finally(() => sending.value = false)
     }
@@ -79,8 +52,7 @@ export function useChatsFunctions() {
         conversationId: string | number,
         content: string,
         files?: PendingFile[]
-    ): Promise<Message | null> => {
-        if (sending.value) return null
+    ): Promise<Message> => {
 
         sending.value = true
         progress.value = 0
@@ -89,8 +61,6 @@ export function useChatsFunctions() {
             // Если есть файлы - используем FormData
             if (files && files.length > 0) {
                 const formData = new FormData()
-
-
 
 
                 // Добавляем текст (может быть пустым если только файлы)
@@ -120,7 +90,7 @@ export function useChatsFunctions() {
                     }
                 )
 
-                return Message.fromJSON(response.data.data)
+                return response.data.data
             }
 
             // Если нет файлов - отправляем JSON как раньше
@@ -132,11 +102,11 @@ export function useChatsFunctions() {
                 }
             )
 
-            return Message.fromJSON(response.data.data)
+            return response.data.data
 
         } catch (e) {
             useErrorHandler().showError(e)
-            return null
+            throw e
         } finally {
             sending.value = false
             progress.value = 0
@@ -148,7 +118,7 @@ export function useChatsFunctions() {
         sending,
         progress,
         getConversations,
-        getConversationById,
+        getConversationByIdWithMessages,
         conversationReplyById
     }
 }
