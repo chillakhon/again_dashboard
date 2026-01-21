@@ -2,17 +2,13 @@
   <form class="space-y-4" @submit.prevent="emit('submitForm')">
     <div v-for="(row, rowIndex) in groupedFields" :key="rowIndex" class="grid gap-2"
          :class="`md:grid-cols-${row.length}`">
-      <div v-for="field in row" :key="field.name" class="space-y-1 max-w-full overflow-hidden p-1"
-
-      >
+      <div v-for="field in row" :key="field.name" class="space-y-1 max-w-full overflow-hidden p-1">
         <Label :for="field.name">
           {{ field.component != 'checkbox' && field.component != 'emitButton' ? field.label : '' }}
           <span v-if="field.required" class="text-red-500">*</span>
         </Label>
 
         <!-- Текстовое поле -->
-
-
         <Input
             v-if="field.component === 'text' && field.type !== 'file'"
             :id="field.name"
@@ -24,8 +20,6 @@
         />
 
         <!-- Поле загрузки файла -->
-
-
         <div
             v-else-if="field.component === 'text' && field.type === 'file'"
             class="max-w-full max-h-full overflow-hidden"
@@ -40,32 +34,28 @@
           />
 
           <div class="max-w-full max-h-full overflow-hidden mt-3 rounded"
-               v-if="field.cropperShow && previewImage">
+               v-if="field.cropperShow && previewImages[field.name]">
             <ImageCropper
                 class="max-w-full max-h-full object-contain"
-                :src="getImageForCropper(field.name)"
+                :src="previewImages[field.name]"
                 :aspect-ratio="field.cropperAspectRatio"
                 @update:file="onCroppedFile(field.name, $event)"
             />
           </div>
 
-
           <div class="max-w-full max-h-full overflow-hidden pt-3 rounded"
-               v-else-if="field.cropperAvatar && previewImage">
+               v-else-if="field.cropperAvatar && previewImages[field.name]">
             <AvatarCropper
                 class="max-w-full max-h-full object-contain"
-                :src="getImageForCropper(field.name)"
+                :src="previewImages[field.name]"
                 @update:file="onCroppedFile(field.name, $event)"
             />
           </div>
 
           <div class="relative max-w-full max-h-full overflow-hidden mt-3 rounded border border-gray-300"
-               v-else-if="previewImage">
-
+               v-else-if="previewImages[field.name]">
             <ImagePreview :file="formData[field.name]"/>
-
             <button
-
                 type="button"
                 @click="removeImage(field.name)"
                 class="absolute top-1 right-1 bg-white bg-opacity-70 rounded-full p-1 hover:bg-opacity-100 transition"
@@ -73,10 +63,7 @@
             >
               <X class="w-5 h-5 text-red-600"/>
             </button>
-
           </div>
-
-
         </div>
 
         <!-- Текстовая область -->
@@ -88,7 +75,6 @@
             :rows="field.rows || 3"
             :required="field.required"
         />
-
 
         <Select
             v-else-if="field.component == 'select'"
@@ -134,7 +120,6 @@
           </label>
         </div>
 
-
         <div v-else-if="field.component == 'color'">
           <ColorPicker
               :colors="field.colors"
@@ -142,15 +127,11 @@
           />
         </div>
 
-
         <div
             class="flex flex-col items-start justify-end h-full pb-1"
             v-else-if="field.component == 'enyComponentSlot'">
-
-            <slot name="enyComponentSlot"></slot>
-
+          <slot name="enyComponentSlot"></slot>
         </div>
-
 
         <p v-if="errors[field.name]" class="text-sm text-red-500">
           {{ errors[field.name] }}
@@ -161,7 +142,6 @@
       </div>
     </div>
 
-
     <Button
         v-if="showSubmitButton"
         type="submit"
@@ -170,7 +150,6 @@
     >
       {{ submitButtonText }}
     </Button>
-
   </form>
 </template>
 
@@ -178,7 +157,7 @@
 import {Input} from '@/components/ui/input'
 import {Textarea} from '@/components/ui/textarea'
 import {Label} from '@/components/ui/label'
-import {computed, ref, watch} from 'vue'
+import {computed, ref} from 'vue'
 import Select from "@/components/dynamics/Dropdown/Select.vue";
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue";
 import {FormDynamicFieldType} from "@/types/form";
@@ -190,7 +169,6 @@ import ImagePreview from "@/components/dynamics/ImagePreview.vue";
 import {X} from 'lucide-vue-next';
 import AvatarCropper from "@/components/dynamics/cropper/AvatarCropper.vue";
 import ColorPicker from "@/components/dynamics/color/ColorPicker.vue";
-
 
 interface Props {
   fields: (FormDynamicFieldType)[]
@@ -207,7 +185,6 @@ const props = withDefaults(
 
 const emit = defineEmits(['update:modelValue', 'submitForm', 'emitButton']);
 
-
 const formData = computed({
   get: () => props.modelValue,
   set: (value) => emit('update:modelValue', value),
@@ -218,46 +195,27 @@ const groupedFields = computed(() => {
   return props.fields.map(field => Array.isArray(field) ? field : [field])
 })
 
-
-const previewImage = ref<string | null>(null)
-
+// Изменяем на объект для хранения превью каждого файла отдельно
+const previewImages = ref<Record<string, string | null>>({})
 
 const onFileChange = (event: Event, fieldName: string) => {
   const target = event.target as HTMLInputElement
   const file = target.files?.[0] || null
   if (file) {
     formData.value[fieldName] = file
-    previewImage.value = URL.createObjectURL(file)
+    previewImages.value[fieldName] = URL.createObjectURL(file)
   }
 }
-
 
 const onCroppedFile = (fieldName: string, file: File) => {
-  // Обновляем модель, как будто пользователь выбрал новый файл
   formData.value[fieldName] = file
-
-}
-
-
-const getImageForCropper = (fieldName: string) => {
-  if (previewImage.value) {
-    return previewImage.value
-  }
-  // if (typeof formData.value[fieldName] === 'string') {
-  //   return formData.value[fieldName]
-  // } else if (formData.value[fieldName] instanceof File) {
-  //   previewImage.value = URL.createObjectURL(formData.value[fieldName])
-  // }
-  return null
 }
 
 const removeImage = (fieldName: string) => {
-  formData.value[fieldName] = null;
-  // Если используешь previewImage, нужно обнулять и его, если нужно
-  if (previewImage.value) {
-    previewImage.value = null;
+  formData.value[fieldName] = null
+  if (previewImages.value[fieldName]) {
+    URL.revokeObjectURL(previewImages.value[fieldName]!)
+    previewImages.value[fieldName] = null
   }
-};
-
-
+}
 </script>

@@ -3,7 +3,8 @@ import axios from 'axios'
 import {useErrorHandler} from "@/composables/useErrorHandler";
 import ContactRequest from "@/models/ContactRequest"; // модель для заявки (создай, как Order)
 import {useSuccessHandler} from "@/composables/useSuccessHandler";
-import {log10} from "chart.js/helpers";
+import {PaginationMeta} from "@/types/Types";
+import type {OtoBannerSubmission} from "@/features/oto-banner/types";
 
 export function useContactRequestFunctions() {
     const sending = ref(false)
@@ -18,11 +19,7 @@ export function useContactRequestFunctions() {
         date_to?: string,
     }): Promise<{
         contactRequests: ContactRequest[],
-        meta: {
-            page: number,
-            per_page: number,
-            total: number,
-        }
+        meta: PaginationMeta
     } | null> => {
         sending.value = true
 
@@ -30,13 +27,12 @@ export function useContactRequestFunctions() {
             .then(res => {
                 const contactRequests: ContactRequest[] = res.data.data.map((item: any) => ContactRequest.fromJSON(item))
 
-                console.log(contactRequests)
                 return {
                     contactRequests,
                     meta: {
-                        page: res.data.current_page,
-                        per_page: res.data.per_page,
-                        total: res.data.total,
+                        page: res.data?.meta?.page,
+                        per_page: res.data?.meta?.per_page,
+                        total: res.data?.meta?.total,
                     }
                 }
             })
@@ -96,12 +92,43 @@ export function useContactRequestFunctions() {
             .finally(() => sending.value = false)
     }
 
+
+    const attachManager = async (
+        id: number | string,
+        managerId: number | null
+    ): Promise<OtoBannerSubmission | undefined> => {
+        if (sending.value) return
+
+        sending.value = true
+
+        return await axios.post<{
+            success: boolean;
+            message: string;
+            data: OtoBannerSubmission
+        }>(
+            `contact-requests/${id}/attach-manager`,
+            {manager_id: managerId}
+        )
+            .then(res => {
+                useSuccessHandler().showSuccess(res)
+                return res.data.data
+            })
+            .catch(e => {
+                useErrorHandler().showError(e)
+                throw e
+            })
+            .finally(() => {
+                sending.value = false
+            })
+    }
+
     return {
         sending,
         getContactRequests,
         getCount,
         getContactRequestById,
         updateContactRequest,
-        deleteContactRequest
+        deleteContactRequest,
+        attachManager
     }
 }

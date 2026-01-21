@@ -254,6 +254,14 @@ const routes = [
                         name: 'integrations-moysklad',
                         component: () => import('../components/integrations/moysklad/MoySklad.vue'),
                     },
+
+
+                    {
+                        path: '/integrations/analytics',
+                        name: 'integrations-analytics',
+                        component: () => import('../components/integrations/analytics/index.vue'),
+                    },
+
                 ]
             },
             {
@@ -324,45 +332,42 @@ const routes = [
                         name: 'settings-layout',
                         component: () => import('../components/settings/index.vue'),
                     },
-                    {
-                        path: '/settings/product-params',
-                        name: 'settings-product-params',
-                        component: () => import('../components/settings/product_params/'),
-                    },
-                    {
-                        path: '/settings/variant-props',
-                        name: 'settings-variant-props',
-                        component: () => import('../components/settings/variant_props/index.vue'),
-                    },
-                    {
-                        path: '/settings/delivery-methods',
-                        name: 'settings-delivery-methods',
-                        component: () => import('../components/settings/delivery_method/index.vue'),
-                    },
-                    {
-                        path: '/settings/custom-statuses',
-                        name: 'settings-custom-statuses',
-                        component: () => import('../components/settings/custom_status/index.vue'),
-                    },
-                    {
-                        path: '/settings/one-click-order',
-                        name: 'settings-one-click-order',
-                        component: () => import('../components/settings/one_click_order/index.vue')
-                    },
+
                     {
                         path: '/settings/home-slider',
                         name: 'settings-home-slider',
                         component: () => import('../components/settings/home_slider/list/SliderList.vue'),
                     }
                 ]
-            }
+            },
 
 
-            // {
-            //     path: '/settings',
-            //     name: 'settings',
-            //     component: () => import('../views/settings/SettingsView.vue'),
-            // },
+            {
+                path: '/settings/oto',
+                name: 'settings-oto',
+                redirect: '/settings/oto/list',
+                children: [
+                    {
+                        path: 'list',
+                        name: 'settings-oto-list',
+                        component: () => import('@/features/oto-banner/components/list/index.vue'),
+                        meta: {
+                            title: 'OTO Баннеры',
+                            requiresAuth: true,
+                        }
+                    },
+                    {
+                        path: ':id',
+                        name: 'settings-oto-detail',
+                        component: () => import('@/features/oto-banner/components/detail/index.vue'),
+                        props: true,
+                        meta: {
+                            title: 'Детали OTO баннера',
+                            requiresAuth: true,
+                        }
+                    },
+                ]
+            },
 
 
         ],

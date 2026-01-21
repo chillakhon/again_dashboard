@@ -1,4 +1,5 @@
 import {Client} from "@/models/client/Client";
+import {User} from "@/types/user";
 
 export default class ContactRequest {
     id: number | undefined;
@@ -10,6 +11,8 @@ export default class ContactRequest {
     message: string | null | undefined;
     source: string | null | undefined;
     status: 'new' | 'viewed' | 'processed' | undefined;
+    manager_id: number | null | undefined;
+    manager: User | undefined
     meta: any | null | undefined;
     ip: string | null | undefined;
     user_agent: string | null | undefined;
@@ -33,6 +36,8 @@ export default class ContactRequest {
         this.read_at = null;
         this.created_at = undefined;
         this.updated_at = undefined;
+        this.manager_id = undefined;
+        this.manager = undefined;
     }
 
     static fromJSON(json: any): ContactRequest {
@@ -52,6 +57,8 @@ export default class ContactRequest {
         cr.read_at = json.read_at ?? null;
         cr.created_at = json.created_at;
         cr.updated_at = json.updated_at;
+        cr.manager_id = json.manager_id;
+        cr.manager = json.manager;
         return cr;
     }
 

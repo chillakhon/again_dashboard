@@ -46,13 +46,8 @@ interface MenuItem {
 }
 
 const menuItems = ref<MenuItem[]>([
-  // { path: '/settings/store', title: 'Настройки сайта' },
   {path: '/settings/home-slider', title: 'Слайдер на главной'},
-  // {path: '/settings/product-params', title: 'Параметры товаров'},
-  // { path: '/settings/delivery-methods', title: 'Доставка' },
-  // {path: '/settings/variant-props', title: 'Свойства вариантов'},
-  // {path: '/settings/custom-statuses', title: 'Пользовательские статусы'},
-  // {path: '/settings/one-click-order', title: 'Заказ в один клик'},
+  {path: '/settings/oto', title: 'OTO Баннеры'},
 ])
 </script>
 

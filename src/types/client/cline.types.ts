@@ -2,7 +2,7 @@ import {Order} from "@/types/order";
 import {Tag} from "@/types/tag";
 import {Segment} from "@/features/segment/types";
 
-export interface ClientProfile {
+export interface Profile {
     id: number;
     first_name?: string;
     last_name?: string;
@@ -21,7 +21,7 @@ export interface Client {
     name: string;
     email: string;
     full_name?: string;
-    profile?: ClientProfile;
+    profile?: Profile;
     last_order?: Order
     tags?: Tag[];
     segments?: Segment[];

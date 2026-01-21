@@ -1,4 +1,5 @@
 <template>
+
   <div class="flex justify-between mb-2 md:space-x-4 max-md:flex-col max-sm:space-y-2">
 
     <BackButton
@@ -30,11 +31,10 @@
       @current-page="currentPage = $event; fetchData()"
   />
 
-
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue';
+import {ref, onMounted} from 'vue';
 import PaginationTable from "@/components/PaginationTable.vue";
 import Loader from "@/components/common/Loader.vue";
 import BackButton from "@/components/BackButton.vue";

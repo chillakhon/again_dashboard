@@ -142,16 +142,27 @@ export function useUserFunctions() {
                 toast.error(err.data.message);
             })
     };
+
     const restoreUser = async (user_id) => {
         axios
             .get(`users/${user_id}/restore`)
             .then(res => {
                 toast.success(res.data.message);
-                // if (res.data.status) {
-                //     toast.success(res.data.message);
-                // } else {
-                //     toast.error(res.data.message);
-                // }
+            })
+            .catch(err => {
+                toast.error(err.data.response.data.message);
+            })
+    };
+    const getUsers = async (page, per_page) => {
+        return axios
+            .get(`users`, {
+                params: {
+                    page: page,
+                    per_page: per_page,
+                },
+            })
+            .then(res => {
+                return res.data;
             })
             .catch(err => {
                 toast.error(err.data.response.data.message);
@@ -166,6 +177,7 @@ export function useUserFunctions() {
         restoreUser,
         forceDestroy,
         updateUser,
-        updateUserProfile
+        updateUserProfile,
+        getUsers
     };
 }

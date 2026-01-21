@@ -12,7 +12,7 @@
 
     </div>
 
-    <!-- Tags List -->
+    <!-- Tags list -->
     <div v-if="client.tags" class="flex flex-wrap gap-2">
       <Badge
           v-for="tag in client.tags"

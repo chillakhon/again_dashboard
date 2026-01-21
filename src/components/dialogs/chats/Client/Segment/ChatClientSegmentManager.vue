@@ -7,7 +7,7 @@
       />
     </div>
 
-    <!-- Tags List -->
+    <!-- Tags list -->
     <div v-if="client.segments && client.segments.length" class="flex flex-wrap gap-2">
       <Badge
           v-for="s in client.segments"
