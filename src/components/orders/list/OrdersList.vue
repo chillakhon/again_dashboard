@@ -26,6 +26,7 @@
   </div>
 
   <OrderListTable
+      :loading="sending"
       :items="orders"
       :pagination="pagination"
       @deleted="fetchData()"
@@ -78,11 +79,10 @@ onMounted(async () => {
   await store.dispatch('notifications/markOrdersChecked');
 })
 
-const {getOrders} = useOrderFunctions()
+const {getOrders, sending} = useOrderFunctions()
 
 
 async function fetchData() {
-
 
   const status = route.query?.status ? `${route.query?.status}` : searchParams.value.status ? searchParams.value.status : ''
 

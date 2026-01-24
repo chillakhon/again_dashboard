@@ -6,6 +6,7 @@
         :custom-actions="true"
         :show-print-button="true"
         :pagination="pagination"
+        :loading="loading"
     >
       <template #actions="{row}">
         <IconButtons
@@ -36,7 +37,6 @@ import {useOrderFunctions} from "@/composables/useOrderFunctions";
 import {useDateFormat} from "@/composables/useDateFormat";
 import {useStatusFunctions} from "@/composables/useStatusFunctions";
 import {PaginationMeta} from "@/types/Types";
-import {useTableColumns} from "@/composables/Table/useTableColumns";
 import {useSelectableColumn} from "@/composables/useSelectableColumn";
 
 
