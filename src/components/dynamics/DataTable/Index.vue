@@ -20,9 +20,12 @@
               <div class="w-full flex justify-end">
                 <div>
                   <PrinterIcon
+                      v-if="showPrintButton"
                       class="text-gray-700 hover:text-gray-800 transition cursor-pointer h-4 w-4"
-                      @click="printTable" v-if="showPrintButton"/>
+                      @click="printTable"
+                  />
                 </div>
+
               </div>
             </TableHead>
           </TableRow>

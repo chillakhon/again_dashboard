@@ -5,6 +5,7 @@
       :edit="edit"
       :loading="loading"
       :pagination="pagination"
+
       @save_changes="handlingUpdate($event)"
       @deleted="
       useClientFunctions().deleteClient($event.id);
@@ -22,15 +23,15 @@
 
 <script setup lang="ts">
 import ClientsEdit from '@/components/clients/Edit/Index.vue'
-import {Check, X, Tickets} from "lucide-vue-next";
-import {h, PropType, ref} from "vue";
+import {Check, X} from "lucide-vue-next";
+import {h, PropType, ref, watch} from "vue";
 import {useClientFunctions} from "@/composables/useClientFunctions";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Client} from "@/models/client/Client";
 import PromoCodeClientModal from "@/components/clients/Promo/PromoCodeClientModal.vue";
 import {useDateFormat} from "@/composables/useDateFormat";
 import {Pagination} from "@/types/Types";
-import {useTableColumns} from "@/composables/Table/useTableColumns";
+import {useSelectableColumn} from "@/composables/useSelectableColumn";
 
 const props = defineProps({
   clients: {
@@ -43,13 +44,19 @@ const props = defineProps({
   }
 });
 
-const emits = defineEmits(["deleted", "updated"]);
+const emits = defineEmits(["deleted", "updated", "selectionChanged"]);
 
 
 const {formatDateToRussian} = useDateFormat()
+const {selectedIds, selectColumn, indexColumn} = useSelectableColumn(props.pagination)
+
+// Следи за изменениями selectedIds и эмить наверх
+watch(selectedIds, (newIds) => {
+  emits('selectionChanged', newIds)
+}, {deep: true})
+
 
 async function handlingUpdate(data: Client) {
-
   await useClientFunctions().updateClient(data)
   emits('updated')
 }
@@ -61,10 +68,10 @@ const edit = ref({
   loader: false,
 });
 
-const {createIndexColumn} = useTableColumns()
-const columns = [
 
-  createIndexColumn(props.pagination),
+const columns = [
+  selectColumn,
+  indexColumn,
   {
     accessorKey: "id",
     header: "ID",

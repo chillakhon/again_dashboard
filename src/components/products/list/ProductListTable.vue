@@ -5,7 +5,6 @@
         :actions="[
         { label: 'Активировать', icon: Eye, onClick: handleActivate },
         { label: 'Деактивировать', icon: EyeOff, onClick: handleDeactivate },
-        // { label: 'Удалить', icon: Trash2, onClick: handleDelete },
       ]"
     />
   </div>

@@ -24,7 +24,10 @@
   <Loader v-if="isLoading"/>
   <div v-else>
     <div class="w-full">
-      <ReviewsTable :reviews="reviewsData" @refresh="fetchData()"/>
+      <ReviewsTable
+          :reviews="reviewsData"
+          @refresh="fetchData()"
+      />
     </div>
     <div class="flex items-center justify-end space-x-2 py-4">
       <div class="space-x-2">

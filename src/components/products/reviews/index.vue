@@ -1,8 +1,11 @@
-<!-- components/products/reviews/Reviews.vue -->
 <template>
   <div class="">
-    <h2 class="text-lg font-semibold text-gray-800 my-2">Отзывы</h2>
+    <div class="flex justify-between items-center my-2">
+      <h2 class="text-lg font-semibold text-gray-800">Отзывы</h2>
 
+      <!-- Добавляем кнопку экспорта -->
+      <ReviewsExport />
+    </div>
 
     <div class="flex-1">
       <Tabs v-model="currentTabValue" class="w-full">
@@ -60,12 +63,11 @@
 <script setup lang="ts">
 import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
 import {ref} from "vue";
-import { Label } from '@/components/ui/label'
-import { Switch } from '@/components/ui/switch'
 import AllReviews from "@/components/products/reviews/tab/AllReviews.vue";
 import UnpublishedReviews from "@/components/products/reviews/tab/UnpublishedReviews.vue";
 import UnansweredReviews from "@/components/products/reviews/tab/UnansweredReviews.vue";
 import SpamReviews from "@/components/products/reviews/tab/SpamReviews.vue";
+import ReviewsExport from "@/components/products/reviews/Export.vue"; // Добавь импорт
 
 const currentTabValue = ref('all');
 const reviewsEnabled = ref(true);

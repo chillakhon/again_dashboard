@@ -1,26 +1,27 @@
 <template>
-  <div>
-    <div class="md:flex justify-between md:mb-2">
+    <div class="md:flex justify-between md:mb-2 md:space-x-2">
       <ClientSearch
           :filter="filters"
           @search="handleSearch"
       />
-
-      <ClientsAdd
-          class="max-md:my-2"
-          @submit="fetchData()"
-      />
+      <div class="flex gap-2 max-md:my-2">
+        <ClientsExport
+            :selected-ids="selectedIds"
+        />
+        <ClientsAdd
+            @submit="fetchData()"
+        />
+      </div>
     </div>
-    <Loader v-if="isLoading"/>
+
     <ClientsTable
-        v-else
         :key="renderTable"
         :clients="clients"
         :pagination="pagination"
         @deleted="deleteClient($event)"
         @updated="fetchData"
+        @selection-changed="handleSelectionChanged"
     />
-  </div>
 </template>
 
 <script setup lang="ts">
@@ -28,14 +29,16 @@ import axios from "axios";
 import {ref, onMounted, watch} from "vue"
 import ClientsTable from "@/components/clients/Table.vue";
 import ClientsAdd from "@/components/clients/Add/Index.vue";
-import Loader from "@/components/common/Loader.vue";
 import {Client} from "@/models/client/Client";
 import ClientSearch from "@/components/clients/ClientSearch.vue";
 import {Pagination} from "@/types/Types";
+import ClientsExport from "@/components/clients/Export.vue";
+
 
 const clients = ref<Client[]>([]);
-const isLoading = ref(true);
+const selectedIds = ref<number[]>([]);
 
+const renderTable = ref(1)
 
 const pagination = ref<Pagination>({
   page: 1,
@@ -43,7 +46,6 @@ const pagination = ref<Pagination>({
   total: 0,
 });
 
-const renderTable = ref(1)
 
 const filters = ref({
   search: "",
@@ -59,6 +61,11 @@ const deleteClient = (client: Client) => {
       (item) => item.id !== client.id
   );
 };
+
+
+const handleSelectionChanged = (ids: number[]) => {
+  selectedIds.value = ids
+}
 
 async function fetchData() {
 
@@ -82,9 +89,8 @@ async function fetchData() {
   } catch (error) {
     console.error("Error fetching clients:", error);
     clients.value = [];
-  } finally {
-    isLoading.value = false;
-    renderTable.value++
+  }
+  finally {
   }
 }
 
@@ -100,12 +106,18 @@ const handleSearch = async () => {
 
 
 watch(
-    () => pagination.value,
+    () => pagination.value.page, // Следим только за страницей
+    () => {
+      selectedIds.value = [] // Сбрасываем выбор
+      renderTable.value++
+      fetchData()
+    }
+)
+
+watch(
+    () => pagination.value.per_page, // Следим за per_page отдельно
     () => {
       fetchData()
-    },
-    {
-      deep: true,
     }
 )
 

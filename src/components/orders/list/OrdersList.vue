@@ -1,9 +1,6 @@
 <template>
   <div class="flex justify-between mb-2 md:space-x-4 max-md:flex-col">
-    <!--    <DynamicTitle-->
-    <!--        title="Заказы"-->
-    <!--        variant="primary"-->
-    <!--    />-->
+
 
     <div class="w-full  flex md:space-x-2 max-md:space-y-2 max-md:flex-col">
       <OrderSearch
@@ -12,50 +9,46 @@
           @search="handleSearch"
       />
 
-      <Button
-          v-if="hasActiveFilters"
-          variant="outline"
-          @click="resetFilters"
-      >
-        <X/>
-      </Button>
+      <div class="flex gap-2">
+        <!-- Добавляем кнопку экспорта -->
+        <OrdersExport />
+
+        <Button
+            v-if="hasActiveFilters"
+            variant="outline"
+            @click="resetFilters"
+        >
+          <X/>
+        </Button>
+      </div>
 
     </div>
   </div>
 
-  <Loader v-if="isLoading"/>
   <OrderListTable
-      v-else
-      :key="renderTable"
       :items="orders"
+      :pagination="pagination"
       @deleted="fetchData()"
   />
 
-  <PaginationTable
-      class="flex justify-end"
-      :total="totalItems"
-      :default-page="currentPage"
-      :items-per-page="itemsPerPage"
-      :sibling-count="1"
-      :show-edges="true"
-      @current-page="currentPage = $event; fetchData()"
-  />
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, computed} from 'vue';
-import PaginationTable from "@/components/PaginationTable.vue";
-import Loader from "@/components/common/Loader.vue";
-import {useRouter, useRoute} from "vue-router";
+import {ref, onMounted, computed, watch} from 'vue';
+import {useRoute} from "vue-router";
 import Order from "@/models/order/Order"
 import OrderListTable from "@/components/orders/list/OrderListTable.vue";
 import {useOrderFunctions} from "@/composables/useOrderFunctions";
 import OrderSearch from "@/components/orders/list/OrderSearch.vue";
+import OrdersExport from "@/components/orders/Export.vue";
 import Button from "@/components/ui/button/Button.vue";
 import {X} from "lucide-vue-next"
 import {useStore} from "vuex";
+import {PaginationMeta} from "@/types/Types";
 
 const store = useStore();
+const route = useRoute()
+
 
 const searchParams = ref({
   datePicker: {
@@ -67,25 +60,18 @@ const searchParams = ref({
   payment_status: ''
 })
 
+const orders = ref<Order[]>([])
 
-const route = useRoute()
-
+const renderSearchComp = ref(1)
+const pagination = ref<PaginationMeta>({
+  page: 1,
+  per_page: 15,
+  total: 0,
+})
 
 const hasActiveFilters = computed(() => {
   return !!searchParams.value.search || !!searchParams.value.datePicker.start || !!searchParams.value.datePicker.end || !!searchParams.value.status
 })
-
-const renderTable = ref(1)
-const renderSearchComp = ref(1)
-
-
-const isLoading = ref(true)
-const orders = ref<Order[]>([])
-
-const totalItems = ref(0);
-const currentPage = ref(1);
-const itemsPerPage = ref(15);
-
 
 onMounted(async () => {
   await fetchData()
@@ -95,19 +81,16 @@ onMounted(async () => {
 const {getOrders} = useOrderFunctions()
 
 
-
-
 async function fetchData() {
 
-  isLoading.value = true
 
   const status = route.query?.status ? `${route.query?.status}` : searchParams.value.status ? searchParams.value.status : ''
 
   const result = await getOrders({
     status: status,
     paginate: true,
-    page: currentPage.value,
-    per_page: itemsPerPage.value,
+    page: pagination.value.page,
+    per_page: pagination.value.per_page,
     search: searchParams.value.search,
     date_from: searchParams.value.datePicker.start,
     date_to: searchParams.value.datePicker.end,
@@ -115,12 +98,7 @@ async function fetchData() {
   })
 
   orders.value = result?.orders ?? []
-  currentPage.value = result?.meta.page ?? 1
-  itemsPerPage.value = result?.meta.per_page ?? 15
-  totalItems.value = result?.meta.total ?? 0
-
-  isLoading.value = false
-  renderTable.value++
+  pagination.value.total = result?.meta.total ?? 0
 }
 
 
@@ -139,9 +117,15 @@ function resetFilters() {
     status: '',
   }
 
-  currentPage.value = 1
+  pagination.value.page = 1
   renderSearchComp.value++
   fetchData()
 }
+
+
+watch(
+    () => [pagination.value.page, pagination.value.per_page],
+    () => fetchData()
+)
 
 </script>

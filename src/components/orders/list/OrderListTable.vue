@@ -5,6 +5,7 @@
         :columns="columns"
         :custom-actions="true"
         :show-print-button="true"
+        :pagination="pagination"
     >
       <template #actions="{row}">
         <IconButtons
@@ -26,24 +27,26 @@
 </template>
 
 <script setup lang="ts">
-import {h, PropType} from "vue";
+import {h} from "vue";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
-import usePermission from "@/composables/usePermission";
 import {RouterLink, useRouter} from "vue-router";
 import IconButtons from "@/components/dynamics/IconButtons.vue";
 import Order from "@/models/order/Order";
 import {useOrderFunctions} from "@/composables/useOrderFunctions";
 import {useDateFormat} from "@/composables/useDateFormat";
 import {useStatusFunctions} from "@/composables/useStatusFunctions";
+import {PaginationMeta} from "@/types/Types";
+import {useTableColumns} from "@/composables/Table/useTableColumns";
+import {useSelectableColumn} from "@/composables/useSelectableColumn";
 
 
-const props = defineProps({
-  items: {
-    type: Array as PropType<Order[]>,
-    default: () => []
-  },
-  loading: Boolean,
-});
+interface Props {
+  items: Order[];
+  loading?: boolean;
+  pagination: PaginationMeta;
+}
+
+const props = defineProps<Props>();
 
 const emits = defineEmits(["deleted", "updated"]);
 
@@ -57,13 +60,11 @@ const handlerEdit = (row: Order) => {
 
 
 const {getStatus} = useStatusFunctions()
+const {indexColumn} = useSelectableColumn(props.pagination)
 
 
 const columns = [
-  {
-    accessorKey: "id",
-    header: "ID",
-  },
+  indexColumn,
 
   {
     accessorKey: 'id',
