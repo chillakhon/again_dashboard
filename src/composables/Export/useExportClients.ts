@@ -35,10 +35,8 @@ export function useExportClients() {
                 let fileName = `clients_${Date.now()}.csv`
 
                 if (contentDisposition) {
-                    const fileNameMatch = contentDisposition.match(/filename="?(.+)"?/)
-                    if (fileNameMatch && fileNameMatch[1]) {
-                        fileName = fileNameMatch[1]
-                    }
+                    const fileNameMatch = contentDisposition.match(/filename="([^"]+)"/i)
+                    if (fileNameMatch?.[1]) fileName = fileNameMatch[1]
                 }
 
                 link.setAttribute('download', fileName)
