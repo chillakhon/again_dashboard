@@ -38,27 +38,26 @@
             />
 
             <!-- Remove button -->
-            <Button
-                variant="destructive"
-                size="icon"
-                @click="emit('remove', file.id)"
-                class="absolute top-1 right-1 w-5 h-5 rounded-full p-0"
+            <button
+                type="button"
+                class="absolute top-1 right-1 w-5 h-5 rounded-full p-0 bg-destructive text-white flex items-center justify-center z-10 hover:bg-destructive/90 transition-colors"
+                @click.stop="handleRemove(file.id)"
             >
-              <X class="w-3 h-3"/>
-            </Button>
+              <X class="w-3 h-3 pointer-events-none" />
+            </button>
 
             <!-- Upload progress -->
             <div
                 v-if="file.uploadProgress !== undefined && file.uploadProgress < 100"
-                class="absolute inset-0 bg-black/50 flex items-center justify-center"
+                class="absolute inset-0 flex items-center justify-center pointer-events-none"
             >
-              <span class="text-white text-xs font-medium">{{ file.uploadProgress }}%</span>
+              <!-- <span class="text-white text-xs font-medium">{{ file.uploadProgress }}%</span> -->
             </div>
 
             <!-- Error overlay -->
             <div
                 v-if="file.error"
-                class="absolute inset-0 bg-destructive/80 flex items-center justify-center"
+                class="absolute inset-0 bg-destructive/80 flex items-center justify-center pointer-events-none"
                 :title="file.error"
             >
               <AlertCircle class="w-5 h-5 text-white"/>
@@ -94,7 +93,7 @@
             <Button
                 variant="destructive"
                 size="icon"
-                @click="emit('remove', file.id)"
+                @click="emit('remove', file.id); console.log(4545)"
                 class="absolute top-1 right-1 w-5 h-5 rounded-full p-0"
             >
               <X class="w-3 h-3"/>
@@ -154,6 +153,12 @@ const emit = defineEmits<{
   remove: [id: string]
   clearAll: []
 }>()
+
+
+
+const handleRemove = (id: string) => {
+  emit('remove', id)
+}
 
 // Проверка наличия ошибок
 const hasErrors = computed(() => {

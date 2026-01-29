@@ -41,14 +41,7 @@
             :key="message.id"
             :class="['flex', message.direction === 'incoming' ? 'justify-start' : 'justify-end']"
         >
-          <!--          <div-->
-          <!--              :class="[-->
-          <!--              'max-w-[80%] rounded-lg text-xs relative',-->
-          <!--              message.direction === 'incoming'-->
-          <!--                ? 'bg-muted'-->
-          <!--                : 'bg-primary text-primary-foreground'-->
-          <!--            ]"-->
-          <!--          >-->
+
 
           <div
               :class="[
@@ -249,6 +242,9 @@ const handleFilesSelected = (files: PendingFile[]) => {
 }
 
 const handleRemoveFile = (fileId: string) => {
+
+  console.log('handleRemoveFile', fileId)
+
   pendingFiles.value = pendingFiles.value.filter(f => f.id !== fileId)
 }
 

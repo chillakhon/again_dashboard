@@ -21,6 +21,10 @@ export interface PendingFile {
     name: string
     uploadProgress?: number       // процент загрузки (0-100)
     error?: string               // ошибка загрузки
+
+    uploadedAttachment?: Attachment   // то, что вернул сервер после upload
+    isUploaded?: boolean             // true когда upload завершен
+
 }
 
 // Допустимые типы файлов
