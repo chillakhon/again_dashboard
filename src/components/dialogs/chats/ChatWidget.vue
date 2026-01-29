@@ -41,14 +41,25 @@
             :key="message.id"
             :class="['flex', message.direction === 'incoming' ? 'justify-start' : 'justify-end']"
         >
+          <!--          <div-->
+          <!--              :class="[-->
+          <!--              'max-w-[80%] rounded-lg text-xs relative',-->
+          <!--              message.direction === 'incoming'-->
+          <!--                ? 'bg-muted'-->
+          <!--                : 'bg-primary text-primary-foreground'-->
+          <!--            ]"-->
+          <!--          >-->
+
           <div
               :class="[
-              'max-w-[80%] rounded-lg text-xs relative',
-              message.direction === 'incoming'
+                'max-w-[80%] rounded-lg text-xs relative overflow-x-hidden break-words [overflow-wrap:anywhere]',
+                message.direction === 'incoming'
                 ? 'bg-muted'
                 : 'bg-primary text-primary-foreground'
-            ]"
+               ]"
           >
+
+
             <!-- ← ДОБАВИЛИ: Вложения -->
             <div
                 v-if="message.attachments && message.attachments.length > 0"
@@ -65,11 +76,19 @@
             </div>
 
             <!-- Текст сообщения -->
+<!--            <p-->
+<!--                v-if="message.content"-->
+<!--                v-html="linkify(message.content)"-->
+<!--                class="px-2 py-1"-->
+<!--            ></p>-->
+
+
             <p
                 v-if="message.content"
                 v-html="linkify(message.content)"
-                class="px-2 py-1"
+                class="px-2 py-1 whitespace-pre-wrap break-words [overflow-wrap:anywhere]"
             ></p>
+
 
             <div class="flex items-center justify-end space-x-1 mt-0.5 px-2 pb-1">
               <!-- Time -->
