@@ -22,7 +22,7 @@
 
     <div v-if="client?.profile?.birthday" class="flex items-center gap-2">
       <Cake class="w-4 h-4 text-muted-foreground"/>
-      <span class="text-sm">{{ client.profile?.birthday }}</span>
+      <span class="text-sm">{{ useDateFormat().formatDateToRussian(client.profile?.birthday )}}</span>
     </div>
 
   </div>
@@ -31,6 +31,7 @@
 <script setup lang="ts">
 import {Mail, Phone, User, MapPin, Cake} from "lucide-vue-next";
 import {Client} from "@/types/client";
+import {useDateFormat} from "@/composables/useDateFormat";
 
 interface Props {
   client: Client;

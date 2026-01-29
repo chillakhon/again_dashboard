@@ -130,7 +130,11 @@ const buildFormFields = () => {
       component: 'checkbox',
       label: 'Показывать поле ввода',
     },
-
+    {
+      name: 'input_field_required',
+      component: 'checkbox',
+      label: 'Поле обязательно',
+    },
     [
       {
         name: 'input_field_type',
@@ -140,21 +144,7 @@ const buildFormFields = () => {
         optionLabel: 'label',
         optionValue: 'value',
       },
-      {
-        name: 'input_field_required',
-        component: 'checkbox',
-        label: 'Поле обязательно',
-      },
-    ],
 
-    [
-      {
-        name: 'input_field_label',
-        component: 'text',
-        type: 'text',
-        label: 'Подпись поля',
-        placeholder: 'Например: Введите ваш email',
-      },
       {
         name: 'input_field_placeholder',
         component: 'text',
@@ -162,6 +152,17 @@ const buildFormFields = () => {
         label: 'Placeholder поля',
         placeholder: 'Например: example@mail.com',
       },
+    ],
+
+    [
+      // {
+      //   name: 'input_field_label',
+      //   component: 'text',
+      //   type: 'text',
+      //   label: 'Подпись поля',
+      //   placeholder: 'Например: Введите ваш email',
+      // },
+
     ],
 
     // Задержка показа

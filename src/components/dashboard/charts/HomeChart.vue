@@ -40,7 +40,7 @@ const props = defineProps({
       labels: [],
       new: [],
       processing: [],
-      approved: []
+      assembled: []
     })
   }
 });
@@ -77,8 +77,8 @@ const chartData = ref({
       pointHoverRadius: 6
     },
     {
-      label: 'Готовы к отправке',
-      data: props.chartData?.approved ?? [],
+      label: 'Собран',
+      data: props.chartData?.assembled ?? [],
       borderColor: '#00ba13',
       backgroundColor: 'rgba(59, 130, 246, 0.05)',
       borderWidth: 3,
@@ -181,7 +181,7 @@ watch(() => props.chartData, (newVal) => {
     datasets: [
       { ...chartData.value.datasets[0], data: newVal.new },
       { ...chartData.value.datasets[1], data: newVal.processing },
-      { ...chartData.value.datasets[2], data: newVal.approved }
+      { ...chartData.value.datasets[2], data: newVal.assembled }
     ]
   };
 }, { deep: true });
