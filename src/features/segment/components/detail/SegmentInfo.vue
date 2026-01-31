@@ -46,14 +46,14 @@
         <!-- Дата создания -->
         <div>
           <p class="text-sm text-gray-600">Создан</p>
-          <p class="text-xs">{{ formatDate(segment.created_at) }}</p>
+          <p class="text-xs">{{ segment.created_at }}</p>
         </div>
 
         <!-- Последний пересчёт -->
         <div>
           <p class="text-sm text-gray-600">Последний пересчёт</p>
           <p class="text-xs">
-            {{ segment.last_recalculated_at ? formatDate(segment.last_recalculated_at) : '—' }}
+            {{ segment.last_recalculated_at ? segment.last_recalculated_at : '—' }}
           </p>
         </div>
       </div>
@@ -76,5 +76,4 @@ defineProps<Props>()
 const emit = defineEmits(['edit', 'delete', 'toggle-active', 'recalculate'])
 
 const {formatDateToRussian} = useDateFormat()
-const formatDate = (date: string) => formatDateToRussian(date)
 </script>

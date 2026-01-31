@@ -109,9 +109,16 @@ const columns = [
   ),
 
   {
+    accessorKey: "created_at",
+    header: "Дата создания",
+  },
+
+
+  {
     accessorKey: "clients_count",
     header: "Клиентов",
   },
+
 
   {
     accessorKey: "statistics.total_amount",
@@ -158,6 +165,12 @@ const columns = [
     accessorKey: "last_recalculated_at",
     header: "Последний пересчёт",
   },
+
+  {
+    accessorKey: "tags",
+    header: "Теги",
+  },
+
 
 ];
 </script>

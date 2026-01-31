@@ -45,6 +45,7 @@ import {PaginationMeta} from "@/types/Types";
 import {h} from "vue";
 import {Button} from "@/components/ui/button";
 import {Trash2, Plus} from "lucide-vue-next";
+import {useDateFormat} from "@/composables/useDateFormat";
 
 interface PropsData {
   clients: SegmentClient[];
@@ -55,8 +56,11 @@ interface PropsData {
 
 const props = defineProps<PropsData>();
 
+
+console.log(props.clients)
 const {createIndexColumn} = useTableColumns();
 const {formatPrice} = usePriceFormatter()
+const {formatDateToRussian} = useDateFormat()
 
 
 const isClientPendingDetach = (promoCodeId: number): boolean => {
@@ -123,6 +127,30 @@ const columns = [
           },
           row.original.profile?.phone
       );
+
+    }
+  },
+
+  {
+    accessorKey: "birthday",
+    header: "День рождения",
+    cell: ({row}: any) => {
+      return h('span', {
+            class: 'whitespace-nowrap',
+          },
+          formatDateToRussian(row.original.profile.birthday)
+      );
+    }
+  },
+  {
+    accessorKey: "added_to_segment_at",
+    header: "Дата доб в сегменте",
+    cell: ({row}: any) => {
+      return h('span', {
+            class: 'whitespace-nowrap',
+          },
+          row.original.added_to_segment_at
+      );
     }
   },
 
@@ -148,6 +176,36 @@ const columns = [
     cell: ({row}: any) => {
       return formatPrice(row.original.average_check || 0);
     }
+  },
+
+
+  {
+    accessorKey: "tags",
+    header: "Теги",
+    cell: ({ row }: any) => {
+      const tags = row.original.tags as Array<{ id: number; name: string }> | undefined;
+
+      if (!tags || tags.length === 0) {
+        return h('span', { class: 'text-muted-foreground' }, '—');
+      }
+
+      return h(
+          'div',
+          { class: 'flex flex-wrap gap-1 max-w-[320px]' },
+          tags.map(t =>
+              h(
+                  'span',
+                  {
+                    key: t.id,
+                    class:
+                        'inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium bg-muted/40 whitespace-nowrap',
+                    title: t.name,
+                  },
+                  t.name
+              )
+          )
+      );
+    },
   },
 
 

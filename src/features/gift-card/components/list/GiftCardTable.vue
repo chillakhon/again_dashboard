@@ -145,6 +145,10 @@ const columns = [
       return useDateFormat().formatDateToRussian(row.original.created_at, true)
     }
   },
+  {
+    accessorKey: "send",
+    header: "Отправлен",
+  },
 ]
 </script>
 
