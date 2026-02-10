@@ -17,6 +17,7 @@ export class PromoCode {
     maxUses: number | undefined;
     timesUsed: number | undefined;
     isActive: boolean | undefined;
+    is_unlimited: boolean | undefined;
     applies_to_all_products: boolean | undefined;
     applies_to_all_clients: boolean | undefined;
     createdAt: string | undefined;
@@ -45,6 +46,7 @@ export class PromoCode {
         this.promo_code_type = undefined;
         this.selected_products = undefined;
         this.discount_behavior = undefined;
+        this.is_unlimited = undefined;
     }
 
     get discountTypeLabel(): string {
@@ -82,6 +84,7 @@ export class PromoCode {
         promo.updatedAt = json.updated_at ?? undefined;
         promo.promo_code_type = json.type;
         promo.selected_products = json.products ?? [];
+        promo.is_unlimited = json.is_unlimited ?? undefined;
         return promo;
     }
 
@@ -99,6 +102,7 @@ export class PromoCode {
             max_uses: this.maxUses ?? null,
             times_used: this.timesUsed ?? 0,
             is_active: this.isActive ?? null,
+            is_unlimited: this.is_unlimited ?? null,
         };
     }
 
@@ -117,6 +121,7 @@ export class PromoCode {
         formData.append('max_uses', String(this.maxUses ?? ''));
         formData.append('times_used', String(this.timesUsed ?? 0));
         formData.append('is_active', this.isActive ? '1' : '0');
+        formData.append('is_unlimited', this.is_unlimited ? '1' : '0');
         formData.append('applies_to_all_clients', this.applies_to_all_clients ? '1' : '0');
 
 
@@ -168,6 +173,7 @@ export class PromoCode {
         cloned.maxUses = this.maxUses;
         cloned.timesUsed = this.timesUsed;
         cloned.isActive = this.isActive;
+        cloned.is_unlimited = this.is_unlimited;
         cloned.createdAt = this.createdAt;
         cloned.updatedAt = this.updatedAt;
         return cloned;

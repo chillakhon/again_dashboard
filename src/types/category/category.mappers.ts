@@ -13,7 +13,8 @@ export function categoryFormUpdate(c: Category): CategoryFormData {
         is_new_product: !!c.is_new_product,
         menu_order: c.menu_order ?? null,
 
-        banner_image: null,
+        banner_image_desktop: null,
+        banner_image_mobile: null,
     }
 }
 

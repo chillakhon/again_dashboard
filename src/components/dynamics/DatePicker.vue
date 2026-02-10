@@ -27,6 +27,7 @@ const props = defineProps({
     type: String,
     default: 'ru-RU'
   },
+  disabled: Boolean
 })
 
 const emit = defineEmits(['update:modelValue'])
@@ -142,6 +143,7 @@ watch(
     </PopoverTrigger>
     <PopoverContent class="w-auto p-0">
       <Calendar
+          :disabled="disabled"
           v-model="internalValue"
           initial-focus
           locale="ru-RU"

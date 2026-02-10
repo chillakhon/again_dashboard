@@ -44,6 +44,7 @@ export interface Conversation {
     id: number
     client_id: number
     source: ChatSource
+    external_id?: string
 
     // Статус
     status: 'active' | 'archived' | 'closed'

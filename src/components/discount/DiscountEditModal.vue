@@ -42,23 +42,7 @@ const props = defineProps({
 
 const discount = ref<Discount>(props.discount?.clone());
 
-
-
-onMounted(() => {
-  console.log(props.discount);
-})
-
-
-let products: Product[] = [];
-
 const {sending, updateDiscount} = useDiscountFunctions()
-
-const dialogOpen = async (param: boolean) => {
-
-  // console.log(props.discount);
-
-
-}
 
 
 const handleSaveToServe = async () => {

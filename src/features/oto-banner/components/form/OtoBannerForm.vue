@@ -12,15 +12,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import {ref, onMounted} from 'vue'
 import DynamicForm from '@/components/dynamics/DynamicForm.vue'
-import type { OtoBannerFormData } from '@/features/oto-banner/types'
+import type {OtoBannerFormData} from '@/features/oto-banner/types'
 import {
   OTO_BANNER_STATUS_OPTIONS,
   OTO_BANNER_DEVICE_TYPE_OPTIONS,
   OTO_BANNER_INPUT_FIELD_TYPE_OPTIONS,
 } from '@/features/oto-banner/types'
-import { Spinner } from "@/components/ui/spinner"
+import {Spinner} from "@/components/ui/spinner"
+import {usePromoCodeFunctions} from "@/composables/usePromoCodeFunctions";
 
 interface OtoBannerFormProps {
   formData: OtoBannerFormData
@@ -37,14 +38,37 @@ const emit = defineEmits<{
   (e: 'submitForm'): void
 }>()
 
+const {getPromoCodes} = usePromoCodeFunctions()
+const loadingPromos = ref(false)
+const promoCodes = ref<any[]>([])
+
 const isLoading = ref<boolean>(true)
 const errors = ref<Record<string, string>>({})
 const formFields = ref<any[]>([])
 
-onMounted(() => {
+onMounted(async () => {
+  await loadPromoCodes()
   buildFormFields()
   isLoading.value = false
 })
+
+
+const loadPromoCodes = async () => {
+  loadingPromos.value = true
+  try {
+    const res = await getPromoCodes({
+      is_active: true,
+      per_page: 100,  // или сколько нужно
+    })
+    if (res) {
+      promoCodes.value = res.data || []
+    }
+  } catch (e) {
+    console.error('Ошибка загрузки промокодов', e)
+  } finally {
+    loadingPromos.value = false
+  }
+}
 
 const buildFormFields = () => {
   formFields.value = [
@@ -154,27 +178,42 @@ const buildFormFields = () => {
       },
     ],
 
+
+    // Задержка показа
     [
-      // {
-      //   name: 'input_field_label',
-      //   component: 'text',
-      //   type: 'text',
-      //   label: 'Подпись поля',
-      //   placeholder: 'Например: Введите ваш email',
-      // },
+      {
+        name: 'display_delay_seconds',
+        component: 'text',
+        type: 'number',
+        label: 'Задержка перед показом (секунды)',
+        placeholder: '0',
+        min: 0,
+        max: 3600,
+      },
+
+
+      {
+        name: 'promo_code_id',
+        component: 'select',
+        label: 'Привязанный промокод',
+        required: false,
+        options: promoCodes.value.map(p => ({
+          value: p.id,
+          label: `${p.code} - ${p.discountType === 'percentage' ? p.discountAmount + '%' : p.discountAmount + '₽'}`
+        })),
+        optionLabel: 'label',
+        optionValue: 'value',
+        placeholder: 'Выберите промокод (опционально)',
+        description: loadingPromos.value
+            ? 'Загрузка промокодов...'
+            : promoCodes.value.length === 0
+                ? 'Активных промокодов нет'
+                : 'Клиент получит выбранный промокод после заявки',
+        disabled: loadingPromos.value || promoCodes.value.length === 0,
+      },
 
     ],
 
-    // Задержка показа
-    {
-      name: 'display_delay_seconds',
-      component: 'text',
-      type: 'number',
-      label: 'Задержка перед показом (секунды)',
-      placeholder: '0',
-      min: 0,
-      max: 3600,
-    },
 
     // Текст политики
     {
@@ -185,16 +224,7 @@ const buildFormFields = () => {
       rows: 3,
     },
 
-    // Сегменты (пока оставим пустым, добавим позже если нужно)
-    // {
-    //   name: 'segment_ids',
-    //   component: 'multiSelect',
-    //   label: 'Сегменты для автоматического добавления',
-    //   options: [], // TODO: загрузить сегменты
-    //   optionLabel: 'name',
-    //   optionValue: 'id',
-    //   placeholder: 'Выберите сегменты',
-    // },
+
   ]
 }
 </script>

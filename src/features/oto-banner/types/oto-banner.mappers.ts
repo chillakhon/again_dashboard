@@ -25,6 +25,8 @@ export const otoBannerToFormData = (banner: OtoBanner): OtoBannerFormData => ({
     display_delay_seconds: banner.display_delay_seconds,
     privacy_text: banner.privacy_text ?? '',
     segment_ids: banner.segment_ids ?? [],
+    promo_code_id: banner.promo_code_id ?? null,
+
     image: null, // Изображение не преобразуем
 })
 
@@ -33,6 +35,7 @@ export const otoBannerToFormData = (banner: OtoBanner): OtoBannerFormData => ({
  */
 export const formDataToCreateRequest = (formData: OtoBannerFormData): FormData => {
     const data = new FormData()
+
 
     data.append('name', formData.name)
     data.append('status', formData.status)
@@ -60,6 +63,10 @@ export const formDataToCreateRequest = (formData: OtoBannerFormData): FormData =
         formData.segment_ids.forEach((id, index) => {
             data.append(`segment_ids[${index}]`, String(id))
         })
+    }
+
+    if (formData.promo_code_id !== undefined) {
+        data.append('promo_code_id', formData.promo_code_id ? String(formData.promo_code_id) : '');
     }
 
     if (formData.image) data.append('image', formData.image)

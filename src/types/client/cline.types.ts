@@ -12,6 +12,7 @@ export interface Profile {
     birthday?: string;
     telegram_user_id?: string;
     telegram_chat_id?: string;
+    vk_user_id?: string;
     image?: string;
 }
 

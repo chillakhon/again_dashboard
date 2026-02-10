@@ -8,7 +8,7 @@
       :errors="errors"
       :show-submit-button="submitButtonButton"
       @emit-button="console.log(45)"
-      @submit-form="emit('submitForm')"
+      @submit-form="handleSubmit"
   >
 
     <template #enyComponentSlot>
@@ -21,7 +21,6 @@
     </template>
 
   </DynamicForm>
-
 </template>
 
 <script setup lang="ts">
@@ -55,6 +54,27 @@ onMounted(() => {
   isLoading.value = false
 })
 
+
+watch(
+    () => props.formData.is_unlimited,
+    (newValue) => {
+      buildFormFields()
+      if (newValue) {
+        console.log(44)
+        props.formData.expiresAt = undefined
+      }
+    }
+)
+
+
+const handleSubmit = () => {
+  if (props.formData.is_unlimited) {
+    props.formData.expiresAt = undefined;
+  }
+  emit('submitForm')
+}
+
+
 const buildFormFields = () => {
   formFields.value = [
     [
@@ -68,32 +88,38 @@ const buildFormFields = () => {
         component: 'checkbox',
         label: 'Применить ко всем клиентам',
       },
+
     ],
 
     [
-      {
-        name: 'discount_behavior',
-        component: 'select',
-        label: 'Правило совмещения скидок',
-        required: true,
-        options: [
-          {label: 'Заменяет скидку товара', value: 'replace'},
-          {label: 'Добавляется поверх существующей скидки', value: 'stack'},
-          {label: 'Не применяется к товарам со скидкой', value: 'skip'}
-        ],
-        optionLabel: 'label',
-        optionValue: 'value',
-        placeholder: 'Выберите поведение',
-      },
 
       {
         name: 'template_type',
         component: 'checkbox',
         label: '🎂 Промокод на ДР',
-      }
+      },
+      {
+        name: 'is_unlimited',
+        component: 'checkbox',
+        label: 'Действует бессрочно',
+      },
+
 
     ],
-
+    {
+      name: 'discount_behavior',
+      component: 'select',
+      label: 'Правило совмещения скидок',
+      required: true,
+      options: [
+        {label: 'Заменяет скидку товара', value: 'replace'},
+        {label: 'Добавляется поверх существующей скидки', value: 'stack'},
+        {label: 'Не применяется к товарам со скидкой', value: 'skip'}
+      ],
+      optionLabel: 'label',
+      optionValue: 'value',
+      placeholder: 'Выберите поведение',
+    },
 
     [
 
@@ -147,11 +173,17 @@ const buildFormFields = () => {
         component: 'date',
         label: 'Дата начала'
       },
-      {
-        name: 'expiresAt',
-        component: 'date',
-        label: 'Дата окончания'
-      },
+
+      ...(props.formData?.is_unlimited
+          ? []
+          : [
+            {
+              name: 'expiresAt',
+              component: 'date',
+              label: 'Дата окончания'
+            },
+          ])
+
 
     ],
 

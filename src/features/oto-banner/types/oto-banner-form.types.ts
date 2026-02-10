@@ -24,6 +24,8 @@ export interface OtoBannerFormData {
 
     segment_ids: number[]
 
+    promo_code_id?: number | null;
+
     image: File | null
 }
 

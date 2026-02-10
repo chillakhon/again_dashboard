@@ -106,6 +106,7 @@
             :key="field.name ?? 0"
             v-model="formData[field.name]"
             :placeholder="field.placeholder"
+            :disabled="field.disabled"
         />
 
         <div class="flex items-center space-x-2"

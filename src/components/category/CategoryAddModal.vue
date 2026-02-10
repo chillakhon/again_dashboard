@@ -32,7 +32,7 @@ const modalRef = ref<{
   closeModal: () => void;
 } | null>(null)
 
-const category = ref<CategoryFormData>(initialCategoryFormData);
+const category = ref<CategoryFormData>({ ...initialCategoryFormData });
 
 const {createCategory, sending} = useCategoryFunctions()
 
@@ -42,6 +42,8 @@ const handleSaveToServe = () => {
     createCategory(category.value)
         .then(res => {
           emit("created", res.data)
+          category.value = { ...initialCategoryFormData }
+
           modalRef.value?.closeModal()
         })
 

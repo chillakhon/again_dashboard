@@ -7,12 +7,6 @@
   >
     <template #actions="{row}">
 
-      <!--      <ProductShowModal-->
-      <!--          :products="row.original.products"-->
-      <!--          @dialog-open="getProducts(row.original)"-->
-      <!--      />-->
-
-
       <DiscountEditModal
           :key="row.original.id"
           :discount="row.original"
@@ -40,7 +34,6 @@ import {Category} from "@/models/Category";
 import {Check, X} from 'lucide-vue-next'
 import IconButtons from "@/components/dynamics/IconButtons.vue";
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
-import ProductShowModal from "@/components/products/ProductShowModal.vue";
 import {Product} from "@/models/Product";
 import {Discount} from "@/models/Discount";
 import {useDateFormat} from "@/composables/useDateFormat";
@@ -60,7 +53,7 @@ const emits = defineEmits(["deleted", "updated"]);
 
 const products = ref<Product[]>([]);
 
-const {deleteCategory, getProductsByCategory} = useCategoryFunctions()
+const {getProductsByCategory} = useCategoryFunctions()
 
 const {deleteDiscount} = useDiscountFunctions()
 
@@ -110,11 +103,22 @@ const columns = [
     header: "Окончание",
     cell: ({row}: any) => formatDateToRussian(row.original.endsAt)
   },
+
+
   {
     accessorKey: "isActive",
     header: "Активна",
     cell: ({row}: any) => {
       return row.original.isActive
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
+  {
+    accessorKey: "is_unlimited",
+    header: "Без бессрочный",
+    cell: ({row}: any) => {
+      return row.original.is_unlimited
           ? h(Check, {class: "h-4 w-4 text-green-500"})
           : h(X, {class: "h-4 w-4 text-red-500"});
     },
@@ -131,7 +135,6 @@ const getProducts = async (item: Category) => {
         })
   }
 }
-
 
 
 const {formatDateToRussian} = useDateFormat()

@@ -66,6 +66,8 @@ const handleSaveToServe = () => {
         categoryFormData.value
     ).then(res => {
       emit("updated", res.data);
+      categoryFormData.value = categoryFormUpdate(res.data)
+
       renderModal.value++
     })
 

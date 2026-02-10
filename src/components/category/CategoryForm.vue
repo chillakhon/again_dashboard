@@ -132,16 +132,44 @@ const getColumns = async () => {
       required: false,
       placeholder: '0'
     },
+    // {
+    //   name: 'banner_image',
+    //   component: 'text',
+    //   type: 'file',
+    //   label: 'Изображение баннера',
+    //   required: false,
+    //   accept: 'image/*',
+    //   cropperShow: true,
+    //   cropperAspectRatio: 16 / 9,
+    // }
+
+
     {
-      name: 'banner_image',
+      name: 'banner_image_desktop',
       component: 'text',
       type: 'file',
-      label: 'Изображение баннера',
+      label: 'Баннер (Desktop)',
       required: false,
       accept: 'image/*',
       cropperShow: true,
-      cropperAspectRatio: 16 / 9,
-    }
+      // cropperAspectRatio: 3 / 2, // 600×400
+      cropperAspectRatio: 3 / 4, // 750×1000
+
+    },
+    {
+      name: 'banner_image_mobile',
+      component: 'text',
+      type: 'file',
+      label: 'Баннер (Mobile)',
+      required: false,
+      accept: 'image/*',
+      cropperShow: true,
+      // cropperAspectRatio: 3 / 4, // 750×1000
+      cropperAspectRatio: 3 / 2, // 600×400
+
+    },
+
+
   ]
 }
 

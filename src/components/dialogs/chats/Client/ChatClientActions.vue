@@ -24,15 +24,28 @@
         Написать на почту
       </Button>
 
+      <!-- В шаблоне -->
+
+<!--      <Button-->
+<!--          variant="outline"-->
+<!--          class="w-full justify-start"-->
+<!--          size="sm"-->
+<!--          @click="handleTelegram"-->
+<!--          :disabled="true"-->
+<!--      >-->
+<!--        <Send class="w-4 h-4 mr-2"/>-->
+<!--        Написать в Telegram-->
+<!--      </Button>-->
+
       <Button
           variant="outline"
           class="w-full justify-start"
           size="sm"
-          @click="handleTelegram"
-          :disabled="!hasTelegramAccess"
+          @click="handleVK"
+          :disabled="conversation?.source !== 'vk'"
       >
-        <Send class="w-4 h-4 mr-2"/>
-        Написать в Telegram
+        <MessageCircle class="w-4 h-4 mr-2"/>
+        Написать ВКонтакте
       </Button>
     </div>
   </div>
@@ -41,11 +54,13 @@
 <script setup lang="ts">
 import {computed} from 'vue'
 import {Button} from "@/components/ui/button"
-import {Mail, Phone, Send} from "lucide-vue-next"
+import {Mail, Phone, Send, MessageCircle} from "lucide-vue-next"
 import {Client} from "@/types/client"
+import {Conversation} from "@/types/conversation";
 
 interface Props {
   client: Client
+  conversation?: Conversation
 }
 
 const props = defineProps<Props>()
@@ -67,13 +82,32 @@ const handleEmail = () => {
   }
 }
 
-const handleTelegram = () => {
-  const userId = props.client?.profile?.telegram_user_id
-  const chatId = props.client?.profile?.telegram_chat_id
+// В <script setup>
 
-  if (userId) {
-    window.open(`https://t.me/${userId}`, '_blank')
+const handleTelegram = () => {
+  const profile = props.client?.profile
+
+  // Вариант 1 — самый надёжный (если есть номер телефона)
+  if (profile?.phone) {
+    // Убираем всё кроме цифр и плюса
+    const cleanPhone = profile.phone.replace(/[^\d+]/g, '')
+    window.open(`https://t.me/+${cleanPhone}`, '_blank')
+    return
   }
+
+
+  // Вариант 3 — fallback на user_id (откроет профиль, а не чат)
+  if (profile?.telegram_user_id) {
+    window.open(`https://t.me/id${profile.telegram_user_id}`, '_blank')
+    // или просто https://t.me/${profile.telegram_user_id} — но это тоже профиль
+  }
+}
+
+const handleVK = () => {
+  const vkId = props.conversation?.external_id
+  if (!vkId) return
+
+  window.open(`https://vk.com/write${vkId}`, '_blank')
 }
 </script>
 

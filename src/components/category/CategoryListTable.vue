@@ -167,17 +167,33 @@ const columns = [
   },
 
   {
-    accessorKey: "banner_image",
+    accessorKey: "banners",
     header: "Фото",
-    cell: ({row}: any) => {
-      if (row.original.banner_url) {
-        return h('img', {
-          src: row.original.banner_url,
-          alt: row.original.name,
-          class: 'w-16 h-10 object-cover rounded'
-        })
+    cell: ({ row }: any) => {
+      const d = row.original.desktop_url
+      const m = row.original.mobile_url
+
+      if (!d && !m) {
+        return h('span', { class: 'text-gray-400 text-sm' }, '−')
       }
-      return h('span', {class: 'text-gray-400 text-sm'}, '−')
+
+      return h('div', { class: 'flex items-center gap-2' }, [
+        d
+            ? h('img', {
+              src: d,
+              alt: row.original.name,
+              class: 'w-16 h-10 object-cover rounded'
+            })
+            : h('span', { class: 'text-gray-300 text-xs' }, 'D−'),
+
+        m
+            ? h('img', {
+              src: m,
+              alt: row.original.name,
+              class: 'w-10 h-16 object-cover rounded'
+            })
+            : h('span', { class: 'text-gray-300 text-xs' }, 'M−'),
+      ])
     }
   },
 

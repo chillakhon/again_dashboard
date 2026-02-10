@@ -8,12 +8,12 @@
       :errors="errors"
       :show-submit-button="true"
       :submit-button-text="submitButtonName"
-      @submit-form="emit('submitForm')"
+      @submit-form="handleSubmit"
   />
 </template>
 
 <script setup lang="ts">
-import {ref, onMounted, watch} from 'vue'
+import {ref, onMounted, watch, computed} from 'vue'
 import DynamicForm from '@/components/dynamics/DynamicForm.vue'
 import {useCategoryFunctions} from "@/composables/useCategoryFunctions";
 import {useProductFunctions} from "@/composables/useProductFunctions";
@@ -59,6 +59,13 @@ onMounted(async () => {
 });
 
 
+const handleSubmit = () => {
+  if (props.formData.is_unlimited) {
+    props.formData.endsAt = null;
+  }
+  emit('submitForm');
+}
+
 watch(
     () => props.formData?.discountType,
     async (newValue) => {
@@ -76,15 +83,27 @@ watch(
       buildFormFields();
     }
 );
-
+watch(
+    () => props.formData.is_unlimited,
+    () => buildFormFields()
+)
 
 const buildFormFields = () => {
   formFields.value = [
-    {
-      name: 'isActive',
-      component: 'checkbox',
-      label: 'Активна',
-    },
+
+    [
+      {
+        name: 'isActive',
+        component: 'checkbox',
+        label: 'Активна',
+      },
+      {
+        name: 'is_unlimited',
+        component: 'checkbox',
+        label: 'Действует бессрочно',
+        description: 'Скидка будет активна без даты окончания',
+      },
+    ],
 
     {
       name: 'name',
@@ -95,15 +114,6 @@ const buildFormFields = () => {
       placeholder: 'Введите название'
     },
 
-    // {
-    //   name: 'priority',
-    //   component: 'text',
-    //   type: 'number',
-    //   label: 'Приоритет',
-    //   required: true,
-    //   placeholder: 'Введите число',
-    //   description: 'Чем меньше значение, тем раньше эта скидка будет применяться при совпадении нескольких акций.'
-    // },
     [
       {
         name: 'type',
@@ -131,58 +141,76 @@ const buildFormFields = () => {
         label: 'Дата начала',
         placeholder: '',
       },
-      {
-        name: 'endsAt',
-        component: 'date',
-        label: 'Дата окончания',
-        placeholder: ''
-      },
+
+
+      ...(props.formData.is_unlimited
+              ? []
+              : [
+                {
+                  name: 'endsAt',
+                  component: 'date',
+                  label: 'Дата окончания',
+                  placeholder: 'Выберите дату окончания',
+                  required: false,
+                  description: 'Если бессрочно — включите галочку выше',
+                },
+              ]
+      )
     ],
-    {
-      name: 'discountType',
-      component: 'select',
-      label: 'Применять',
-      required: true,
-      placeholder: 'Введите название',
-      options: DiscountTargetOptions,
-      optionLabel: 'label',
-      optionValue: 'value'
-    },
-
-    ...(props.formData?.discountType == DiscountTargetType.SPECIFIC
-        ? [
-          {
-            name: 'productIds',
-            component: 'multiSelect',
-            label: 'Товары',
-            required: true,
-            placeholder: 'Выберите продукты',
-            options: products.value,
-            optionLabel: 'name',
-            optionValue: 'id'
-          }
-        ]
-        : []),
 
 
-    ...(props.formData?.discountType == DiscountTargetType.CATEGORY
-        ? [
-          {
-            name: 'categoryIds', // исправлено
-            component: 'multiSelect',
-            label: 'Категории',
-            required: true,
-            placeholder: 'Выберите категории', // исправлено
-            options: categories.value,
-            optionLabel: 'name',
-            optionValue: 'id'
-          }
+    [
 
-        ]
-        : [])
+
+      {
+        name: 'discountType',
+        component: 'select',
+        label: 'Применять',
+        required: true,
+        placeholder: 'Введите название',
+        options: DiscountTargetOptions,
+        optionLabel: 'label',
+        optionValue: 'value'
+      },
+
+      ...(props.formData?.discountType == DiscountTargetType.SPECIFIC
+          ? [
+            {
+              name: 'productIds',
+              component: 'multiSelect',
+              label: 'Товары',
+              required: true,
+              placeholder: 'Выберите продукты',
+              options: products.value,
+              optionLabel: 'name',
+              optionValue: 'id'
+            }
+          ]
+          : []),
+
+
+      ...(props.formData?.discountType == DiscountTargetType.CATEGORY
+          ? [
+            {
+              name: 'categoryIds', // исправлено
+              component: 'multiSelect',
+              label: 'Категории',
+              required: true,
+              placeholder: 'Выберите категории', // исправлено
+              options: categories.value,
+              optionLabel: 'name',
+              optionValue: 'id'
+            }
+
+          ]
+          : []),
+
+
+    ]
+
+
   ]
 }
-
 
 async function loadOptions() {
   const type = props.formData?.discountType

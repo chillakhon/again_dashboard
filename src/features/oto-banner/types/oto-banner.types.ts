@@ -40,6 +40,16 @@ export interface OtoBanner {
 
     is_active: boolean
 
+
+    promo_code_id?: number | null;
+    promo_code?: {
+        id: number;
+        code: string;
+        discount_amount: number;
+        discount_type: 'percentage' | 'fixed';
+        description?: string;
+    } | null;
+
     created_at: string
     updated_at: string
 }

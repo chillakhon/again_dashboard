@@ -171,6 +171,16 @@ const columns = [
     header: "Задержка (сек)",
   },
 
+
+  {
+    accessorKey: "promo_code.code",
+    header: "Промокод",
+    cell: ({row}: any) => {
+      const code = row.original.promo_code?.code;
+      return code ? code : '—';
+    }
+  },
+
   {
     accessorKey: "created_at",
     header: "Создан",

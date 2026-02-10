@@ -39,6 +39,7 @@
       <ClientInfoPanel
           v-if="selectedConversation"
           :client="selectedConversation.client"
+          :conversation="selectedConversation"
           @tags-updated="handleTagsUpdated"
           @client-updated="handleClientUpdate"
           class="h-[85vh]"

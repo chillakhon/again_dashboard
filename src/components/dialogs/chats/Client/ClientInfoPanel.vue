@@ -51,6 +51,7 @@
 
       <ChatClientActions
           :client="client!"
+          :conversation="conversation"
       />
 
     </div>
@@ -65,9 +66,11 @@ import ClientEditModal from "@/components/clients/Edit/ClientEditModal.vue";
 import ClientInfo from "@/components/dialogs/chats/Client/ClientInfo.vue";
 import ChatClientSegmentManager from "@/components/dialogs/chats/Client/Segment/ChatClientSegmentManager.vue";
 import ChatClientActions from "@/components/dialogs/chats/Client/ChatClientActions.vue";
+import {Conversation} from "@/types/conversation";
 
 interface Props {
   client: Client | null
+  conversation?: Conversation
 }
 
 defineProps<Props>()

@@ -14,6 +14,7 @@ export class Discount {
     discountType: string | undefined;
     createdAt: string | undefined;
     updatedAt: string | undefined;
+    is_unlimited?: boolean;
 
     productIds: number[] | undefined;
     categoryIds: number[] | undefined;
@@ -71,6 +72,7 @@ export class Discount {
         discount.isActive = !!json.is_active;
         discount.startsAt = json.starts_at ?? undefined;
         discount.endsAt = json.ends_at ?? undefined;
+        discount.is_unlimited = json.ends_at === null;
         discount.priority = json.priority;
         discount.conditions = json.conditions ?? null;
         discount.discountType = json.discount_type;
@@ -78,8 +80,8 @@ export class Discount {
         discount.updatedAt = json.updated_at;
         discount.categoryIds = undefined;
         discount.productIds = json.products ? json.products?.map((item: any) => item.id) : undefined;
-        discount.categoryIds = json.categories?.map((item: any) => item.id);
 
+        discount.categoryIds = json.categories?.map((item: any) => item.id);
         discount.products = json.products ? json.products.map((p: any) => Product.fromJSON(p)) : null;
 
         return discount;
@@ -97,6 +99,7 @@ export class Discount {
             value: this.value ?? null,
             categories: this.categoryIds ?? null,
             products: this.productIds ?? null,
+            is_unlimited: this.is_unlimited ?? null,
         };
     }
 
@@ -114,6 +117,7 @@ export class Discount {
         cloned.priority = this.priority;
         cloned.conditions = this.conditions ? JSON.parse(JSON.stringify(this.conditions)) : null;
         cloned.discountType = this.discountType;
+        cloned.is_unlimited = this.is_unlimited;
         cloned.createdAt = this.createdAt;
         cloned.updatedAt = this.updatedAt;
 

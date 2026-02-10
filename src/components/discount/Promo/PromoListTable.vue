@@ -68,6 +68,7 @@ const deletePromoCodeHandle = async (promo: PromoCode) => {
 };
 
 const handleUpdate = async (item: PromoCode) => {
+
   const success = await updatePromoCode(item);
 
   if (success) {
@@ -155,6 +156,17 @@ const columns = [
       return getDiscountTargetLabel(row.original.promo_code_type);
     }
   },
+
+  {
+    accessorKey: "is_unlimited",
+    header: "Без бессрочный",
+    cell: ({row}: any) => {
+      return row.original.is_unlimited
+          ? h(Check, {class: "h-4 w-4 text-green-500"})
+          : h(X, {class: "h-4 w-4 text-red-500"});
+    },
+  },
+
   {
     accessorKey: "applies_to_all_clients",
     header: "Ко всем клиентам",
