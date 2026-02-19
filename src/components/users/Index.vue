@@ -9,8 +9,8 @@
 
     <UsersAdd
         class="mb-2"
-        :permissions="data?.permissions"
-        :roles="data?.roles"
+        :permissions="permissions"
+        :roles="roles"
         @submit="fetchData()"
     />
 
@@ -49,6 +49,13 @@ import {PermissionsData} from "@/constants/PermissionsData";
 import usePermission from "@/composables/usePermission";
 import PermissionGuard from "@/components/PermissionGuard.vue";
 import UsersSearch from "@/components/users/UsersSearch.vue";
+import {useUsersFunctions} from "@/composables/useUsersFunctions";
+
+
+const {getRoles, getPermissions} = useUsersFunctions()
+
+const permissions = ref<any[]>([])
+const roles = ref<any[]>([])
 
 const data = ref()
 const users = ref<User[]>([]);
@@ -96,6 +103,9 @@ async function fetchData() {
 
 onMounted(async () => {
   await fetchData();
+
+  roles.value = (await getRoles()) || []
+  permissions.value = (await getPermissions()) || []
 });
 
 

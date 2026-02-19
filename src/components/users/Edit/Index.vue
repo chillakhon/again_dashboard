@@ -36,24 +36,11 @@
     </div>
   </form>
 
-  <!--  <UsersEditChangePassword-->
-  <!--      v-show="item.changePass"-->
-  <!--      :changePass="item.changePass"-->
-  <!--      :item="item"-->
-  <!--  />-->
-
-  <!--  <button-->
-  <!--      type="button"-->
-  <!--      class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"-->
-  <!--      @click="item.changePass = !item.changePass"-->
-  <!--  >-->
-  <!--    {{ !item.changePass ? "Изменить пароль" : "Сбросить изменение" }}-->
-  <!--  </button>-->
 </template>
 
 <script setup>
 import {Input} from "@/components/ui/input"
-import UsersEditChangePassword from "@/components/users/Edit/ChangePassword.vue"
+import { useUsersFunctions } from "@/composables/useUsersFunctions"
 import axios from "axios"
 import {onMounted, ref, watch} from "vue"
 import MultiSelect from "@/components/dynamics/Dropdown/MultiSelect.vue"
@@ -73,6 +60,7 @@ const props = defineProps({
 })
 
 const {hasPermission} = usePermission()
+const { getRoles, getPermissions } = useUsersFunctions()
 
 
 const selectedPermissionIds = ref()
@@ -101,34 +89,14 @@ if (!props.item.permissions) {
 }
 
 onMounted(async () => {
-  await getPermissions()
-  await getRoles()
-  // console.log(roles.value)
+  roles.value = (await getRoles()) || []
+  permissions.value = (await getPermissions()) || []
+
   selectedRoleId.value = props.item.roles[0]?.id || ''
   selectedPermissionIds.value = props.item.permissions.map(item => item.id || '')
 })
 
-async function getRoles() {
-  axios.get('roles')
-      .then(res => {
-        roles.value = res.data.roles || []
-      })
-      .catch(error => {
-        console.error('Error fetching roles:', error)
-        roles.value = []
-      })
-}
 
-async function getPermissions() {
-  axios.get('roles/permissions')
-      .then(res => {
-        permissions.value = res.data.permissions || []
-      })
-      .catch(error => {
-        console.error('Error fetching permissions:', error)
-        permissions.value = []
-      })
-}
 </script>
 
 <style scoped>
