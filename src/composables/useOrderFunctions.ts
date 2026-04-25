@@ -74,8 +74,7 @@ export function useOrderFunctions() {
 
         return await axios.get(`orders/${orderId}`)
             .then(res => {
-
-                return Order.fromJSON(res.data.order);
+                return Order.fromJSON(res.data?.data?.order ?? res.data?.order ?? res.data);
             })
             .catch(e => {
                 sending.value = false

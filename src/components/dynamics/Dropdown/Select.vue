@@ -26,11 +26,24 @@
         </button>
       </SelectTrigger>
       <SelectContent>
+        <div
+            v-if="searchable"
+            class="sticky top-0 z-10 -mx-1 -mt-1 mb-1 border-b bg-popover p-2"
+            @pointerdown.stop
+        >
+          <Input
+              v-model="searchQuery"
+              :placeholder="searchPlaceholder || 'Поиск...'"
+              class="h-8"
+              type="text"
+              @keydown.stop
+          />
+        </div>
         <SelectGroup>
           <SelectLabel v-if="label">{{ label }}</SelectLabel>
           <SelectItem
-              v-for="option in options"
-              :key="option.value"
+              v-for="(option, index) in filteredOptions"
+              :key="option.value ?? index"
               :value="option[optionValue ?? 'label']"
               :disabled="option.disabled"
           >
@@ -65,7 +78,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import {
   Select,
   SelectContent,
@@ -77,6 +90,7 @@ import {
 } from '@/components/ui/select'
 import { Label } from '@/components/ui/label'
 import { X } from 'lucide-vue-next'
+import { Input } from '@/components/ui/input'
 
 interface SelectOption {
   value?: string
@@ -97,12 +111,15 @@ const props = defineProps<{
   disabled?: boolean
   required?: boolean
   title?: string
+  searchable?: boolean
+  searchPlaceholder?: string
 }>()
 
 const emit = defineEmits(['update:modelValue'])
 
 const showError = ref(false)
 const hiddenInput = ref<HTMLInputElement>()
+const searchQuery = ref('')
 
 const handleUpdate = (value: any) => {
   // Убираем ошибку при выборе значения
@@ -117,6 +134,19 @@ const clearSelection = (e: Event) => {
   e.stopPropagation()
   emit('update:modelValue', '')
 }
+
+const filteredOptions = computed(() => {
+  if (!props.searchable) return props.options
+  const q = (searchQuery.value || '').toLowerCase()
+  if (!q) return props.options
+  return (props.options || []).filter((opt: any) => {
+    const labelKey = props.optionLabel ?? 'label'
+    const valueKey = props.optionValue ?? 'value'
+    const label = String(opt?.[labelKey] ?? '').toLowerCase()
+    const value = String(opt?.[valueKey] ?? '').toLowerCase()
+    return label.includes(q) || value.includes(q)
+  })
+})
 
 // Обработчик HTML5 валидации
 const handleInvalid = (e: Event) => {

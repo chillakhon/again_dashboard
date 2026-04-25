@@ -64,6 +64,9 @@ const close = () => {
   internalOpen.value = false
 }
 
-defineExpose({close})
+defineExpose({
+  open,
+  close,
+})
 
 </script>

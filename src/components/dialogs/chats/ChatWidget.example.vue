@@ -1,3 +1,8 @@
+<!-- 
+  Пример интеграции useConversationWebSocket в ChatWidget.vue
+  Этот файл показывает, как заменить существующую логику WebSocket на новую структуру
+-->
+
 <template>
   <Card
     class="w-full h-full shadow-none border-0 md:border-l md:border-r rounded-none flex flex-col"
@@ -15,9 +20,9 @@
             }}</AvatarFallback>
           </Avatar>
           <div>
-            <CardTitle class="text-sm font-medium">{{
-              conversation.client?.profile?.full_name || "Клиент"
-            }}</CardTitle>
+            <CardTitle class="text-sm font-medium">
+              {{ conversation.client?.profile?.full_name || "Клиент" }}
+            </CardTitle>
             <CardDescription class="flex items-center gap-1 text-xs">
               <span>{{ conversation.client?.profile?.phone }}</span>
               <Badge
@@ -25,6 +30,14 @@
                 class="h-4 px-1 text-[0.6rem] capitalize"
               >
                 {{ sourceName }}
+              </Badge>
+              <!-- Индикатор подключения WebSocket -->
+              <Badge
+                v-if="!isConnected"
+                variant="destructive"
+                class="h-4 px-1 text-[0.6rem]"
+              >
+                Отключено
               </Badge>
             </CardDescription>
           </div>
@@ -53,8 +66,9 @@
         class="flex-1 overflow-y-auto space-y-1 max-md:max-h-[66vh] max-md:min-h-[66vh]"
         v-else
       >
+        <!-- Используем messages из WebSocket composable -->
         <div
-          v-for="message in conversation.messages"
+          v-for="message in displayMessages"
           :key="message.id"
           :class="[
             'flex',
@@ -69,7 +83,7 @@
                 : 'bg-primary text-primary-foreground',
             ]"
           >
-            <!-- ← ДОБАВИЛИ: Вложения -->
+            <!-- Вложения -->
             <div
               v-if="message.attachments && message.attachments.length > 0"
               class="space-y-1"
@@ -85,12 +99,6 @@
             </div>
 
             <!-- Текст сообщения -->
-            <!--            <p-->
-            <!--                v-if="message.content"-->
-            <!--                v-html="linkify(message.content)"-->
-            <!--                class="px-2 py-1"-->
-            <!--            ></p>-->
-
             <p
               v-if="message.content"
               v-html="linkify(message.content)"
@@ -113,6 +121,30 @@
             </div>
           </div>
         </div>
+
+        <!-- Индикатор печати -->
+        <div v-if="isAnyoneTyping()" class="flex justify-start">
+          <div class="bg-muted rounded-lg px-3 py-2 text-xs">
+            <div class="flex items-center gap-2">
+              <div class="flex gap-1">
+                <span
+                  class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style="animation-delay: 0ms"
+                ></span>
+                <span
+                  class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style="animation-delay: 150ms"
+                ></span>
+                <span
+                  class="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                  style="animation-delay: 300ms"
+                ></span>
+              </div>
+              <span class="text-muted-foreground">Печатает...</span>
+            </div>
+          </div>
+        </div>
+
         <div ref="messagesEndRef" />
       </div>
     </CardContent>
@@ -132,6 +164,7 @@
             class="h-8 text-xs flex-1"
             :disabled="isSending"
             @keyup.enter="sendMessage"
+            @input="handleTyping"
           />
 
           <FileUploadButton
@@ -161,14 +194,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  ref,
-  nextTick,
-  onMounted,
-  onBeforeUnmount,
-  watch,
-  computed,
-} from "vue";
+import { ref, nextTick, onMounted, watch, computed } from "vue";
 import {
   Card,
   CardHeader,
@@ -190,15 +216,13 @@ import {
   Loader2,
 } from "lucide-vue-next";
 import { useChatsFunctions } from "@/composables/useChatsFunctions";
-import "@/echo";
+import { useConversationWebSocket } from "@/composables/WebSocket/useConversationWebSocket";
 import { assetPath } from "@/utils/assetPath";
 import Loader from "@/components/common/Loader.vue";
-
 import FileUploadButton from "./File/FileUploadButton.vue";
 import FilePreview from "./File/FilePreview.vue";
 import AttachmentItem from "./File/AttachmentItem.vue";
-import type { Conversation, PendingFile } from "@/types/conversation";
-import { Message } from "@/types/conversation";
+import type { Conversation, PendingFile, Message } from "@/types/conversation";
 
 const props = defineProps<{
   conversation: Conversation;
@@ -208,14 +232,69 @@ const props = defineProps<{
 const emits = defineEmits(["hasNewMessage"]);
 
 const { conversationReplyById } = useChatsFunctions();
-
 const clientIcon = assetPath("icons/client.png");
 
 const newMessage = ref("");
 const messagesEndRef = ref<HTMLDivElement | null>(null);
-const isSending = ref(false); // ← ДОБАВИЛИ
-
+const isSending = ref(false);
 const pendingFiles = ref<PendingFile[]>([]);
+
+// Computed для conversationId
+const conversationId = computed(() => props.conversation?.id ?? null);
+
+// Инициализация WebSocket
+const {
+  isConnected,
+  connectionError,
+  messages: wsMessages,
+  isReceiving,
+  setMessages,
+  typingUsers,
+  isAnyoneTyping,
+  getTypingCount,
+  markAllAsRead,
+} = useConversationWebSocket({
+  conversationId,
+
+  // Callback при получении нового сообщения
+  onMessageReceived: (message) => {
+    console.log("Новое сообщение через WebSocket:", message);
+    scrollToBottom();
+    emits("hasNewMessage", props.conversation.id);
+
+    // Автоматически помечаем как прочитанное если окно активно
+    if (document.hasFocus()) {
+      setTimeout(() => markAllAsRead(), 500);
+    }
+  },
+
+  // Callback при удалении сообщения
+  onMessageDeleted: (messageId) => {
+    console.log("Сообщение удалено:", messageId);
+  },
+
+  // Callback при обновлении статуса
+  onStatusUpdated: (messageId, status) => {
+    console.log(`Статус сообщения ${messageId} изменен на ${status}`);
+  },
+
+  // Callback при изменении индикатора печати
+  onTypingChanged: (userId, isTyping) => {
+    console.log(
+      `Пользователь ${userId} ${isTyping ? "печатает" : "перестал печатать"}`,
+    );
+  },
+});
+
+// Объединяем сообщения из props и WebSocket
+const displayMessages = computed(() => {
+  // Если есть сообщения в WebSocket, используем их
+  if (wsMessages.value.length > 0) {
+    return wsMessages.value;
+  }
+  // Иначе используем сообщения из props
+  return props.conversation.messages || [];
+});
 
 const sourceName = computed(() => {
   switch (props.conversation.source) {
@@ -268,8 +347,6 @@ const handleFilesSelected = (files: PendingFile[]) => {
 };
 
 const handleRemoveFile = (fileId: string) => {
-  console.log("handleRemoveFile", fileId);
-
   pendingFiles.value = pendingFiles.value.filter((f) => f.id !== fileId);
 };
 
@@ -279,23 +356,31 @@ const handleClearAllFiles = () => {
 
 const handleFileError = (error: string) => {
   console.error("File error:", error);
-  // Можно добавить toast notification
 };
 
-let addMessage = true;
+// Обработка печати (можно отправить событие на сервер)
+let typingTimeout: NodeJS.Timeout;
+const handleTyping = () => {
+  clearTimeout(typingTimeout);
+  // Здесь можно отправить событие на сервер о том, что пользователь печатает
+  // axios.post(`conversations/${conversationId.value}/typing`, { is_typing: true })
+
+  typingTimeout = setTimeout(() => {
+    // Событие о прекращении печати
+    // axios.post(`conversations/${conversationId.value}/typing`, { is_typing: false })
+  }, 1000);
+};
 
 async function sendMessage() {
   const text = newMessage.value.trim();
   const files = [...pendingFiles.value];
 
-  // Должен быть текст ИЛИ файлы
   if (!text && files.length === 0) return;
   if (props.conversation.id === undefined) return;
 
   isSending.value = true;
-  addMessage = false;
 
-  // Создаём временное сообщение
+  // Создаём временное сообщение для оптимистичного UI
   const tempId = `temp-${Date.now()}-${Math.random()}`;
   const tempMessage: Message = {
     id: tempId,
@@ -307,10 +392,12 @@ async function sendMessage() {
     conversation_id: props.conversation.id,
   } as Message;
 
-  props.conversation.messages = props.conversation.messages || [];
-  props.conversation.messages.push(tempMessage);
+  // Добавляем временное сообщение в список
+  const currentMessages = [...displayMessages.value, tempMessage];
+  setMessages(currentMessages);
+
   newMessage.value = "";
-  pendingFiles.value = []; // ← Очищаем файлы
+  pendingFiles.value = [];
   scrollToBottom();
 
   try {
@@ -321,41 +408,63 @@ async function sendMessage() {
     );
 
     if (response) {
-      const tempIndex = props.conversation.messages.findIndex(
-        (m) => m.id === tempId,
+      // Заменяем временное сообщение на реальное
+      const updatedMessages = currentMessages.map((m) =>
+        m.id === tempId ? response : m,
       );
-      if (tempIndex !== -1) {
-        props.conversation.messages[tempIndex] = response;
-      }
+      setMessages(updatedMessages);
 
       emits("hasNewMessage", props.conversation.id);
-
-      // Задержка перед разблокировкой WebSocket, чтобы избежать дублирования
-      setTimeout(() => {
-        addMessage = true;
-      }, 500);
     }
   } catch (e) {
     console.error("Ошибка отправки:", e);
 
-    const messageIndex = props.conversation.messages.findIndex(
-      (m) => m.id === tempId,
+    // Помечаем сообщение как failed
+    const updatedMessages = currentMessages.map((m) =>
+      m.id === tempId ? { ...m, status: "failed" as const } : m,
     );
-    if (messageIndex !== -1) {
-      props.conversation.messages[messageIndex].status = "failed";
-    }
-    addMessage = true;
+    setMessages(updatedMessages);
   } finally {
     isSending.value = false;
   }
 }
 
-onMounted(() => scrollToBottom("auto"));
+// Загрузка начальных сообщений при монтировании
+onMounted(() => {
+  if (props.conversation.messages) {
+    setMessages(props.conversation.messages);
+  }
+  scrollToBottom("auto");
+});
 
+// Обновляем сообщения при изменении conversation
 watch(
-  () => props.conversation.messages?.length,
-  () => scrollToBottom(),
+  () => props.conversation.messages,
+  (newMessages) => {
+    if (newMessages && newMessages.length > 0) {
+      setMessages(newMessages);
+    }
+  },
+  { deep: true },
 );
+
+// Следим за фокусом окна для автоматической пометки прочитанных
+watch(
+  () => document.hasFocus(),
+  (hasFocus) => {
+    if (hasFocus && displayMessages.value.length > 0) {
+      markAllAsRead();
+    }
+  },
+);
+
+// Показываем ошибку подключения
+watch(connectionError, (error) => {
+  if (error) {
+    console.error("Ошибка WebSocket:", error);
+    // Здесь можно показать toast уведомление
+  }
+});
 
 const urlPattern = /(\bhttps?:\/\/[^\s<>]+[^\s<.,:;"')\]\s])/g;
 
@@ -366,81 +475,20 @@ function linkify(text = ""): string {
       `<a href="${url}" target="_blank" class="text-blue-600 underline">${url}</a>`,
   );
 }
-
-/* ---------- WebSocket подписка ---------- */
-let currentChannel: any = null;
-
-watch(
-  () => props.conversation.id,
-  (id, oldId) => {
-    if (oldId && (window as any).Echo) {
-      try {
-        (window as any).Echo.leave(`private-conversation.${oldId}`);
-      } catch (e) {}
-    }
-
-    if (!id || !(window as any).Echo) return;
-
-    try {
-      currentChannel = (window as any).Echo.private(`conversation.${id}`);
-
-      currentChannel.listen(".MessageCreated", (payload: any) => {
-        if (!addMessage) return;
-
-        const incoming: Partial<Message> = {
-          id: payload.id,
-          content: payload.content,
-          direction: payload.direction,
-          status: payload.status,
-          created_at: payload.created_at,
-          attachments: payload.attachments ?? [],
-        };
-
-        props.conversation.messages = props.conversation.messages || [];
-
-        // Улучшенная проверка дубликатов: проверяем по ID и по содержимому + времени
-        const exists = props.conversation.messages.some((m) => {
-          // Проверка по ID
-          if (String(m.id) === String(incoming.id)) return true;
-
-          // Дополнительная проверка: одинаковое содержимое и близкое время (в пределах 2 секунд)
-          if (
-            m.content === incoming.content &&
-            m.direction === incoming.direction
-          ) {
-            const timeDiff = Math.abs(
-              new Date(m.created_at).getTime() -
-                new Date(incoming.created_at).getTime(),
-            );
-            if (timeDiff < 2000) return true;
-          }
-
-          return false;
-        });
-
-        if (!exists) {
-          props.conversation.messages.push(incoming as Message);
-          nextTick(() => scrollToBottom());
-          emits("hasNewMessage", id);
-        }
-      });
-    } catch (e) {
-      console.error("Echo subscribe failed:", e);
-    }
-  },
-  {
-    immediate: true,
-  },
-);
-
-onBeforeUnmount(() => {
-  const id = props.conversation.id;
-  if (id && (window as any).Echo) {
-    try {
-      (window as any).Echo.leave(`private-conversation.${id}`);
-    } catch (e) {
-      /* ignore */
-    }
-  }
-});
 </script>
+
+<style scoped>
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+</style>

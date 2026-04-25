@@ -10,6 +10,12 @@
       />
 
       <div class="flex gap-2">
+        <router-link to="/order/create">
+          <Button variant="outline" size="icon">
+            <Plus/>
+          </Button>
+        </router-link>
+
         <!-- Добавляем кнопку экспорта -->
         <OrdersExport />
 
@@ -43,7 +49,7 @@ import {useOrderFunctions} from "@/composables/useOrderFunctions";
 import OrderSearch from "@/components/orders/list/OrderSearch.vue";
 import OrdersExport from "@/components/orders/Export.vue";
 import Button from "@/components/ui/button/Button.vue";
-import {X} from "lucide-vue-next"
+import {Plus, X} from "lucide-vue-next"
 import {useStore} from "vuex";
 import {PaginationMeta} from "@/types/Types";
 

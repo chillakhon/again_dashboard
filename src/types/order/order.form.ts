@@ -6,7 +6,8 @@ export interface OrderUpdateForm {
     // first_name: string | null,
     // last_name: string | null,
     // phone: string | null,
-    // delivery_method_id: string | null,
+    delivery_method_id: number | null,
     status: string | null,
     payment_status: string | null,
+    created_at: string | null,
 }
