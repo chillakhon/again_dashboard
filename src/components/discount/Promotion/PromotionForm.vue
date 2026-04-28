@@ -9,13 +9,13 @@
       :show-submit-button="false"
     />
 
-    <!-- Товары акции -->
+    <!-- Товары на которые действует акция -->
     <div class="space-y-2">
       <label class="text-sm font-medium">
-        Товары акции <span class="text-red-500">*</span>
+        Товар (на который действует акция) <span class="text-red-500">*</span>
       </label>
       <p class="text-sm text-gray-500">
-        Выберите товары, на которые действует акция
+        Выберите товары из каталога — акция сработает, когда эти товары окажутся в корзине
       </p>
 
       <TriggerProductListModal
@@ -49,13 +49,13 @@
       </div>
     </div>
 
-    <!-- Товары-подарки -->
+    <!-- Товары участвующие в акции (подарки) -->
     <div class="space-y-2">
       <label class="text-sm font-medium">
-        Товары-подарки <span class="text-red-500">*</span>
+        Товар (который участвует в акции) <span class="text-red-500">*</span>
       </label>
       <p class="text-sm text-gray-500">
-        Добавьте товары, которые клиент может выбрать в качестве подарка
+        Выберите товары из каталога — клиент получит их в подарок при выполнении условий акции
       </p>
 
       <GiftProductListModal
@@ -237,25 +237,11 @@ const removeGiftProduct = (index: number) => {
 
 const buildFormFields = () => {
   formFields.value = [
-    [
-      {
-        name: "isActive",
-        component: "checkbox",
-        label: "Активна",
-      },
-      {
-        name: "allowPromoCodes",
-        component: "checkbox",
-        label: "Разрешить промокоды",
-        description: "Клиент сможет выбрать между подарком и промокодом",
-      },
-    ],
-
     {
       name: "name",
       component: "text",
       type: "text",
-      label: "Название",
+      label: "Название акции",
       required: true,
       placeholder: "Например: Купи на 5000₽ и получи подарок",
     },
@@ -263,7 +249,7 @@ const buildFormFields = () => {
     {
       name: "description",
       component: "textarea",
-      label: "Описание",
+      label: "Описание акции",
       placeholder: "Описание акции для клиентов",
     },
 
@@ -284,33 +270,26 @@ const buildFormFields = () => {
       },
     ],
 
-    [
-      {
-        name: "minPurchaseAmount",
-        component: "text",
-        type: "number",
-        label: "Минимальная сумма покупки (₽)",
-        placeholder: "Например: 5000",
-        description: "Оставьте пустым, если нет минимума",
-      },
-      {
-        name: "maxUses",
-        component: "text",
-        type: "number",
-        label: "Максимальное количество использований",
-        placeholder: "Например: 100",
-        description: "Оставьте пустым для неограниченного",
-      },
-    ],
-
     {
-      name: "priority",
+      name: "minPurchaseAmount",
       component: "text",
       type: "number",
-      label: "Приоритет",
-      required: true,
-      placeholder: "10",
-      description: "Чем выше число, тем выше приоритет",
+      label: "Сумма покупки от (₽)",
+      placeholder: "Например: 5000",
+      description: "От какой суммы активна акция для пользователя",
+    },
+
+    {
+      name: "allowPromoCodes",
+      component: "checkbox",
+      label: "Промокоды и скидки активны",
+      description: "Если включено — пользователь выбирает между подарком и промокодом/скидкой. Если выключено — только подарок.",
+    },
+
+    {
+      name: "isActive",
+      component: "checkbox",
+      label: "Акция активна",
     },
   ];
 
