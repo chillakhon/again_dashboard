@@ -11,11 +11,13 @@ const REVERB_SCHEME = process.env.VUE_APP_REVERB_SCHEME || 'wss';
 const API_BASE = (process.env.VUE_APP_API_BASE_URL || '').replace(/\/$/, '');
 
 const authEndpoint = API_BASE ? `${API_BASE}/broadcasting/auth` : '/broadcasting/auth';
-const access_token = Cookies.get('access_token');
 
 // Правильно: транспорты всегда ['ws', 'wss'], а forceTLS зависит от схемы
 const enabledTransports = ['ws', 'wss'];
 const forceTLS = REVERB_SCHEME === 'wss';
+
+// Включаем логирование Pusher для диагностики
+Pusher.logToConsole = process.env.NODE_ENV !== 'production';
 
 window.Echo = new Echo({
     broadcaster: 'reverb',
@@ -28,10 +30,46 @@ window.Echo = new Echo({
     enabledTransports: enabledTransports,
     disableStats: true,
     authEndpoint: authEndpoint,
+    // Динамическое получение токена при каждом auth-запросе
     auth: {
-        headers: {
-            'Authorization': `Bearer ${access_token}`,
-        },
+        headers: {},
+    },
+    authorizer: (channel, options) => {
+        return {
+            authorize: (socketId, callback) => {
+                const token = Cookies.get('access_token');
+                if (!token) {
+                    callback(new Error('No access token'), null);
+                    return;
+                }
+
+                fetch(authEndpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        socket_id: socketId,
+                        channel_name: channel.name,
+                    }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Auth failed: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    callback(null, data);
+                })
+                .catch(error => {
+                    console.error(`Echo auth error for ${channel.name}:`, error);
+                    callback(error, null);
+                });
+            },
+        };
     },
 });
 

@@ -681,14 +681,6 @@ const normalizeOrderItems = (items) => {
 };
 
 const fillFormFromOrder = (order) => {
-  console.log("Order data:", order);
-  console.log("Delivery date from order:", order?.delivery_date);
-  console.log("Delivery address:", order?.delivery_address);
-  console.log(
-    "Delivery address delivery_date:",
-    order?.delivery_address?.delivery_date,
-  );
-
   Object.assign(formData.user, {
     first_name: order?.user?.first_name || order?.client?.first_name || "",
     last_name: order?.user?.last_name || order?.client?.last_name || "",
@@ -729,10 +721,7 @@ const fillFormFromOrder = (order) => {
 
   // Дата доставки может быть в delivery_address.delivery_date или в order.delivery_date
   const deliveryDateValue = orderAddress.delivery_date || order?.delivery_date;
-  console.log("Delivery date value before format:", deliveryDateValue);
-  const formattedDate = formatDateTimeLocal(deliveryDateValue);
-  console.log("Delivery date value after format:", formattedDate);
-  formData.delivery_address.delivery_date = formattedDate;
+  formData.delivery_address.delivery_date = formatDateTimeLocal(deliveryDateValue);
 
   formData.address = formData.delivery_address.address || "";
 
@@ -786,13 +775,6 @@ const handleUpdate = async () => {
     notes: orderMeta.value?.notes ?? null,
     ...(appliedCouponCode.value ? { promo_code: appliedCouponCode.value } : {}),
   };
-
-  console.log("Payload to send:", payload);
-  console.log("Delivery address in payload:", payload.delivery_address);
-  console.log(
-    "Delivery date in payload:",
-    payload.delivery_address?.delivery_date,
-  );
 
   try {
     await updateOrder(route.params.id, payload);

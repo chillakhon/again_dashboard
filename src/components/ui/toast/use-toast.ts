@@ -76,14 +76,17 @@ const state = ref<State>({
   toasts: [],
 })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const stateAny = state as any
+
 function dispatch(action: Action) {
   switch (action.type) {
     case actionTypes.ADD_TOAST:
-      state.value.toasts = [action.toast, ...state.value.toasts].slice(0, TOAST_LIMIT)
+      stateAny.value.toasts = ([action.toast] as any[]).concat(stateAny.value.toasts).slice(0, TOAST_LIMIT)
       break
 
     case actionTypes.UPDATE_TOAST:
-      state.value.toasts = state.value.toasts.map(t =>
+      stateAny.value.toasts = (stateAny.value.toasts as any[]).map((t: any) =>
         t.id === action.toast.id ? { ...t, ...action.toast } : t,
       )
       break
@@ -95,12 +98,12 @@ function dispatch(action: Action) {
         addToRemoveQueue(toastId)
       }
       else {
-        state.value.toasts.forEach((toast) => {
+        (stateAny.value.toasts as any[]).forEach((toast: any) => {
           addToRemoveQueue(toast.id)
         })
       }
 
-      state.value.toasts = state.value.toasts.map(t =>
+      stateAny.value.toasts = (stateAny.value.toasts as any[]).map((t: any) =>
         t.id === toastId || toastId === undefined
           ? {
               ...t,
@@ -113,9 +116,9 @@ function dispatch(action: Action) {
 
     case actionTypes.REMOVE_TOAST:
       if (action.toastId === undefined)
-        state.value.toasts = []
+        stateAny.value.toasts = []
       else
-        state.value.toasts = state.value.toasts.filter(t => t.id !== action.toastId)
+        stateAny.value.toasts = (stateAny.value.toasts as any[]).filter((t: any) => t.id !== action.toastId)
 
       break
   }

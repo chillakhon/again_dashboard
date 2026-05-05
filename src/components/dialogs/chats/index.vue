@@ -86,8 +86,9 @@
 
           </div>
           <ChatWidget
+              v-if="selectedConversation"
               class="flex-1"
-              :conversation="selectedConversation!"
+              :conversation="selectedConversation"
               :isLoadingGetMessage="isLoadingGetMessage"
               @has-new-message="handleUpdateConv"
           />

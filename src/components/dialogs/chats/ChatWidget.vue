@@ -218,7 +218,7 @@ const isSending = ref(false); // ← ДОБАВИЛИ
 const pendingFiles = ref<PendingFile[]>([]);
 
 const sourceName = computed(() => {
-  switch (props.conversation.source) {
+  switch (props.conversation?.source) {
     case "telegram":
       return "Telegram";
     case "whatsapp":
@@ -353,7 +353,7 @@ async function sendMessage() {
 onMounted(() => scrollToBottom("auto"));
 
 watch(
-  () => props.conversation.messages?.length,
+  () => props.conversation?.messages?.length,
   () => scrollToBottom(),
 );
 
