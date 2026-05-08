@@ -14,6 +14,14 @@
 
     <template #content>
       <div class="space-y-4">
+        <div
+            v-if="!clientId"
+            class="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800"
+        >
+          Клиент ещё не выбран — показаны только купоны, доступные всем клиентам.
+          После выбора клиента список расширится.
+        </div>
+
         <div class="relative">
           <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400"/>
           <input
@@ -104,6 +112,13 @@ const props = defineProps({
     type: String,
     default: 'Выбрать купон',
   },
+  // Если задан — показываем все активные купоны (бэкенд отсечёт неподходящие
+  // при /promo-codes/validate). Если пуст — фильтруем на applies_to_all_clients=true,
+  // потому что без клиента иначе мы не сможем валидировать выбор.
+  clientId: {
+    type: [Number, String],
+    default: null,
+  },
 });
 
 const emit = defineEmits(['select']);
@@ -140,9 +155,13 @@ const fetchPromoCodes = async () => {
 
 const filteredCodes = computed(() => {
   const query = searchQuery.value.trim().toLowerCase();
-  if (!query) return promoCodes.value;
+  const list = props.clientId
+      ? promoCodes.value
+      : promoCodes.value.filter((c) => c.applies_to_all_clients);
 
-  return promoCodes.value.filter((c) => {
+  if (!query) return list;
+
+  return list.filter((c) => {
     const inCode = (c.code || '').toLowerCase().includes(query);
     const inDesc = (c.description || '').toLowerCase().includes(query);
     return inCode || inDesc;

@@ -24,31 +24,9 @@
                 :products="filteredProducts"
                 @select="addPosition"
               />
-              <TooltipProvider v-if="!data.items.length || !formData.client_id">
-                <Tooltip>
-                  <TooltipTrigger as-child>
-                    <span class="inline-flex">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        class="gap-2"
-                        :disabled="true"
-                      >
-                        <TicketPercent class="h-4 w-4" />
-                        Купон
-                      </Button>
-                    </span>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p v-if="!formData.client_id">Сначала выберите клиента</p>
-                    <p v-else>Сначала добавьте хотя бы одну позицию</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-
               <PromoCodeListModal
-                v-else
                 trigger-label="Купон"
+                :client-id="formData.client_id"
                 @select="onCouponSelected"
               />
             </div>
@@ -175,6 +153,34 @@
           </div>
 
           <div
+            v-if="pendingCouponCode && !appliedCouponCode"
+            class="mt-4 flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3"
+          >
+            <div class="text-sm text-amber-800">
+              Купон <span class="font-semibold">{{ pendingCouponCode }}</span>
+              выбран. Скидка применится автоматически после
+              <template v-if="!formData.client_id && !data.items.length">
+                выбора клиента и добавления позиций.
+              </template>
+              <template v-else-if="!formData.client_id">
+                выбора клиента.
+              </template>
+              <template v-else>
+                добавления хотя бы одной позиции.
+              </template>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              class="text-amber-700 hover:text-amber-900"
+              @click="clearCoupon"
+            >
+              Отменить
+            </Button>
+          </div>
+
+          <div
             v-if="appliedCouponCode"
             class="mt-4 flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3"
           >
@@ -249,7 +255,7 @@ import { ref, reactive, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
-import { TicketPercent, Trash2 } from "lucide-vue-next";
+import { Trash2 } from "lucide-vue-next";
 import { useToast } from "@/components/ui/toast/use-toast";
 
 import PageHeading from "@/components/common/PageHeading.vue";
@@ -260,12 +266,6 @@ import OrderQuickClientCreate from "@/components/orders/create/OrderQuickClientC
 import OrderRecipientDetails from "@/components/orders/create/OrderRecipientDetails.vue";
 import OrderDeliveryDetails from "@/components/orders/create/OrderDeliveryDetails.vue";
 import Button from "@/components/ui/button/Button.vue";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
 import { useProductFunctions } from "@/composables/useProductFunctions";
 import { useStatusFunctions } from "@/composables/useStatusFunctions";
 import { useOrderPaymentMethods } from "@/composables/orders/useOrderPaymentMethods";
@@ -277,6 +277,7 @@ const { toast } = useToast();
 const productSearch = ref("");
 const products = ref([]);
 const appliedCouponCode = ref("");
+const pendingCouponCode = ref("");
 const couponSavings = ref(0);
 const couponNotApplicableCount = ref(0);
 const validationErrors = ref({});
@@ -538,6 +539,7 @@ const clearCoupon = () => {
     });
   }
   appliedCouponCode.value = "";
+  pendingCouponCode.value = "";
   couponSavings.value = 0;
   couponNotApplicableCount.value = 0;
   itemOriginalPrices.value = new Map();
@@ -599,6 +601,20 @@ const onCouponSelected = async (promoCode) => {
     clearCoupon();
   }
 
+  // Если ещё нет клиента или позиций — запоминаем выбор и применим автоматически
+  // как только оба условия будут выполнены (см. watcher ниже).
+  if (!formData.client_id || !data.items.length) {
+    pendingCouponCode.value = promoCode.code;
+    toast({
+      title: "Купон выбран",
+      description: !formData.client_id
+        ? "Скидка применится после выбора клиента."
+        : "Скидка применится после добавления позиций.",
+    });
+    return;
+  }
+
+  pendingCouponCode.value = "";
   snapshotOriginalPrices();
 
   try {
@@ -640,6 +656,19 @@ const revalidateCoupon = async () => {
   clearCoupon();
   await onCouponSelected({ code });
 };
+
+// Когда пользователь выбрал купон до клиента/позиций — дожидаемся обоих условий
+// и автоматически применяем. Watch объединённый, чтобы не дёргать validate дважды.
+watch(
+  () => [formData.client_id, data.items.length],
+  ([clientId, itemsLen]) => {
+    if (!pendingCouponCode.value) return;
+    if (!clientId || !itemsLen) return;
+    const code = pendingCouponCode.value;
+    pendingCouponCode.value = "";
+    onCouponSelected({ code });
+  },
+);
 
 const pluralizeProducts = (count) => {
   const mod10 = count % 10;
