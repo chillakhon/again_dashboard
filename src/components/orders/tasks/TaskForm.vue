@@ -5,6 +5,7 @@
       v-model="props.formData"
       :key="renderForm"
       :fields="formFields"
+      :errors="errors"
       :show-submit-button="showSubmitButton"
       :submit-button-text="submitButtonName"
       @submit-form="emit('submitForm')"
@@ -39,7 +40,11 @@ const props = defineProps({
   isEdit: {
     type: Boolean,
     default: false
-  }
+  },
+  errors: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 
 const emit = defineEmits(['submitForm'])
@@ -117,7 +122,7 @@ const buildFormFields = async () => {
         options: taskStatuses.value,
         optionValue: 'id',
         optionLabel: 'name',
-        required: false,
+        required: true,
       },
       {
         name: 'priority_id',
@@ -127,7 +132,7 @@ const buildFormFields = async () => {
         options: taskPriorities.value,
         optionValue: 'id',
         optionLabel: 'name',
-        required: false,
+        required: true,
       },
     ],
 
