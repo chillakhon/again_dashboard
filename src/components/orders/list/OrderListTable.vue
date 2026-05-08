@@ -74,7 +74,7 @@ const columns = [
       return h(
           RouterLink,
           {
-            to: `/order/update/${id}`,
+            to: `/order/${id}`,
             class: 'text-blue-500 hover:underline',
           },
           {default: () => id}
