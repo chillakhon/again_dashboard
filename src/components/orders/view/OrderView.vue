@@ -27,7 +27,11 @@
         <SideApps :order="order" />
         <SideDelivery :order="order" />
         <SideClient :client="order.client" :stats="clientStats" />
-        <SideTasks :tasks="tasks" />
+        <SideTasks
+          :order-id="order.id"
+          :tasks="tasks"
+          @refresh="fetchOrder(order.id)"
+        />
         <SideCdek :order="order" />
         <SideSource :source="source" />
         <SideViewedProducts :products="viewedProducts" />

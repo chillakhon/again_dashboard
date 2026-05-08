@@ -13,13 +13,20 @@ import {ref} from "vue";
 import Task from "@/models/Task";
 import {useTaskFunctions} from "@/composables/useTaskFunctions";
 
+const props = defineProps<{
+  orderId?: number | string | null;
+}>();
+
 const emit = defineEmits(['created'])
 const task = ref(Task.fromJSON({}))
+if (props.orderId) {
+  task.value.order_id = Number(props.orderId);
+}
 const {createTask} = useTaskFunctions()
 
 
-const handleSubmit = () => {
-  const result = createTask(task.value.toJSONForCreate())
+const handleSubmit = async () => {
+  const result = await createTask(task.value.toJSONForCreate())
   if (result) {
     emit('created', result)
   }

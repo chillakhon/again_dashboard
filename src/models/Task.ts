@@ -48,6 +48,7 @@ export default class Task {
     creator_id: number | null | undefined;
     assignee_id: number | null | undefined;
     parent_id: number | null | undefined;
+    order_id: number | null | undefined;
     due_date: string | null | undefined;
     started_at: string | null | undefined;
     completed_at: string | null | undefined;
@@ -79,6 +80,7 @@ export default class Task {
         this.creator_id = null;
         this.assignee_id = null;
         this.parent_id = null;
+        this.order_id = null;
         this.due_date = null;
         this.started_at = null;
         this.completed_at = null;
@@ -113,6 +115,7 @@ export default class Task {
         task.creator_id = json.creator_id ?? null;
         task.assignee_id = json.assignee_id ?? null;
         task.parent_id = json.parent_id ?? null;
+        task.order_id = json.order_id ?? null;
         task.due_date = json.due_date ?? null;
         task.started_at = json.started_at ?? null;
         task.completed_at = json.completed_at ?? null;
@@ -147,6 +150,7 @@ export default class Task {
             priority_id: this.priority_id ?? null,
             assignee_id: this.assignee_id ?? null,
             // parent_id: this.parent_id ?? null,
+            order_id: this.order_id ?? null,
             due_date: this.due_date ?? null,
             estimated_time: this.estimated_time ?? null,
             labels: this.label_ids ?? null,

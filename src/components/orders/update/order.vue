@@ -249,6 +249,12 @@
         v-model:delivery-address="formData.delivery_address"
         :errors="validationErrors"
       />
+
+      <SideTasks
+        :order-id="route.params.id"
+        :tasks="orderTasks"
+        @refresh="loadOrderTasks"
+      />
     </div>
   </div>
 </template>
@@ -269,10 +275,12 @@ import OrderRecipientDetails from "@/components/orders/create/OrderRecipientDeta
 import OrderQuickClientCreate from "@/components/orders/create/OrderQuickClientCreate.vue";
 import OrderPositionModal from "@/components/orders/modals/OrderPositionModal.vue";
 import PromoCodeListModal from "@/components/orders/modals/PromoCodeListModal.vue";
+import SideTasks from "@/components/orders/view/partials/side/SideTasks.vue";
 import Button from "@/components/ui/button/Button.vue";
 import { useProductFunctions } from "@/composables/useProductFunctions";
 import { useStatusFunctions } from "@/composables/useStatusFunctions";
 import { useOrderFunctions } from "@/composables/useOrderFunctions";
+import { useTaskFunctions } from "@/composables/useTaskFunctions";
 import { useOrderPaymentMethods } from "@/composables/orders/useOrderPaymentMethods";
 import { ORDER_SOURCE_OPTIONS } from "@/composables/orders/orderSourceOptions";
 
@@ -292,6 +300,15 @@ const itemOriginalPrices = ref(new Map());
 const validationErrors = ref({});
 const { toast } = useToast();
 const orderMeta = ref(null);
+const orderTasks = ref([]);
+
+const { getTasks } = useTaskFunctions();
+
+const loadOrderTasks = async () => {
+  if (!route.params.id) return;
+  const result = await getTasks({ order_id: route.params.id, per_page: 100 });
+  orderTasks.value = result?.tasks ?? [];
+};
 
 const { getProducts: getProductsFromApi } = useProductFunctions();
 const { getAllStatuses, getStatuses } = useStatusFunctions();
@@ -428,6 +445,7 @@ const formFields = computed(() => [
 ]);
 
 onMounted(async () => {
+  loadOrderTasks();
   await Promise.all([
     getAllStatuses(),
     fetchPaymentMethods(),
