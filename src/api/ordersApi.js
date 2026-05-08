@@ -9,6 +9,10 @@ class clientsApi{
     getOrder(id) {
         return axios.get("/orders/" + id);
     }
+
+    getOrderView(id) {
+        return axios.get("/orders/" + id + "/view");
+    }
     
     create(data) {
         return axios.post("/orders", data);

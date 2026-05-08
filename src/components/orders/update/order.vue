@@ -6,7 +6,7 @@
       class="mt-10 mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
     >
       <div
-        class="-mx-4 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14 lg:col-span-2 lg:row-span-2 lg:row-end-2"
+        class="-mx-4 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14 lg:col-span-2 lg:row-span-3 lg:row-end-3"
       >
         <div class="mt-6">
           <div class="flex items-center justify-between gap-3">
@@ -25,7 +25,7 @@
                 :products="filteredProducts"
                 @select="addPosition"
               />
-              <TooltipProvider v-if="!data.items.length">
+              <TooltipProvider v-if="!data.items.length || !formData.client_id">
                 <Tooltip>
                   <TooltipTrigger as-child>
                     <span class="inline-flex">
@@ -41,21 +41,17 @@
                     </span>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Сначала добавьте хотя бы одну позицию</p>
+                    <p v-if="!formData.client_id">Сначала выберите клиента</p>
+                    <p v-else>Сначала добавьте хотя бы одну позицию</p>
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
 
-              <Button
+              <PromoCodeListModal
                 v-else
-                type="button"
-                variant="outline"
-                class="gap-2"
-                @click="toggleCouponInput"
-              >
-                <TicketPercent class="h-4 w-4" />
-                Купон
-              </Button>
+                trigger-label="Купон"
+                @select="onCouponSelected"
+              />
             </div>
           </div>
 
@@ -180,41 +176,31 @@
           </div>
 
           <div
-            v-if="showCouponInput && data.items.length"
-            class="mt-4 rounded-lg border border-gray-200 bg-gray-50 p-4"
+            v-if="appliedCouponCode"
+            class="mt-4 flex items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3"
           >
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-end">
-              <div class="w-full">
-                <label
-                  for="couponCode"
-                  class="block text-sm/6 font-medium text-gray-900"
-                  >Купон</label
-                >
-                <input
-                  id="couponCode"
-                  v-model.trim="couponCode"
-                  type="text"
-                  placeholder="Введите код купона"
-                  class="mt-2 block w-full rounded-md border border-gray-300 py-2 px-3 text-sm text-gray-900 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
-                />
-              </div>
-              <Button type="button" class="sm:w-auto" @click="applyCoupon"
-                >Сохранить</Button
+            <div class="text-sm text-emerald-800">
+              Применён купон:
+              <span class="font-semibold">{{ appliedCouponCode }}</span>
+              <span v-if="couponSavings > 0">
+                · скидка {{ formatPrice(couponSavings) }}
+              </span>
+              <span
+                v-if="couponNotApplicableCount > 0"
+                class="text-amber-700 ml-2"
               >
+                ({{ couponNotApplicableCount }} {{ pluralizeProducts(couponNotApplicableCount) }} без скидки)
+              </span>
             </div>
-
-            <div class="mt-3 flex items-center justify-between gap-3">
-              <p v-if="appliedCouponCode" class="text-sm text-green-700">
-                Применен купон:
-                <span class="font-medium">{{ appliedCouponCode }}</span>
-              </p>
-              <a
-                :href="couponCalculationLink"
-                class="text-sm font-medium text-blue-600 hover:text-blue-700 hover:underline"
-              >
-                Ссылка для расчета купона
-              </a>
-            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              class="text-emerald-700 hover:text-emerald-900"
+              @click="clearCoupon"
+            >
+              Снять
+            </Button>
           </div>
         </div>
 
@@ -248,6 +234,11 @@
         @cleared="handleClientCleared"
       />
 
+      <OrderRecipientDetails
+        v-model:recipient="formData.recipient"
+        :errors="recipientErrors"
+      />
+
       <OrderDeliveryDetails
         v-model:delivery-address="formData.delivery_address"
         :errors="validationErrors"
@@ -258,16 +249,20 @@
 
 <script setup>
 import { computed, onMounted, reactive, ref, watch } from "vue";
+import axios from "axios";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
 import { TicketPercent, Trash2 } from "lucide-vue-next";
+import { useToast } from "@/components/ui/toast/use-toast";
 
 import Loader from "@/components/common/Loader.vue";
 import PageHeading from "@/components/common/PageHeading.vue";
 import DynamicForm from "@/components/dynamics/DynamicForm.vue";
 import OrderDeliveryDetails from "@/components/orders/create/OrderDeliveryDetails.vue";
+import OrderRecipientDetails from "@/components/orders/create/OrderRecipientDetails.vue";
 import OrderQuickClientCreate from "@/components/orders/create/OrderQuickClientCreate.vue";
 import OrderPositionModal from "@/components/orders/modals/OrderPositionModal.vue";
+import PromoCodeListModal from "@/components/orders/modals/PromoCodeListModal.vue";
 import Button from "@/components/ui/button/Button.vue";
 import {
   Tooltip,
@@ -289,11 +284,12 @@ const productSearch = ref("");
 const products = ref([]);
 const isPageLoading = ref(true);
 const isSaving = ref(false);
-const showCouponInput = ref(false);
-const couponCode = ref("");
 const appliedCouponCode = ref("");
+const couponSavings = ref(0);
+const couponNotApplicableCount = ref(0);
+const itemOriginalPrices = ref(new Map());
 const validationErrors = ref({});
-const couponCalculationLink = "/clients/discounts";
+const { toast } = useToast();
 const orderMeta = ref(null);
 
 const { getProducts: getProductsFromApi } = useProductFunctions();
@@ -321,6 +317,13 @@ const createEmptyDeliveryAddress = () => ({
   buyer_comment: "",
 });
 
+const createEmptyRecipient = () => ({
+  first_name: "",
+  last_name: "",
+  middle_name: "",
+  phone: "",
+});
+
 const formData = reactive({
   client_id: null,
   user: {
@@ -328,6 +331,7 @@ const formData = reactive({
     last_name: "",
     phone: "",
   },
+  recipient: createEmptyRecipient(),
   delivery_address: createEmptyDeliveryAddress(),
   source: "",
   status: "new",
@@ -554,18 +558,141 @@ const removePosition = (index) => {
   data.items.splice(index, 1);
 
   if (!data.items.length) {
-    showCouponInput.value = false;
+    clearCoupon();
+  } else if (appliedCouponCode.value) {
+    revalidateCoupon();
   }
 };
 
-const toggleCouponInput = () => {
-  showCouponInput.value = !showCouponInput.value;
+const itemKey = (item) =>
+  `${item.product_id}-${item.variant_id ?? item.product_variant_id ?? "default"}`;
+
+const snapshotOriginalPrices = () => {
+  itemOriginalPrices.value = new Map(
+    data.items.map((item) => [itemKey(item), Number(item.price) || 0]),
+  );
 };
 
-const applyCoupon = () => {
-  const value = couponCode.value?.trim();
-  if (!value) return;
-  appliedCouponCode.value = value;
+const clearCoupon = () => {
+  if (itemOriginalPrices.value.size) {
+    data.items.forEach((item) => {
+      const original = itemOriginalPrices.value.get(itemKey(item));
+      if (original !== undefined) {
+        item.price = original;
+      }
+    });
+  }
+  appliedCouponCode.value = "";
+  couponSavings.value = 0;
+  couponNotApplicableCount.value = 0;
+  itemOriginalPrices.value = new Map();
+};
+
+const buildPromoCheckUrl = (code) => {
+  const params = new URLSearchParams();
+  params.append("code", code);
+
+  if (formData.client_id) {
+    params.append("client_id", String(formData.client_id));
+  }
+
+  data.items.forEach((item) => {
+    const productId = item.product_id;
+    const variantId = item.variant_id ?? item.product_variant_id ?? null;
+    if (variantId) {
+      params.append(`product_ids[${productId}][]`, String(variantId));
+    } else {
+      params.append(`product_ids[${productId}]`, "");
+    }
+  });
+
+  return `/promo-codes/validate?${params.toString()}`;
+};
+
+const applyCouponResponse = (responseData) => {
+  const applicable = responseData?.applicable_products ?? [];
+  const notApplicable = responseData?.not_applicable_products ?? [];
+
+  let totalSavings = 0;
+
+  data.items.forEach((item) => {
+    const variantId = item.variant_id ?? item.product_variant_id ?? null;
+
+    const found = applicable.find(
+      (p) =>
+        p.product_id === item.product_id &&
+        ((!p.variant_id && !variantId) || p.variant_id === variantId),
+    );
+
+    if (found) {
+      const finalPrice = Number(found.final_price ?? item.price);
+      const original =
+        itemOriginalPrices.value.get(itemKey(item)) ?? Number(item.price);
+      totalSavings += (original - finalPrice) * Number(item.quantity || 0);
+      item.price = finalPrice;
+    }
+  });
+
+  couponSavings.value = Math.max(0, Math.round(totalSavings * 100) / 100);
+  couponNotApplicableCount.value = notApplicable.length;
+};
+
+const onCouponSelected = async (promoCode) => {
+  if (!promoCode?.code) return;
+
+  if (appliedCouponCode.value) {
+    clearCoupon();
+  }
+
+  snapshotOriginalPrices();
+
+  try {
+    const url = buildPromoCheckUrl(promoCode.code);
+    const { data: response } = await axios.get(url);
+
+    if (!response?.success) {
+      itemOriginalPrices.value = new Map();
+      toast({
+        title: "Промокод не применён",
+        description: response?.message || "Не удалось применить промокод",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    appliedCouponCode.value = promoCode.code;
+    applyCouponResponse(response);
+
+    toast({
+      title: "Купон применён",
+      description: response.message || `Промокод ${promoCode.code} применён к заказу.`,
+    });
+  } catch (error) {
+    itemOriginalPrices.value = new Map();
+    const message =
+      error?.response?.data?.message || "Ошибка при применении промокода";
+    toast({
+      title: "Промокод не применён",
+      description: message,
+      variant: "destructive",
+    });
+  }
+};
+
+const revalidateCoupon = async () => {
+  if (!appliedCouponCode.value) return;
+  const code = appliedCouponCode.value;
+  clearCoupon();
+  await onCouponSelected({ code });
+};
+
+const pluralizeProducts = (count) => {
+  const mod10 = count % 10;
+  const mod100 = count % 100;
+  if (mod10 === 1 && mod100 !== 11) return "товар";
+  if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100))
+    return "товара";
+  return "товаров";
 };
 
 const handleQuickClientCreated = (client) => {
@@ -573,7 +700,25 @@ const handleQuickClientCreated = (client) => {
   formData.user.first_name = client.first_name || "";
   formData.user.last_name = client.last_name || "";
   formData.user.phone = client.phone || "";
+
+  // Автозаполнение получателя из клиента — оператор всегда сможет переписать вручную.
+  if (!formData.recipient.first_name) {
+    formData.recipient.first_name = client.first_name || "";
+  }
+  if (!formData.recipient.last_name) {
+    formData.recipient.last_name = client.last_name || "";
+  }
+  if (!formData.recipient.middle_name) {
+    formData.recipient.middle_name =
+      client.middle_name || client.profile?.middle_name || "";
+  }
+  if (!formData.recipient.phone) {
+    formData.recipient.phone = client.phone || "";
+  }
 };
+
+// Ошибки только для блока «Получатель», прокидываются в OrderRecipientDetails.
+const recipientErrors = computed(() => validationErrors.value?.recipient || {});
 
 const handleClientCleared = () => {
   formData.client_id = null;
@@ -725,11 +870,41 @@ const fillFormFromOrder = (order) => {
 
   formData.address = formData.delivery_address.address || "";
 
+  // Заполняем получателя из order_addresses (recipient_*) с фолбэком
+  // на контактные данные клиента, если в адресе ничего не сохранено.
+  const emptyRecipient = createEmptyRecipient();
+  formData.recipient.first_name =
+    orderAddress.recipient_first_name ||
+    order?.client?.profile?.first_name ||
+    order?.client?.first_name ||
+    emptyRecipient.first_name;
+  formData.recipient.last_name =
+    orderAddress.recipient_last_name ||
+    order?.client?.profile?.last_name ||
+    order?.client?.last_name ||
+    emptyRecipient.last_name;
+  formData.recipient.middle_name =
+    orderAddress.recipient_middle_name ||
+    order?.client?.profile?.middle_name ||
+    emptyRecipient.middle_name;
+  formData.recipient.phone =
+    orderAddress.recipient_phone ||
+    order?.client?.profile?.phone ||
+    order?.client?.phone ||
+    emptyRecipient.phone;
+
   data.items.splice(0, data.items.length, ...normalizeOrderItems(order?.items));
 
+  // Если на заказ уже применён промокод — отображаем его как «применённый»,
+  // но пересчёт цен уже выполнен бэком и сохранён в order_items.price.
+  // Поэтому запоминаем текущие цены как «исходные» — снять купон без полной
+  // перезагрузки заказа корректно не получится, но оператор всё ещё может выбрать
+  // другой купон (тогда revalidateCoupon перезапросит расчёт от текущих цен).
   appliedCouponCode.value = order?.promo_code?.code || "";
-  couponCode.value = appliedCouponCode.value;
-  showCouponInput.value = Boolean(appliedCouponCode.value);
+  if (appliedCouponCode.value) {
+    couponSavings.value = Number(order?.total_promo_discount ?? 0);
+    couponNotApplicableCount.value = 0;
+  }
 };
 
 const loadOrder = async (id) => {
@@ -753,6 +928,7 @@ const handleUpdate = async () => {
   const payload = {
     client_id: formData.client_id,
     user: formData.user,
+    recipient: formData.recipient,
     delivery_address: formData.delivery_address,
     delivery_date: formData.delivery_address.delivery_date || null,
     source: formData.source || null,
@@ -784,7 +960,7 @@ const handleUpdate = async () => {
     if (error?.response?.data?.errors) {
       const errors = error.response.data.errors;
 
-      // Преобразуем ошибки вида "delivery_address.city" в вложенную структуру
+      // Преобразуем ошибки вида "delivery_address.city" / "recipient.first_name" в вложенную структуру
       const processedErrors = {};
       Object.keys(errors).forEach((key) => {
         if (key.startsWith("delivery_address.")) {
@@ -794,6 +970,10 @@ const handleUpdate = async () => {
           const field = key.replace("user.", "");
           if (!processedErrors.user) processedErrors.user = {};
           processedErrors.user[field] = errors[key];
+        } else if (key.startsWith("recipient.")) {
+          const field = key.replace("recipient.", "");
+          if (!processedErrors.recipient) processedErrors.recipient = {};
+          processedErrors.recipient[field] = errors[key];
         } else {
           processedErrors[key] = errors[key];
         }

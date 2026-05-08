@@ -31,7 +31,7 @@
               <input
                 v-model.trim="search"
                 type="text"
-                placeholder="Поиск клиента"
+                placeholder="Поиск клиента (имя, телефон, email)"
                 class="block w-full rounded-md border border-gray-300 py-2 pl-10 pr-3 text-sm text-gray-900 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
               />
             </div>
@@ -314,8 +314,12 @@ const availableClients = computed(() => {
   return clientsFromProps.value;
 });
 
+const onlyDigits = (value) => String(value ?? "").replace(/\D+/g, "");
+
 const filteredClients = computed(() => {
-  const query = search.value.trim().toLowerCase();
+  const rawQuery = search.value.trim();
+  const query = rawQuery.toLowerCase();
+  const digitsQuery = onlyDigits(rawQuery);
 
   return availableClients.value
     .map((client) => normalizeClient(client))
@@ -336,7 +340,16 @@ const filteredClients = computed(() => {
         .join(" ")
         .toLowerCase();
 
-      return haystack.includes(query);
+      if (haystack.includes(query)) {
+        return true;
+      }
+
+      // Сравниваем телефон по цифрам, чтобы "+7 (912) 345-67-89" находил "+79123456789".
+      if (digitsQuery && client.phone) {
+        return onlyDigits(client.phone).includes(digitsQuery);
+      }
+
+      return false;
     });
 });
 

@@ -165,6 +165,8 @@ const getLogo = (source: string): string => {
       return assetPath('icons/chat/whatsapp.svg')
     case 'vk':
       return assetPath('icons/chat/vk.svg')
+    case 'max':
+      return assetPath('icons/chat/max.svg')
     case 'email':
       return assetPath('icons/chat/email.png')
     default:

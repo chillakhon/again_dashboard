@@ -55,6 +55,11 @@ const routes = [
                         component: () => import('../components/orders/update/order.vue'),
                     },
                     {
+                        path: '/order/:id',
+                        name: 'orders-view',
+                        component: () => import('../components/orders/view/OrderView.vue'),
+                    },
+                    {
                         path: '/orders/tasks',
                         name: 'orders-tasks',
                         component: () => import('../components/orders/tasks'),
