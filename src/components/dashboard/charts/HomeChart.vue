@@ -4,7 +4,7 @@
     <div class="mb-4">
       <h3 class="text-lg font-semibold text-gray-800">Динамика заказов за последние 6 месяцев</h3>
       <p class="text-sm text-gray-500 mt-1">
-        Визуализация показывает изменение количества заказов по статусам
+        Визуализация показывает изменение количества заказов по всем статусам
       </p>
     </div>
 
@@ -26,7 +26,7 @@
 <script setup lang="ts">
 import { LineChart } from 'vue-chart-3';
 import { Chart, registerables } from 'chart.js';
-import {  ref, watch } from 'vue';
+import { computed } from 'vue';
 import { Clock } from 'lucide-vue-next';
 
 
@@ -36,65 +36,60 @@ const props = defineProps({
   chartData: {
     type: Object,
     required: true,
-    default: () => ({
-      labels: [],
-      new: [],
-      processing: [],
-      assembled: []
-    })
+    default: () => ({ labels: [] })
   }
 });
 
-const chartData = ref({
-  labels: props.chartData?.labels,
-  datasets: [
-    {
-      label: 'Новые заказы',
-      data: props.chartData?.new ?? [],
-      borderColor: '#EF4444',
-      backgroundColor: 'rgba(239, 68, 68, 0.05)',
-      borderWidth: 3,
-      tension: 0.3,
-      fill: true,
-      pointBackgroundColor: '#EF4444',
-      pointBorderColor: '#ffffff',
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6
-    },
-    {
-      label: 'В обработке',
-      data: props.chartData?.processing ?? [],
-      borderColor: '#F59E0B',
-      backgroundColor: 'rgba(245, 158, 11, 0.05)',
-      borderWidth: 3,
-      tension: 0.3,
-      fill: true,
-      pointBackgroundColor: '#F59E0B',
-      pointBorderColor: '#ffffff',
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6
-    },
-    {
-      label: 'Собран',
-      data: props.chartData?.assembled ?? [],
-      borderColor: '#00ba13',
-      backgroundColor: 'rgba(59, 130, 246, 0.05)',
-      borderWidth: 3,
-      tension: 0.3,
-      fill: true,
-      pointBackgroundColor: '#00ba13',
-      pointBorderColor: '#ffffff',
-      pointBorderWidth: 2,
-      pointRadius: 4,
-      pointHoverRadius: 6
-    }
-  ]
+// Метаданные по всем статусам заказов (синхронизировано с App\Enums\OrderStatus)
+const STATUS_META: Record<string, { label: string; color: string }> = {
+  new:            { label: 'Новые',              color: '#EF4444' },
+  processing:     { label: 'В обработке',        color: '#F59E0B' },
+  shipped:        { label: 'Отгружен',           color: '#7391ec' },
+  shipped_export: { label: 'Отгружен на экспорт',color: '#9333ea' },
+  delivered:      { label: 'Доставлен',          color: '#6fbaba' },
+  cancelled:      { label: 'Отменён',            color: '#f88686' },
+  product_return: { label: 'Возврат товара',     color: '#fb923c' },
+};
+
+function hexToRgba(hex: string, alpha = 0.05): string {
+  const h = hex.replace('#', '');
+  const bigint = parseInt(h, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+const chartData = computed(() => {
+  const cd = props.chartData ?? { labels: [] };
+  const datasets = Object.keys(STATUS_META)
+      .filter((status) => Array.isArray(cd[status]))
+      .map((status) => {
+        const meta = STATUS_META[status];
+        return {
+          label: meta.label,
+          data: cd[status] ?? [],
+          borderColor: meta.color,
+          backgroundColor: hexToRgba(meta.color, 0.05),
+          borderWidth: 3,
+          tension: 0.3,
+          fill: true,
+          pointBackgroundColor: meta.color,
+          pointBorderColor: '#ffffff',
+          pointBorderWidth: 2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+        };
+      });
+
+  return {
+    labels: cd.labels ?? [],
+    datasets,
+  };
 });
 
 // Красивые настройки графика
-const options = ref({
+const options = {
   responsive: true,
   maintainAspectRatio: false,
   plugins: {
@@ -171,20 +166,7 @@ const options = ref({
       cubicInterpolationMode: 'monotone'
     }
   }
-});
-
-// Обновляем данные при изменении пропсов
-watch(() => props.chartData, (newVal) => {
-  chartData.value = {
-    ...chartData.value,
-    labels: newVal.labels,
-    datasets: [
-      { ...chartData.value.datasets[0], data: newVal.new },
-      { ...chartData.value.datasets[1], data: newVal.processing },
-      { ...chartData.value.datasets[2], data: newVal.assembled }
-    ]
-  };
-}, { deep: true });
+};
 
 // onMounted(() => {
 //   console.log('Данные графика:', props.chartData);
