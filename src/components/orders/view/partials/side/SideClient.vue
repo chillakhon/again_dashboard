@@ -30,7 +30,16 @@
       </div>
       <div v-if="stats">
         <dt class="text-xs uppercase text-gray-500">Заказов</dt>
-        <dd class="text-gray-900">{{ stats.orders_count }}</dd>
+        <dd class="text-gray-900">
+          <router-link
+            v-if="client?.id"
+            :to="`/clients/${client.id}`"
+            class="text-blue-600 hover:underline"
+          >
+            {{ stats.orders_count }}
+          </router-link>
+          <span v-else>{{ stats.orders_count }}</span>
+        </dd>
       </div>
       <div v-if="stats">
         <dt class="text-xs uppercase text-gray-500">Оборот</dt>
