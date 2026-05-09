@@ -239,6 +239,37 @@
           </table>
         </section>
 
+        <!-- События -->
+        <section class="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
+          <header class="border-b px-4 py-3">
+            <h3 class="text-sm font-semibold text-gray-900">События</h3>
+          </header>
+          <div class="px-4 py-3">
+            <div v-if="!events.length" class="text-sm text-muted-foreground">
+              Событий пока нет
+            </div>
+            <ul v-else class="space-y-3 text-sm">
+              <li v-for="ev in events" :key="ev.id" class="leading-snug">
+                <div class="text-xs text-gray-500">
+                  {{ formatDateToRussian(ev.created_at, true) }}
+                  <span v-if="ev.order_number || ev.order_id">
+                    —
+                    <RouterLink
+                        :to="`/order/${ev.order_id}`"
+                        class="text-blue-600 hover:underline"
+                    >
+                      {{ ev.order_number || ev.order_id }}
+                    </RouterLink>
+                  </span>
+                </div>
+                <div class="text-gray-900">
+                  {{ ev.description || '—' }}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </section>
+
         <!-- Теги -->
         <section class="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
           <header class="border-b px-4 py-3">
@@ -303,6 +334,7 @@ const {getStatus, getAllStatuses, cachedStatuses} = useStatusFunctions();
 const isLoading = ref(true);
 const client = ref<any>(null);
 const statistics = ref<any>(null);
+const events = ref<any[]>([]);
 
 const orders = ref<any[]>([]);
 const ordersMeta = ref<any | null>(null);
@@ -370,11 +402,13 @@ async function fetchClient(id: number | string) {
     const {data} = await axios.get(`/clients/${id}`);
     client.value = data?.client ?? data ?? null;
     statistics.value = data?.statistics ?? null;
+    events.value = Array.isArray(data?.events) ? data.events : [];
   } catch (e) {
     console.error('Не удалось загрузить клиента', e);
     toast.error('Не удалось загрузить клиента');
     client.value = null;
     statistics.value = null;
+    events.value = [];
   } finally {
     isLoading.value = false;
   }
