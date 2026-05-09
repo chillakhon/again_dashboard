@@ -161,6 +161,16 @@ const routes = [
                         name: 'clients-discounts',
                         component: () => import('../components/discount/Discount.vue'),
                     },
+
+                    {
+                        path: '/clients/:id(\\d+)',
+                        name: 'clients-show',
+                        component: () => import('../components/clients/Show/Index.vue'),
+                        meta: {
+                            title: 'Карточка клиента',
+                            requiresAuth: true,
+                        },
+                    },
                 ]
             },
 
