@@ -25,6 +25,7 @@
 import ClientsEdit from '@/components/clients/Edit/Index.vue'
 import {Check, X} from "lucide-vue-next";
 import {h, PropType, ref, watch} from "vue";
+import {RouterLink} from "vue-router";
 import {useClientFunctions} from "@/composables/useClientFunctions";
 import DynamicsDataTable from "@/components/dynamics/DataTable/Index.vue";
 import {Client} from "@/models/client/Client";
@@ -75,12 +76,29 @@ const columns = [
   {
     accessorKey: "id",
     header: "ID",
+    cell: ({row}: any) =>
+        h(
+            RouterLink,
+            {
+              to: `/clients/${row.original.id}`,
+              class: "text-blue-600 hover:underline",
+            },
+            () => row.original.id
+        ),
   },
   {
     accessorKey: "profile.fullName",
     header: "Клиент",
-    cell: (row: any) => {
-      return row.row?.original?.profile?.fullName || '—';
+    cell: ({row}: any) => {
+      const name = row.original?.profile?.fullName || '—';
+      return h(
+          RouterLink,
+          {
+            to: `/clients/${row.original.id}`,
+            class: "text-blue-600 hover:underline",
+          },
+          () => name
+      );
     }
   },
 
