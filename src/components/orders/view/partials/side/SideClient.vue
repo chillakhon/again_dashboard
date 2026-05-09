@@ -18,15 +18,11 @@
       </div>
       <div>
         <dt class="text-xs uppercase text-gray-500">Телефон</dt>
-        <dd class="text-gray-900">{{ client.phone || "—" }}</dd>
+        <dd class="text-gray-900">{{ phone || "—" }}</dd>
       </div>
       <div>
         <dt class="text-xs uppercase text-gray-500">Email</dt>
         <dd class="text-gray-900">{{ client.email || "—" }}</dd>
-      </div>
-      <div>
-        <dt class="text-xs uppercase text-gray-500">Согласие на обработку ПД</dt>
-        <dd class="text-gray-900">{{ client.personal_data_consent ? "Да" : "—" }}</dd>
       </div>
       <div v-if="stats">
         <dt class="text-xs uppercase text-gray-500">Заказов</dt>
@@ -59,12 +55,24 @@ const props = defineProps({
 
 const fullName = computed(() => {
   if (!props.client) return "—";
+  const p = props.client.profile || {};
   return (
-    [props.client.last_name, props.client.first_name, props.client.middle_name]
+    [
+      p.last_name ?? props.client.last_name,
+      p.first_name ?? props.client.first_name,
+      p.middle_name ?? props.client.middle_name,
+    ]
       .filter(Boolean)
-      .join(" ") || "—"
+      .join(" ") ||
+    props.client.name ||
+    p.full_name ||
+    "—"
   );
 });
+
+const phone = computed(
+  () => props.client?.profile?.phone ?? props.client?.phone ?? null,
+);
 
 const formatPrice = (value) => {
   const n = Number(value || 0);
