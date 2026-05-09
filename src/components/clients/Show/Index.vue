@@ -6,73 +6,77 @@
   </div>
 
   <div v-else class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-wrap items-center justify-between gap-3">
-      <div class="flex items-center gap-3 min-w-0">
-        <RouterLink
-            to="/clients/list"
-            class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800"
-        >
-          <ChevronLeft class="h-4 w-4"/>
-          К списку
-        </RouterLink>
-        <h1 class="truncate text-xl font-semibold text-gray-900">
-          {{ fullName || client.email || `Клиент #${client.id}` }}
-        </h1>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <ClientEditModal
-            v-if="clientForModal"
-            :client="clientForModal"
-            button-name="Редактировать"
-            @updated="handleUpdated"
-        />
-      </div>
+    <!-- Page header -->
+    <div class="flex flex-wrap items-center gap-3">
+      <RouterLink
+          to="/clients/list"
+          class="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-800"
+      >
+        <ChevronLeft class="h-4 w-4"/>
+        К списку
+      </RouterLink>
+      <h1 class="truncate text-xl font-semibold text-gray-900">
+        {{ fullName || client.email || `Клиент #${client.id}` }}
+      </h1>
     </div>
 
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
-      <!-- Main column -->
+      <!-- Main (2/3) -->
       <div class="space-y-6 lg:col-span-2">
-        <!-- Stats cards -->
-        <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <div class="rounded-lg border bg-white p-4 shadow-sm ring-1 ring-gray-900/5">
-            <div class="text-xs text-gray-500">Всего заказов</div>
-            <div class="mt-1 text-2xl font-semibold text-gray-900">
-              {{ statistics?.total_orders ?? 0 }}
-            </div>
-          </div>
-          <div class="rounded-lg border bg-white p-4 shadow-sm ring-1 ring-gray-900/5">
-            <div class="text-xs text-gray-500">Оборот</div>
-            <div class="mt-1 text-2xl font-semibold text-gray-900">
-              {{ formatPrice(statistics?.total_spent) }}
-            </div>
-          </div>
-          <div class="rounded-lg border bg-white p-4 shadow-sm ring-1 ring-gray-900/5">
-            <div class="text-xs text-gray-500">Средний чек</div>
-            <div class="mt-1 text-2xl font-semibold text-gray-900">
-              {{ formatPrice(statistics?.average_order_value) }}
-            </div>
-          </div>
-          <div class="rounded-lg border bg-white p-4 shadow-sm ring-1 ring-gray-900/5">
-            <div class="text-xs text-gray-500">Последний заказ</div>
-            <div class="mt-1 text-sm font-medium text-gray-900">
-              {{
-                statistics?.last_order_date
-                    ? formatDateToRussian(statistics.last_order_date)
-                    : '—'
-              }}
-            </div>
-          </div>
-        </div>
-
-        <!-- Orders -->
+        <!-- Карточка клиента -->
         <section class="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
           <header class="flex items-center justify-between border-b px-4 py-3">
-            <h3 class="text-sm font-semibold text-gray-900">Заказы</h3>
-            <span v-if="ordersMeta?.total" class="text-xs text-gray-500">
-              Всего: {{ ordersMeta.total }}
-            </span>
+            <h3 class="text-sm font-semibold text-gray-900">Карточка клиента</h3>
+            <ClientEditModal
+                v-if="clientForModal"
+                :client="clientForModal"
+                button-name="Редактировать"
+                @updated="handleUpdated"
+            />
+          </header>
+
+          <div class="divide-y">
+            <div class="grid grid-cols-1 gap-4 px-4 py-4 md:grid-cols-3">
+              <FieldView label="Фамилия" :value="client.profile?.last_name"/>
+              <FieldView label="Имя" :value="client.profile?.first_name"/>
+              <FieldView label="Отчество" :value="client.profile?.middle_name"/>
+              <FieldView label="Телефон" :value="client.profile?.phone"/>
+              <FieldView label="Почта" :value="client.email"/>
+              <FieldView
+                  label="Бонусы"
+                  :value="
+                  client.bonus_balance !== undefined && client.bonus_balance !== null
+                      ? Number(client.bonus_balance).toLocaleString('ru-RU')
+                      : null
+                "
+              />
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 px-4 py-4 md:grid-cols-2">
+              <FieldView
+                  label="Дата рождения"
+                  :value="
+                  client.profile?.birthday
+                      ? formatDateToRussian(client.profile.birthday)
+                      : null
+                "
+              />
+              <FieldView label="Адрес" :value="client.profile?.address"/>
+            </div>
+          </div>
+        </section>
+
+        <!-- Заказы клиента -->
+        <section class="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
+          <header class="flex items-center justify-between border-b px-4 py-3">
+            <h3 class="text-sm font-semibold text-gray-900">Заказы клиента</h3>
+            <RouterLink
+                :to="`/admin/order/create?client_id=${client.id}`"
+                class="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
+            >
+              <Plus class="h-3.5 w-3.5"/>
+              Новый заказ
+            </RouterLink>
           </header>
 
           <div v-if="ordersLoading" class="flex items-center justify-center py-10">
@@ -90,37 +94,71 @@
             <table class="w-full text-sm">
               <thead class="bg-muted/50 text-left">
               <tr>
-                <th class="px-4 py-2 font-medium">№</th>
+                <th class="w-10 px-4 py-2 font-medium"></th>
+                <th class="px-4 py-2 font-medium">Заказ</th>
                 <th class="px-4 py-2 font-medium">Дата</th>
-                <th class="px-4 py-2 font-medium">Сумма</th>
-                <th class="px-4 py-2 font-medium">Статус</th>
+                <th class="px-4 py-2 text-right font-medium">Сумма</th>
+                <th class="px-4 py-2 text-right font-medium">Оплачено</th>
+                <th class="px-4 py-2 text-center font-medium">Статус заказа</th>
+                <th class="px-4 py-2 text-center font-medium">Статус оплаты</th>
               </tr>
               </thead>
               <tbody>
-              <tr v-for="o in orders" :key="o.id" class="border-t">
+              <!-- Итого -->
+              <tr class="border-t bg-gray-50 font-semibold">
+                <td class="px-4 py-2"></td>
+                <td class="px-4 py-2">Итого</td>
+                <td class="px-4 py-2 whitespace-nowrap">
+                  {{ totalOrdersLabel }}
+                </td>
+                <td class="px-4 py-2 text-right whitespace-nowrap">
+                  {{ formatPrice(statistics?.total_spent) }}
+                </td>
+                <td class="px-4 py-2 text-right whitespace-nowrap">
+                  {{ formatPrice(statistics?.total_paid) }}
+                </td>
+                <td></td>
+                <td></td>
+              </tr>
+
+              <tr v-for="(o, i) in orders" :key="o.id" class="border-t">
+                <td class="px-4 py-2 text-gray-400">
+                  {{ (ordersMeta?.current_page - 1 || 0) * ordersPerPage + i + 1 }}
+                </td>
                 <td class="px-4 py-2 whitespace-nowrap">
                   <RouterLink
                       :to="`/order/${o.id}`"
-                      class="text-blue-600 hover:underline"
+                      class="font-medium text-blue-600 hover:underline"
                   >
                     {{ o.order_number || o.id }}
                   </RouterLink>
                 </td>
                 <td class="px-4 py-2 whitespace-nowrap">
-                  {{ formatDateToRussian(o.created_at) }}
+                  {{ formatDateToRussian(o.created_at, true) }}
                 </td>
-                <td class="px-4 py-2 whitespace-nowrap">
+                <td class="px-4 py-2 text-right whitespace-nowrap">
                   {{ formatPrice(o.total_amount) }}
                 </td>
-                <td class="px-4 py-2">
+                <td class="px-4 py-2 text-right whitespace-nowrap">
+                  {{ formatPrice(o.payment_status === 'paid' ? o.total_amount : 0) }}
+                </td>
+                <td class="px-4 py-2 text-center">
                   <span
                       v-if="getStatus('order', String(o.status ?? '').trim())"
                       :style="{ backgroundColor: getStatus('order', String(o.status ?? '').trim())?.color }"
-                      class="rounded px-2 py-1 text-white whitespace-nowrap"
+                      class="inline-block rounded px-2 py-1 text-white whitespace-nowrap"
                   >
                     {{ getStatus('order', String(o.status ?? '').trim())?.label }}
                   </span>
                   <span v-else class="text-muted-foreground">—</span>
+                </td>
+                <td class="px-4 py-2 text-center">
+                  <span
+                      class="inline-block rounded px-2 py-1 text-white whitespace-nowrap"
+                      :style="{ backgroundColor: paymentStatusColor(o.payment_status) }"
+                  >
+                    {{ paymentStatusLabel(o.payment_status) }}
+                  </span>
                 </td>
               </tr>
               </tbody>
@@ -156,82 +194,72 @@
         </section>
       </div>
 
-      <!-- Side column -->
+      <!-- Sidebar (1/3) -->
       <aside class="space-y-6">
-        <!-- Контакты -->
-        <section class="rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-900/5">
-          <h3 class="text-sm font-semibold text-gray-900">Контакты</h3>
-          <dl class="mt-3 space-y-2 text-sm">
-            <div>
-              <dt class="text-xs uppercase text-gray-500">ФИО</dt>
-              <dd class="text-gray-900">{{ fullName || '—' }}</dd>
-            </div>
-            <div>
-              <dt class="text-xs uppercase text-gray-500">Email</dt>
-              <dd class="text-gray-900">{{ client.email || '—' }}</dd>
-            </div>
-            <div>
-              <dt class="text-xs uppercase text-gray-500">Телефон</dt>
-              <dd class="text-gray-900">{{ client.profile?.phone || '—' }}</dd>
-            </div>
-            <div>
-              <dt class="text-xs uppercase text-gray-500">Адрес</dt>
-              <dd class="text-gray-900">{{ client.profile?.address || '—' }}</dd>
-            </div>
-            <div>
-              <dt class="text-xs uppercase text-gray-500">Дата рождения</dt>
-              <dd class="text-gray-900">
-                {{
-                  client.profile?.birthday
-                      ? formatDateToRussian(client.profile.birthday)
-                      : '—'
-                }}
-              </dd>
-            </div>
-            <div>
-              <dt class="text-xs uppercase text-gray-500">
-                Согласие на обработку ПД
-              </dt>
-              <dd class="text-gray-900">
-                {{ client.personal_data_consent ? 'Да' : '—' }}
-              </dd>
-            </div>
-            <div>
-              <dt class="text-xs uppercase text-gray-500">Зарегистрирован</dt>
-              <dd class="text-gray-900">
+        <!-- Сводка -->
+        <section class="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
+          <header class="border-b px-4 py-3">
+            <h3 class="text-sm font-semibold text-gray-900">Сводка</h3>
+          </header>
+          <table class="w-full text-sm">
+            <tbody>
+            <tr class="border-t">
+              <td class="px-4 py-2 text-gray-500">Группа:</td>
+              <td class="px-4 py-2 text-gray-900">
+                {{ client.level?.name || 'Вне группы' }}
+              </td>
+            </tr>
+            <tr class="border-t">
+              <td class="px-4 py-2 text-gray-500">Скидка:</td>
+              <td class="px-4 py-2 text-gray-900">
+                {{ client.level?.discount_amount
+                  ? `${client.level.discount_amount}${client.level.discount_type === 'percentage' ? '%' : ' ₽'}`
+                  : '—' }}
+              </td>
+            </tr>
+            <tr class="border-t">
+              <td class="px-4 py-2 text-gray-500">Регистрация:</td>
+              <td class="px-4 py-2 text-gray-900">
+                {{ client.user_id || client.email_verified_at ? 'Да' : 'Нет' }}
+              </td>
+            </tr>
+            <tr class="border-t">
+              <td class="px-4 py-2 text-gray-500">Создан:</td>
+              <td class="px-4 py-2 text-gray-900">
                 {{ client.created_at ? formatDateToRussian(client.created_at) : '—' }}
-              </dd>
-            </div>
-          </dl>
-        </section>
-
-        <!-- Бонусы -->
-        <section
-            v-if="client.bonus_balance !== undefined && client.bonus_balance !== null"
-            class="rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-900/5"
-        >
-          <h3 class="text-sm font-semibold text-gray-900">Бонусы</h3>
-          <div class="mt-2 text-xl font-semibold text-gray-900">
-            {{ Number(client.bonus_balance).toLocaleString('ru-RU') }}
-          </div>
+              </td>
+            </tr>
+            <tr v-if="statistics?.last_order_date" class="border-t">
+              <td class="px-4 py-2 text-gray-500">Последний заказ:</td>
+              <td class="px-4 py-2 text-gray-900">
+                {{ formatDateToRussian(statistics.last_order_date) }}
+              </td>
+            </tr>
+            </tbody>
+          </table>
         </section>
 
         <!-- Теги -->
-        <section
-            v-if="Array.isArray(client.tags) && client.tags.length"
-            class="rounded-lg bg-white p-4 shadow-sm ring-1 ring-gray-900/5"
-        >
-          <h3 class="text-sm font-semibold text-gray-900">Теги</h3>
-          <div class="mt-3 flex flex-wrap gap-2">
-            <span
-                v-for="tag in client.tags"
-                :key="tag.id"
-                class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
-                :style="tag.color ? { backgroundColor: tag.color, color: '#fff' } : undefined"
-                :class="!tag.color ? 'bg-gray-100 text-gray-700' : undefined"
+        <section class="rounded-lg bg-white shadow-sm ring-1 ring-gray-900/5">
+          <header class="border-b px-4 py-3">
+            <h3 class="text-sm font-semibold text-gray-900">Теги</h3>
+          </header>
+          <div class="px-4 py-3">
+            <div
+                v-if="Array.isArray(client.tags) && client.tags.length"
+                class="flex flex-wrap gap-2"
             >
-              {{ tag.name }}
-            </span>
+              <span
+                  v-for="tag in client.tags"
+                  :key="tag.id"
+                  class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium"
+                  :style="tag.color ? { backgroundColor: tag.color, color: '#fff' } : undefined"
+                  :class="!tag.color ? 'bg-gray-100 text-gray-700' : undefined"
+              >
+                {{ tag.name }}
+              </span>
+            </div>
+            <div v-else class="text-sm text-muted-foreground">Нет тегов</div>
           </div>
         </section>
       </aside>
@@ -240,11 +268,11 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, ref, watch} from 'vue';
+import {computed, onMounted, ref, watch, h} from 'vue';
 import {RouterLink, useRoute} from 'vue-router';
 import axios from 'axios';
 import {toast} from 'vue-sonner';
-import {ChevronLeft} from 'lucide-vue-next';
+import {ChevronLeft, Plus} from 'lucide-vue-next';
 
 import Loader from '@/components/common/Loader.vue';
 import {Spinner} from '@/components/ui/spinner';
@@ -254,6 +282,18 @@ import ClientEditModal from '@/components/clients/Edit/ClientEditModal.vue';
 import {useDateFormat} from '@/composables/useDateFormat';
 import {usePriceFormatter} from '@/composables/usePriceFormatter';
 import {useStatusFunctions} from '@/composables/useStatusFunctions';
+
+// Небольшой поле-рендер для карточки клиента (label + значение)
+const FieldView = (props: { label: string; value: any }) => {
+  const val =
+      props.value === undefined || props.value === null || props.value === ''
+          ? '—'
+          : props.value;
+  return h('div', [
+    h('div', {class: 'text-xs uppercase text-gray-500'}, props.label),
+    h('div', {class: 'mt-0.5 text-sm text-gray-900 break-words'}, val),
+  ]);
+};
 
 const route = useRoute();
 const {formatDateToRussian} = useDateFormat();
@@ -268,7 +308,24 @@ const orders = ref<any[]>([]);
 const ordersMeta = ref<any | null>(null);
 const ordersLoading = ref(false);
 const ordersPage = ref(1);
-const ordersPerPage = 20;
+const ordersPerPage = 25;
+
+const PAYMENT_STATUS_META: Record<string, {label: string; color: string}> = {
+  paid: {label: 'Оплачен', color: '#10B981'},
+  pending: {label: 'Не оплачен', color: '#979797'},
+  failed: {label: 'Ошибка оплаты', color: '#ec5353'},
+  refunded: {label: 'Возврат оплаты', color: '#f1ad41'},
+};
+
+function paymentStatusLabel(value: string | undefined | null): string {
+  if (!value) return '—';
+  return PAYMENT_STATUS_META[value]?.label ?? value;
+}
+
+function paymentStatusColor(value: string | undefined | null): string {
+  if (!value) return '#9ca3af';
+  return PAYMENT_STATUS_META[value]?.color ?? '#9ca3af';
+}
 
 const fullName = computed(() => {
   if (!client.value) return '';
@@ -279,6 +336,17 @@ const fullName = computed(() => {
           .join(' ')
           .trim() || client.value.name || ''
   );
+});
+
+// Полный формат «X заказов/заказ»
+const totalOrdersLabel = computed(() => {
+  const n = Number(statistics.value?.total_orders ?? 0);
+  const mod10 = n % 10;
+  const mod100 = n % 100;
+  let word = 'заказов';
+  if (mod10 === 1 && mod100 !== 11) word = 'заказ';
+  else if ([2, 3, 4].includes(mod10) && ![12, 13, 14].includes(mod100)) word = 'заказа';
+  return `${n} ${word}`;
 });
 
 // Для передачи в ClientEditModal (ожидает тип из @/types/client)
