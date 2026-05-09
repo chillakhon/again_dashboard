@@ -131,11 +131,19 @@ const searchQuery = ref('');
 const fetchPromoCodes = async () => {
   isLoading.value = true;
   try {
-    const {data} = await axios.get('/promo-codes');
-    const list = Array.isArray(data?.promoCodes) ? data.promoCodes : [];
+    const {data} = await axios.get('/promo-codes', {
+      params: {is_active: 1, per_page: 200},
+    });
+    // Бэк отдаёт { success, data: [...], meta }. Поддерживаем и legacy-ключ promoCodes.
+    const list = Array.isArray(data?.data)
+        ? data.data
+        : Array.isArray(data?.promoCodes)
+            ? data.promoCodes
+            : [];
 
-    // Только активные и не просроченные. Невалидные для конкретного клиента
-    // отсечёт бэк при попытке /promo-codes/validate.
+    // Дополнительно отсекаем просроченные на клиенте
+    // (на бэке index не фильтрует по дате). Невалидные для конкретного
+    // клиента/состава товаров отсечёт /promo-codes/validate.
     const now = Date.now();
     promoCodes.value = list.filter((c) => {
       if (!c.is_active) return false;
