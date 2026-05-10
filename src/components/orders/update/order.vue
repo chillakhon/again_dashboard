@@ -137,22 +137,6 @@
             </table>
           </div>
 
-          <div v-if="data.items.length" class="mt-4">
-            <label
-              for="delivery_method"
-              class="block text-sm/6 font-medium text-gray-900"
-              >Способ доставки</label
-            >
-            <select
-              id="delivery_method"
-              v-model="formData.delivery_method_name"
-              class="mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
-            >
-              <option value="Курьерская доставка">Курьерская доставка</option>
-              <option value="Сдэк">Сдэк</option>
-            </select>
-          </div>
-
           <div
             v-if="pendingCouponCode && !appliedCouponCode"
             class="mt-4 flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3"
@@ -207,6 +191,18 @@
             >
               Снять
             </Button>
+          </div>
+
+          <div v-if="data.items.length" class="mt-4 space-y-1">
+            <Label for="delivery_method">Способ доставки</Label>
+            <Select
+              id="delivery_method"
+              v-model="formData.delivery_method_name"
+              :options="deliveryMethodOptions"
+              option-label="label"
+              option-value="value"
+              placeholder="Выберите способ доставки"
+            />
           </div>
         </div>
 
@@ -277,6 +273,8 @@ import OrderPositionModal from "@/components/orders/modals/OrderPositionModal.vu
 import PromoCodeListModal from "@/components/orders/modals/PromoCodeListModal.vue";
 import SideTasks from "@/components/orders/view/partials/side/SideTasks.vue";
 import Button from "@/components/ui/button/Button.vue";
+import { Label } from "@/components/ui/label";
+import Select from "@/components/dynamics/Dropdown/Select.vue";
 import { useProductFunctions } from "@/composables/useProductFunctions";
 import { useStatusFunctions } from "@/composables/useStatusFunctions";
 import { useOrderFunctions } from "@/composables/useOrderFunctions";
@@ -358,6 +356,11 @@ const formData = reactive({
   delivery_method_name: "Курьерская доставка",
   address: "",
 });
+
+const deliveryMethodOptions = [
+  { value: "Курьерская доставка", label: "Курьерская доставка" },
+  { value: "Сдэк", label: "Сдэк" },
+];
 
 const getClients = () => store.dispatch("clients/getClients");
 const clients = computed(() => store.getters["clients/clients"]);

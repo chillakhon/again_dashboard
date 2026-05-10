@@ -136,22 +136,6 @@
             </table>
           </div>
 
-          <div v-if="data.items.length" class="mt-4">
-            <label
-              for="delivery_method"
-              class="block text-sm/6 font-medium text-gray-900"
-              >Способ доставки</label
-            >
-            <select
-              id="delivery_method"
-              v-model="formData.delivery_method_name"
-              class="mt-2 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm text-gray-900 outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500"
-            >
-              <option value="Курьерская доставка">Курьерская доставка</option>
-              <option value="Сдэк">Сдэк</option>
-            </select>
-          </div>
-
           <div
             v-if="pendingCouponCode && !appliedCouponCode"
             class="mt-4 flex items-center justify-between gap-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3"
@@ -207,6 +191,18 @@
               Снять
             </Button>
           </div>
+
+          <div v-if="data.items.length" class="mt-4 space-y-1">
+            <Label for="delivery_method">Способ доставки</Label>
+            <Select
+              id="delivery_method"
+              v-model="formData.delivery_method_name"
+              :options="deliveryMethodOptions"
+              option-label="label"
+              option-value="value"
+              placeholder="Выберите способ доставки"
+            />
+          </div>
         </div>
 
         <div class="mt-6">
@@ -254,7 +250,7 @@
 import { ref, reactive, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { Trash2 } from "lucide-vue-next";
 import { useToast } from "@/components/ui/toast/use-toast";
 
@@ -266,6 +262,8 @@ import OrderQuickClientCreate from "@/components/orders/create/OrderQuickClientC
 import OrderRecipientDetails from "@/components/orders/create/OrderRecipientDetails.vue";
 import OrderDeliveryDetails from "@/components/orders/create/OrderDeliveryDetails.vue";
 import Button from "@/components/ui/button/Button.vue";
+import { Label } from "@/components/ui/label";
+import Select from "@/components/dynamics/Dropdown/Select.vue";
 import { useProductFunctions } from "@/composables/useProductFunctions";
 import { useStatusFunctions } from "@/composables/useStatusFunctions";
 import { useOrderPaymentMethods } from "@/composables/orders/useOrderPaymentMethods";
@@ -273,7 +271,15 @@ import { ORDER_SOURCE_OPTIONS } from "@/composables/orders/orderSourceOptions";
 
 const store = useStore();
 const router = useRouter();
+const route = useRoute();
 const { toast } = useToast();
+
+const initialClientIdFromQuery = (() => {
+  const raw = route.query.client_id;
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  const parsed = value != null ? Number(value) : NaN;
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+})();
 const productSearch = ref("");
 const products = ref([]);
 const appliedCouponCode = ref("");
@@ -292,7 +298,7 @@ const data = reactive({
 });
 
 const formData = reactive({
-  client_id: null,
+  client_id: initialClientIdFromQuery,
   user: {
     first_name: "",
     last_name: "",
@@ -324,6 +330,11 @@ const formData = reactive({
   delivery_method_name: "Курьерская доставка",
   address: "",
 });
+
+const deliveryMethodOptions = [
+  { value: "Курьерская доставка", label: "Курьерская доставка" },
+  { value: "Сдэк", label: "Сдэк" },
+];
 
 const getProducts = () => store.dispatch("products/getProducts");
 const getClients = () => store.dispatch("clients/getClients");

@@ -63,6 +63,31 @@
               />
               <FieldView label="Адрес" :value="client.profile?.address"/>
             </div>
+
+            <div class="grid grid-cols-1 gap-4 px-4 py-4 md:grid-cols-3">
+              <FieldView label="Страна" :value="client.profile?.country?.name"/>
+              <FieldView label="Регион" :value="client.profile?.delivery_region"/>
+              <FieldView label="Город" :value="client.profile?.city?.name"/>
+              <FieldView label="Улица" :value="client.profile?.delivery_street"/>
+              <FieldView label="Дом" :value="client.profile?.delivery_house"/>
+              <FieldView label="Квартира" :value="client.profile?.delivery_apartment"/>
+              <FieldView label="Почтовый индекс" :value="client.profile?.delivery_postal_code"/>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 px-4 py-4 md:grid-cols-3">
+              <FieldView
+                  label="Подписан на рассылку"
+                  :value="boolLabel(client.subscribed_to_newsletter)"
+              />
+              <FieldView
+                  label="Согласие на ПД"
+                  :value="boolLabel(client.personal_data_consent)"
+              />
+              <FieldView
+                  label="Уведомления о заказе"
+                  :value="boolLabel(client.messenger_subscription)"
+              />
+            </div>
           </div>
         </section>
 
@@ -71,7 +96,7 @@
           <header class="flex items-center justify-between border-b px-4 py-3">
             <h3 class="text-sm font-semibold text-gray-900">Заказы клиента</h3>
             <RouterLink
-                :to="`/admin/order/create?client_id=${client.id}`"
+                :to="`/order/create?client_id=${client.id}`"
                 class="inline-flex items-center gap-1 rounded-md border px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50"
             >
               <Plus class="h-3.5 w-3.5"/>
@@ -206,7 +231,13 @@
             <tr class="border-t">
               <td class="px-4 py-2 text-gray-500">Группа:</td>
               <td class="px-4 py-2 text-gray-900">
-                {{ client.level?.name || 'Вне группы' }}
+                {{ client.group_name || client.level?.name || 'Вне группы' }}
+              </td>
+            </tr>
+            <tr class="border-t">
+              <td class="px-4 py-2 text-gray-500">RFM:</td>
+              <td class="px-4 py-2 text-gray-900">
+                {{ client.rfm_segment || '—' }}
               </td>
             </tr>
             <tr class="border-t">
@@ -357,6 +388,11 @@ function paymentStatusLabel(value: string | undefined | null): string {
 function paymentStatusColor(value: string | undefined | null): string {
   if (!value) return '#9ca3af';
   return PAYMENT_STATUS_META[value]?.color ?? '#9ca3af';
+}
+
+function boolLabel(value: any): string {
+  if (value === undefined || value === null) return '—';
+  return value ? 'Да' : 'Нет';
 }
 
 const fullName = computed(() => {

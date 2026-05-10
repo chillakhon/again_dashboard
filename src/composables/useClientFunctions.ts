@@ -135,14 +135,29 @@ export function useClientFunctions() {
 
 
     function prepareClientDataForValidation(client: ClientModel) {
+        const profile: any = client.profile ?? {};
+        const c: any = client as any;
         return {
-            first_name: client.profile?.first_name ?? null,
-            last_name: client.profile?.last_name ?? null,
+            first_name: profile.first_name ?? null,
+            last_name: profile.last_name ?? null,
+            middle_name: profile.middle_name ?? null,
             email: client.email ?? null,
-            phone: client.profile?.phone ?? null,
-            address: client.profile?.address ?? null,
+            phone: profile.phone ?? null,
+            address: profile.address ?? null,
             user_id: client?.id ?? null,
-            birthday: client.profile?.birthday ?? null,
+            birthday: profile.birthday ?? null,
+            delivery_country_id: profile.delivery_country_id ?? null,
+            delivery_city_id: profile.delivery_city_id ?? null,
+            delivery_region: profile.delivery_region ?? null,
+            delivery_street: profile.delivery_street ?? null,
+            delivery_house: profile.delivery_house ?? null,
+            delivery_apartment: profile.delivery_apartment ?? null,
+            delivery_postal_code: profile.delivery_postal_code ?? null,
+            subscribed_to_newsletter: c.subscribed_to_newsletter ?? false,
+            personal_data_consent: c.personal_data_consent ?? false,
+            messenger_subscription: c.messenger_subscription ?? false,
+            rfm_segment: c.rfm_segment ?? null,
+            group_name: c.group_name ?? null,
         };
     }
 

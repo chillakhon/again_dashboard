@@ -1,6 +1,37 @@
 <template>
   <section class="rounded-lg bg-white p-6 shadow-sm ring-1 ring-gray-900/5">
-    <h3 class="text-sm font-semibold text-gray-900">Позиции заказа</h3>
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-gray-900">Позиции заказа</h3>
+      <Button
+        v-if="!editing"
+        variant="outline"
+        size="sm"
+        type="button"
+        @click="startEdit"
+      >
+        <Pencil class="mr-2 h-3.5 w-3.5" /> Редактировать
+      </Button>
+      <div v-else class="flex items-center gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          type="button"
+          :disabled="saving"
+          @click="cancelEdit"
+        >
+          Отмена
+        </Button>
+        <Button
+          variant="default"
+          size="sm"
+          type="button"
+          :disabled="saving"
+          @click="saveEdit"
+        >
+          {{ saving ? "Сохранение..." : "Сохранить" }}
+        </Button>
+      </div>
+    </div>
 
     <div class="mt-4 overflow-x-auto rounded-lg border border-gray-200">
       <table class="min-w-full divide-y divide-gray-200">
@@ -20,12 +51,12 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200 bg-white">
-          <tr v-if="!items.length">
+          <tr v-if="!displayItems.length">
             <td colspan="11" class="px-3 py-6 text-center text-sm text-gray-500">
               Нет позиций
             </td>
           </tr>
-          <tr v-for="(item, index) in items" :key="item.id || index">
+          <tr v-for="(item, index) in displayItems" :key="item.id || `${item.product_id}-${item.variant_id ?? 0}-${index}`">
             <td class="px-3 py-2 text-sm text-gray-700">{{ index + 1 }}</td>
             <td class="px-3 py-2">
               <img
@@ -43,13 +74,28 @@
               {{ item.product?.name || item.name || "—" }}
             </td>
             <td class="px-3 py-2 text-right text-sm text-gray-900">
-              {{ formatPrice(getUnitPrice(item)) }}
+              <Input
+                v-if="editing"
+                v-model.number="item.unit_price"
+                type="number"
+                min="0"
+                step="0.01"
+                class="h-8 w-24 text-right"
+              />
+              <span v-else>{{ formatPrice(getUnitPrice(item)) }}</span>
             </td>
             <td class="px-3 py-2 text-right text-sm text-gray-700">
               {{ item.product?.weight ?? "—" }}
             </td>
             <td class="px-3 py-2 text-right text-sm text-gray-900">
-              {{ item.quantity }}
+              <Input
+                v-if="editing"
+                v-model.number="item.quantity"
+                type="number"
+                min="1"
+                class="h-8 w-20 text-right"
+              />
+              <span v-else>{{ item.quantity }}</span>
             </td>
             <td class="px-3 py-2 text-right text-sm text-gray-700">
               {{ item.reserved_quantity ?? "—" }}
@@ -61,7 +107,15 @@
               {{ formatPrice(getRowTotal(item)) }}
             </td>
             <td class="px-3 py-2 text-right">
-              <Button variant="ghost" size="icon" type="button" :disabled="true">
+              <Button
+                v-if="editing"
+                variant="ghost"
+                size="icon"
+                type="button"
+                class="text-red-500 hover:text-red-700"
+                title="Удалить позицию"
+                @click="removeItem(index)"
+              >
                 <Trash2 class="h-4 w-4" />
               </Button>
             </td>
@@ -73,13 +127,65 @@
 </template>
 
 <script setup>
-import { Trash2 } from "lucide-vue-next";
+import { ref, computed, watch } from "vue";
+import { Trash2, Pencil } from "lucide-vue-next";
 import Button from "@/components/ui/button/Button.vue";
+import { Input } from "@/components/ui/input";
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
   summary: { type: Object, default: null },
+  saving: { type: Boolean, default: false },
 });
+
+const emit = defineEmits(["save"]);
+
+const editing = ref(false);
+const draftItems = ref([]);
+
+const displayItems = computed(() => (editing.value ? draftItems.value : props.items));
+
+const cloneItems = () =>
+  props.items.map((item) => ({
+    ...item,
+    unit_price: getUnitPrice(item),
+    quantity: Number(item.quantity || 0),
+  }));
+
+const startEdit = () => {
+  draftItems.value = cloneItems();
+  editing.value = true;
+};
+
+const cancelEdit = () => {
+  editing.value = false;
+  draftItems.value = [];
+};
+
+const removeItem = (index) => {
+  draftItems.value.splice(index, 1);
+};
+
+const saveEdit = async () => {
+  // Преобразуем драфт в формат items, который понимает payload-builder
+  const normalized = draftItems.value.map((it) => ({
+    ...it,
+    unit_price: Number(it.unit_price || 0),
+    quantity: Number(it.quantity || 0),
+  }));
+  emit("save", normalized);
+};
+
+// Когда родитель обновил items после успешного сохранения — выходим из режима редактирования
+watch(
+  () => props.items,
+  () => {
+    if (editing.value && !props.saving) {
+      editing.value = false;
+      draftItems.value = [];
+    }
+  },
+);
 
 const formatPrice = (value) => {
   const amount = Number(value || 0);
@@ -90,7 +196,7 @@ const formatPrice = (value) => {
   }).format(amount);
 };
 
-const getUnitPrice = (item) => {
+function getUnitPrice(item) {
   const candidates = [item?.unit_price, item?.price_per_unit, item?.variant?.price, item?.price];
   for (const c of candidates) {
     const n = Number(c);
@@ -99,7 +205,7 @@ const getUnitPrice = (item) => {
     }
   }
   return 0;
-};
+}
 
 const getRowTotal = (item) => getUnitPrice(item) * Number(item.quantity || 0);
 
