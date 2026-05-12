@@ -1,10 +1,44 @@
 <template>
   <div>
     <PageHeading :title="pageTitle" />
+
+    <!-- Сводка ошибок валидации. Показывается сверху, чтобы оператор
+         сразу понимал, что и где не заполнено, и мог кликнуть по ссылке
+         для быстрого перехода к нужному блоку. -->
+    <div
+      v-if="errorSummary.length"
+      ref="errorSummaryRef"
+      role="alert"
+      aria-live="polite"
+      class="mt-6 rounded-md border border-red-200 bg-red-50 p-4"
+    >
+      <div class="flex items-start gap-3">
+        <AlertCircle class="mt-0.5 h-5 w-5 shrink-0 text-red-600" />
+        <div class="flex-1">
+          <h4 class="text-sm font-semibold text-red-800">
+            Не удалось сохранить заказ — проверьте поля:
+          </h4>
+          <ul class="mt-2 space-y-1 text-sm text-red-700">
+            <li v-for="item in errorSummary" :key="item.key">
+              <button
+                type="button"
+                class="inline-flex items-center gap-1 underline-offset-2 hover:underline"
+                @click="focusSection(item.section)"
+              >
+                <span class="font-medium">{{ item.label }}:</span>
+                <span>{{ item.message }}</span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
     <div
       class="mt-10 mx-auto grid max-w-2xl grid-cols-1 grid-rows-1 items-start gap-x-8 gap-y-8 lg:mx-0 lg:max-w-none lg:grid-cols-3"
     >
       <div
+        data-section="items"
         class="-mx-4 px-4 py-8 shadow-sm ring-1 ring-gray-900/5 sm:mx-0 sm:rounded-lg sm:px-8 sm:pb-14 lg:col-span-2 lg:row-span-3 lg:row-end-3"
       >
         <div class="mt-6">
@@ -226,22 +260,28 @@
         </div>
       </div>
 
-      <OrderQuickClientCreate
-        :clients="clients"
-        :refresh-clients="getClients"
-        :errors="validationErrors"
-        @created="handleQuickClientCreated"
-      />
+      <div ref="clientSectionRef">
+        <OrderQuickClientCreate
+          :clients="clients"
+          :refresh-clients="getClients"
+          :errors="validationErrors"
+          @created="handleQuickClientCreated"
+        />
+      </div>
 
-      <OrderRecipientDetails
-        v-model:recipient="formData.recipient"
-        :errors="recipientErrors"
-      />
+      <div ref="recipientSectionRef">
+        <OrderRecipientDetails
+          v-model:recipient="formData.recipient"
+          :errors="recipientErrors"
+        />
+      </div>
 
-      <OrderDeliveryDetails
-        v-model:delivery-address="formData.delivery_address"
-        :errors="validationErrors"
-      />
+      <div ref="deliverySectionRef">
+        <OrderDeliveryDetails
+          v-model:delivery-address="formData.delivery_address"
+          :errors="validationErrors"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -251,7 +291,7 @@ import { ref, reactive, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
-import { Trash2 } from "lucide-vue-next";
+import { Trash2, AlertCircle } from "lucide-vue-next";
 import { useToast } from "@/components/ui/toast/use-toast";
 
 import PageHeading from "@/components/common/PageHeading.vue";
@@ -287,6 +327,13 @@ const pendingCouponCode = ref("");
 const couponSavings = ref(0);
 const couponNotApplicableCount = ref(0);
 const validationErrors = ref({});
+
+// Refs на DOM-секции — для автоскролла к блоку с ошибкой.
+const errorSummaryRef = ref(null);
+const clientSectionRef = ref(null);
+const recipientSectionRef = ref(null);
+const deliverySectionRef = ref(null);
+
 const { getProducts: getProductsFromApi } = useProductFunctions();
 const { getAllStatuses, getStatuses } = useStatusFunctions();
 const { paymentMethodOptions, fetchPaymentMethods } = useOrderPaymentMethods();
@@ -715,6 +762,93 @@ const handleQuickClientCreated = (client) => {
 // Прокидываем во вложенный компонент только ошибки получателя.
 const recipientErrors = computed(() => validationErrors.value?.recipient || {});
 
+// Человекочитаемая сводка ошибок для блока сверху формы.
+// Группируем ошибки по секциям: позиции / клиент / получатель / доставка / общие.
+const FIELD_LABELS = {
+  items: { label: "Позиции заказа", section: "items" },
+  client_id: { label: "Клиент", section: "client" },
+  "user.first_name": { label: "Имя клиента", section: "client" },
+  "user.last_name": { label: "Фамилия клиента", section: "client" },
+  "user.phone": { label: "Телефон клиента", section: "client" },
+  "recipient.first_name": { label: "Имя получателя", section: "recipient" },
+  "recipient.last_name": { label: "Фамилия получателя", section: "recipient" },
+  "recipient.middle_name": { label: "Отчество получателя", section: "recipient" },
+  "recipient.phone": { label: "Телефон получателя", section: "recipient" },
+  country: { label: "Страна доставки", section: "delivery" },
+  region: { label: "Регион доставки", section: "delivery" },
+  city: { label: "Город доставки", section: "delivery" },
+  postal_code: { label: "Почтовый индекс", section: "delivery" },
+  address: { label: "Адрес доставки", section: "delivery" },
+  entrance: { label: "Подъезд", section: "delivery" },
+  floor: { label: "Этаж", section: "delivery" },
+  intercom: { label: "Домофон", section: "delivery" },
+  delivery_comment: { label: "Комментарий к доставке", section: "delivery" },
+  delivery_date: { label: "Дата доставки", section: "delivery" },
+  buyer_comment: { label: "Комментарий покупателя", section: "delivery" },
+};
+
+const errorSummary = computed(() => {
+  const result = [];
+  const seen = new Set();
+  const push = (key, label, section, message) => {
+    if (!message) return;
+    const id = `${key}|${message}`;
+    if (seen.has(id)) return;
+    seen.add(id);
+    result.push({ key: id, label, section, message });
+  };
+
+  const errs = validationErrors.value || {};
+  // Плоские ключи (items, client_id, и «опущенные» delivery_address.* → city/address/...)
+  for (const [key, val] of Object.entries(errs)) {
+    if (val && typeof val === "object" && !Array.isArray(val)) continue;
+    const meta = FIELD_LABELS[key] || { label: key, section: "delivery" };
+    const msg = Array.isArray(val) ? val[0] : val;
+    push(key, meta.label, meta.section, msg);
+  }
+  // Вложенные (user.*, recipient.*)
+  for (const group of ["user", "recipient"]) {
+    const sub = errs[group];
+    if (sub && typeof sub === "object") {
+      for (const [field, val] of Object.entries(sub)) {
+        const fullKey = `${group}.${field}`;
+        const meta = FIELD_LABELS[fullKey] || {
+          label: fullKey,
+          section: group === "user" ? "client" : "recipient",
+        };
+        const msg = Array.isArray(val) ? val[0] : val;
+        push(fullKey, meta.label, meta.section, msg);
+      }
+    }
+  }
+  return result;
+});
+
+const focusSection = (section) => {
+  const map = {
+    items: () => document.querySelector('[data-section="items"]'),
+    client: () => clientSectionRef.value,
+    recipient: () => recipientSectionRef.value,
+    delivery: () => deliverySectionRef.value,
+  };
+  const el = map[section]?.();
+  if (el && typeof el.scrollIntoView === "function") {
+    el.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Подсветим первый инпут в секции
+    const firstInput = el.querySelector?.("input, textarea, select");
+    setTimeout(() => firstInput?.focus?.({ preventScroll: true }), 300);
+  }
+};
+
+const scrollToErrorSummary = () => {
+  requestAnimationFrame(() => {
+    errorSummaryRef.value?.scrollIntoView?.({
+      behavior: "smooth",
+      block: "start",
+    });
+  });
+};
+
 const handleCreate = async () => {
   validationErrors.value = {};
 
@@ -760,6 +894,14 @@ const handleCreate = async () => {
       });
 
       validationErrors.value = processedErrors;
+
+      toast({
+        title: "Проверьте форму",
+        description:
+          "Есть ошибки валидации — подробности в красном блоке сверху.",
+        variant: "destructive",
+      });
+      scrollToErrorSummary();
     }
   }
 };
