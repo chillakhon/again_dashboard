@@ -2,7 +2,7 @@
   <div class="relative  w-full bg-white rounded-xl p-5 shadow-md border border-gray-100">
     <!-- Заголовок и пояснение -->
     <div class="mb-4">
-      <h3 class="text-lg font-semibold text-gray-800">Динамика заказов за последние 6 месяцев</h3>
+      <h3 class="text-lg font-semibold text-gray-800">Динамика заказов{{ titleSuffix }}</h3>
       <p class="text-sm text-gray-500 mt-1">
         Визуализация показывает изменение количества заказов по всем статусам
       </p>
@@ -32,12 +32,49 @@ import { Clock } from 'lucide-vue-next';
 
 Chart.register(...registerables);
 
-const props = defineProps({
-  chartData: {
-    type: Object,
-    required: true,
-    default: () => ({ labels: [] })
+interface PeriodInfo {
+  from: string | null;
+  to: string | null;
+  preset: 'day' | '3days' | 'week' | 'month' | 'year' | '2years' | 'all' | 'custom';
+}
+
+const props = defineProps<{
+  chartData: Record<string, any> & { labels?: string[]; from?: string; to?: string };
+  period?: PeriodInfo;
+}>();
+
+const PRESET_TITLES: Record<Exclude<PeriodInfo['preset'], 'custom' | 'all'>, string> = {
+  day:    ' за сегодня',
+  '3days':' за последние 3 дня',
+  week:   ' за последнюю неделю',
+  month:  ' за последний месяц',
+  year:   ' за последний год',
+  '2years':' за последние 2 года',
+};
+
+const formatDate = (s: string): string => {
+  const [y, m, d] = s.split('-');
+  return `${d}.${m}.${y}`;
+};
+
+const titleSuffix = computed(() => {
+  const p = props.period;
+  if (!p) return ' за последние 6 месяцев';
+
+  if (p.preset === 'all') {
+    // Берём фактический диапазон из ответа бэка (min/max created_at).
+    const cdFrom = props.chartData?.from;
+    const cdTo = props.chartData?.to;
+    if (cdFrom && cdTo) return ` за всё время (${formatDate(cdFrom)} — ${formatDate(cdTo)})`;
+    return ' за всё время';
   }
+
+  if (p.preset === 'custom') {
+    if (p.from && p.to) return ` за период ${formatDate(p.from)} — ${formatDate(p.to)}`;
+    return '';
+  }
+
+  return PRESET_TITLES[p.preset] ?? '';
 });
 
 // Метаданные по всем статусам заказов (синхронизировано с App\Enums\OrderStatus)
@@ -154,8 +191,7 @@ const options = {
         font: {
           family: 'Inter, sans-serif'
         },
-        stepSize: 50,
-        callback: (value) => value % 100 === 0 ? value : null
+        precision: 0
       },
       beginAtZero: true,
       min: 0

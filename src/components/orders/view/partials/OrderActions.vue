@@ -5,41 +5,94 @@
       :products="products"
       @select="onAddPosition"
     />
-    <Button variant="outline" size="sm" type="button" disabled>
-      <Percent class="mr-2 h-4 w-4" /> Скидка
-    </Button>
     <PromoCodeListModal
       trigger-label="Купон"
       :client-id="order.client?.id ?? order.client_id ?? null"
       @select="onCouponSelect"
     />
     <span class="ml-auto flex items-center gap-2">
-      <Button variant="outline" size="sm" type="button" disabled>
+      <Button
+        variant="outline"
+        size="sm"
+        type="button"
+        :disabled="!order?.id"
+        @click="onPrint"
+      >
         <Printer class="mr-2 h-4 w-4" /> Печать
       </Button>
-      <Button variant="outline" size="sm" type="button" disabled>
-        <Mail class="mr-2 h-4 w-4" /> Письмо
+      <Button
+        variant="outline"
+        size="sm"
+        type="button"
+        :disabled="!clientEmail || isSendingEmail"
+        :title="clientEmail ? `Отправить письмо на ${clientEmail}` : 'У клиента не указан email'"
+        @click="onSendEmail"
+      >
+        <Mail class="mr-2 h-4 w-4" />
+        {{ isSendingEmail ? "Отправка..." : "Письмо" }}
       </Button>
-      <Button variant="outline" size="sm" type="button" disabled>
-        <MessageSquare class="mr-2 h-4 w-4" /> Чат
-      </Button>
+      <OrderChat :client-id="order.client?.id ?? order.client_id ?? null" />
     </span>
   </section>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
-import { Percent, Printer, Mail, MessageSquare } from "lucide-vue-next";
+import { ref, computed, watch, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import axios from "axios";
+import { Printer, Mail } from "lucide-vue-next";
 import Button from "@/components/ui/button/Button.vue";
 import OrderPositionModal from "@/components/orders/modals/OrderPositionModal.vue";
 import PromoCodeListModal from "@/components/orders/modals/PromoCodeListModal.vue";
+import OrderChat from "@/components/orders/view/partials/OrderChat.vue";
 import { useProductFunctions } from "@/composables/useProductFunctions";
+import { useToast } from "@/components/ui/toast/use-toast";
 
-defineProps({
+const props = defineProps({
   order: { type: Object, required: true },
 });
 
 const emit = defineEmits(["add-position", "coupon-select"]);
+
+const router = useRouter();
+const { toast } = useToast();
+
+const clientEmail = computed(() => props.order?.client?.email || "");
+
+const onPrint = () => {
+  const id = props.order?.id;
+  if (!id) return;
+  // router.resolve учитывает base ('/admin/'), поэтому открываем
+  // с правильным префиксом — иначе nginx отдаёт 404 для /order/...
+  const href = router.resolve({ name: "orders-print", params: { id } }).href;
+  window.open(href, "_blank", "noopener");
+};
+
+const isSendingEmail = ref(false);
+
+const onSendEmail = async () => {
+  const id = props.order?.id;
+  if (!id || !clientEmail.value || isSendingEmail.value) return;
+
+  isSendingEmail.value = true;
+  try {
+    const { data } = await axios.post(`/orders/${id}/send-email`);
+    toast({
+      title: "Письмо отправлено",
+      description: data?.message || `Письмо отправлено на ${clientEmail.value}`,
+    });
+  } catch (e) {
+    const message =
+      e?.response?.data?.message || "Не удалось отправить письмо";
+    toast({
+      title: "Ошибка отправки",
+      description: message,
+      variant: "destructive",
+    });
+  } finally {
+    isSendingEmail.value = false;
+  }
+};
 
 const { getProducts: getProductsFromApi } = useProductFunctions();
 const productSearch = ref("");

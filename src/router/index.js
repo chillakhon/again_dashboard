@@ -22,6 +22,12 @@ const routes = [
     },
 
     {
+        path: '/order/:id/print',
+        name: 'orders-print',
+        component: () => import('../views/orders/OrderPrint.vue'),
+    },
+
+    {
         path: '/',
         name: 'MainView',
         component: () => import('../views/MainView.vue'),

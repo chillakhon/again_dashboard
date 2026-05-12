@@ -1,7 +1,12 @@
 <template>
-  <loader v-if="isLoading"/>
-  <div v-else class="space-y-4">
-    <h2 class="text-2xl font-medium tracking-tight">Заказы</h2>
+  <div class="space-y-4">
+    <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+      <h2 class="text-2xl font-medium tracking-tight">Заказы</h2>
+      <DashboardPeriodFilter v-model="period"/>
+    </div>
+
+    <loader v-if="isLoading"/>
+    <template v-else-if="data">
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Новые заказы -->
@@ -69,9 +74,9 @@
     </div>
 
 
-    <HomeChart :chartData="data.chartData"/>
+    <HomeChart :chartData="data.chartData" :period="period"/>
 
-
+    </template>
   </div>
 </template>
 
@@ -85,34 +90,60 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {onMounted, ref} from "vue";
+import {onMounted, ref, watch} from "vue";
 import Loader from "@/components/common/Loader.vue";
 import HomeChart from "@/components/dashboard/charts/HomeChart.vue";
+import DashboardPeriodFilter, {type PeriodRange} from "@/components/dashboard/DashboardPeriodFilter.vue";
 import {toast} from "vue-sonner";
 import {usePriceFormatter} from "@/composables/usePriceFormatter";
 
 const {formatPrice} = usePriceFormatter()
 
-const isLoading = ref<Boolean>(true)
-const data = ref()
+const isLoading = ref<boolean>(true)
+const data = ref<any>(null)
 
+// Период по умолчанию — месяц (соответствует пресету "Месяц").
+const initialTo = new Date()
+const initialFrom = new Date()
+initialFrom.setDate(initialTo.getDate() - 29)
+const fmt = (d: Date) => {
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+const period = ref<PeriodRange>({from: fmt(initialFrom), to: fmt(initialTo), preset: 'month'})
 
-onMounted(() => {
-  fetchData()
-})
+let fetchAbort: AbortController | null = null
 
 async function fetchData() {
-  await axios.get('/orders/stats')
-      .then(res => {
-        data.value = res.data
-      })
-      .catch(err => {
-        console.log(err)
-      })
-      .finally(() => {
-        isLoading.value = false
-      })
+  fetchAbort?.abort()
+  fetchAbort = new AbortController()
+  isLoading.value = true
+  try {
+    const params: Record<string, string> = {}
+    if (period.value.preset === 'all') {
+      params.preset = 'all'
+    } else if (period.value.from && period.value.to) {
+      params.from = period.value.from
+      params.to = period.value.to
+    }
+    const res = await axios.get('/orders/stats', {
+      params,
+      signal: fetchAbort.signal,
+    })
+    data.value = res.data
+  } catch (err: any) {
+    if (axios.isCancel(err) || err?.name === 'CanceledError') return
+    console.log(err)
+    toast.error('Не удалось загрузить статистику')
+  } finally {
+    isLoading.value = false
+  }
 }
+
+onMounted(fetchData)
+watch(() => [period.value.from, period.value.to, period.value.preset], fetchData)
 
 
 </script>

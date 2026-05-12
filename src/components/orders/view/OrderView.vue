@@ -64,6 +64,7 @@
         <OrderComments :order="order" />
         <OrderBonuses :order="order" />
         <OrderHistory :history="history" />
+        <OrderSimilarClients :clients="similarClients" />
       </div>
 
       <!-- Боковая колонка -->
@@ -110,6 +111,7 @@ import OrderCustomFields from "./partials/OrderCustomFields.vue";
 import OrderComments from "./partials/OrderComments.vue";
 import OrderBonuses from "./partials/OrderBonuses.vue";
 import OrderHistory from "./partials/OrderHistory.vue";
+import OrderSimilarClients from "./partials/OrderSimilarClients.vue";
 
 import SideApps from "./partials/side/SideApps.vue";
 import SideDelivery from "./partials/side/SideDelivery.vue";
@@ -136,6 +138,7 @@ const customFields = ref([]);
 const viewedProducts = ref([]);
 const source = ref({});
 const neighbors = ref({ prev_id: null, next_id: null });
+const similarClients = ref([]);
 
 const { saveOrderPatch } = useOrderInlineEdit();
 const { toast } = useToast();
@@ -164,6 +167,9 @@ const fetchOrder = async (id) => {
     viewedProducts.value = data?.viewed_products ?? [];
     source.value = data?.source ?? {};
     neighbors.value = data?.neighbors ?? { prev_id: null, next_id: null };
+    similarClients.value = Array.isArray(data?.similar_clients)
+      ? data.similar_clients
+      : [];
 
     // Синхронизируем состояние купона с заказом
     appliedCouponCode.value = order.value?.promo_code?.code || "";

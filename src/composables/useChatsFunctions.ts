@@ -114,11 +114,30 @@ export function useChatsFunctions() {
     }
 
 
+    // Получить все диалоги конкретного клиента (для inline-чата на карточке заказа).
+    // Бэкенд дополнительно подцепляет «анонимные» диалоги по email / телефону.
+    const getConversationsByClient = async (
+        clientId: number | string
+    ): Promise<Conversation[]> => {
+        if (!clientId) return []
+        sending.value = true
+        try {
+            const { data } = await axios.get(`conversations/by-client/${clientId}`)
+            return (data?.data || []) as Conversation[]
+        } catch (e) {
+            useErrorHandler().showError(e)
+            throw e
+        } finally {
+            sending.value = false
+        }
+    }
+
     return {
         sending,
         progress,
         getConversations,
         getConversationByIdWithMessages,
+        getConversationsByClient,
         conversationReplyById
     }
 }
