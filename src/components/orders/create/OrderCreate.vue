@@ -118,10 +118,10 @@
                 >
                   <td class="px-4 py-3">
                     <div class="text-sm font-medium text-gray-900">
-                      {{ getProductName(item.product_id) }}
+                      {{ getItemTitle(item) }}
                     </div>
                     <div class="text-xs text-gray-500">
-                      Артикул: {{ getProductSku(item.product_id) }}
+                      Артикул: {{ getItemSku(item) }}
                     </div>
                   </td>
 
@@ -146,7 +146,7 @@
                   </td>
 
                   <td class="px-4 py-3 text-sm text-gray-700">
-                    {{ getProductStock(item.product_id) }} шт
+                    {{ getItemStock(item) }} шт
                   </td>
 
                   <td
@@ -228,14 +228,30 @@
 
           <div v-if="data.items.length" class="mt-4 space-y-1">
             <Label for="delivery_method">Способ доставки</Label>
-            <Select
-              id="delivery_method"
-              v-model="formData.delivery_method_name"
-              :options="deliveryMethodOptions"
-              option-label="label"
-              option-value="value"
-              placeholder="Выберите способ доставки"
-            />
+            <div class="flex items-start gap-2">
+              <div class="flex-1">
+                <Select
+                  id="delivery_method"
+                  v-model="formData.delivery_method_id"
+                  :options="deliveryMethodOptions"
+                  option-label="name"
+                  option-value="id"
+                  placeholder="Выберите способ доставки"
+                  searchable
+                  search-placeholder="Поиск по способам доставки..."
+                />
+              </div>
+              <Button
+                v-if="canPickOnMap"
+                type="button"
+                variant="outline"
+                class="shrink-0"
+                @click="onPickOnMap"
+              >
+                <MapPin class="mr-2 h-4 w-4" />
+                Выбрать на карте
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -291,7 +307,7 @@ import { ref, reactive, computed, onMounted, watch } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
 import { useRoute, useRouter } from "vue-router";
-import { Trash2, AlertCircle } from "lucide-vue-next";
+import { Trash2, AlertCircle, MapPin } from "lucide-vue-next";
 import { useToast } from "@/components/ui/toast/use-toast";
 
 import PageHeading from "@/components/common/PageHeading.vue";
@@ -374,14 +390,76 @@ const formData = reactive({
   status: "new",
   payment_status: "pending",
   payment_method: "",
-  delivery_method_name: "Курьерская доставка",
+  delivery_method_id: null,
+  delivery_method_name: "",
   address: "",
 });
 
-const deliveryMethodOptions = [
-  { value: "Курьерская доставка", label: "Курьерская доставка" },
-  { value: "Сдэк", label: "Сдэк" },
+const MAP_PICK_DELIVERY_CODES = [
+  "cdek_pickup",
+  "yandex_pickup",
+  "russian_post_office",
+  "russian_post_on_demand",
 ];
+
+const deliveryMethodOptions = ref([]);
+
+const fetchDeliveryMethods = async () => {
+  try {
+    const { data } = await axios.get("/delivery/methods/admin", {
+      params: { active: 1 },
+    });
+    const items = Array.isArray(data?.data) ? data.data : [];
+    deliveryMethodOptions.value = items.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description ?? "",
+      code: item.delivery_type_code ?? item.code ?? null,
+    }));
+
+    // Если способ ещё не выбран, по умолчанию выберем «Курьером», если он есть
+    if (!formData.delivery_method_id) {
+      const fallback =
+        deliveryMethodOptions.value.find((m) => m.code === "courier") ||
+        deliveryMethodOptions.value[0] ||
+        null;
+      if (fallback) {
+        formData.delivery_method_id = fallback.id;
+        formData.delivery_method_name = fallback.name;
+      }
+    }
+  } catch {
+    deliveryMethodOptions.value = [];
+  }
+};
+
+const selectedDeliveryMethod = computed(() =>
+  deliveryMethodOptions.value.find(
+    (m) => m.id === formData.delivery_method_id,
+  ) || null,
+);
+
+const canPickOnMap = computed(() =>
+  MAP_PICK_DELIVERY_CODES.includes(selectedDeliveryMethod.value?.code),
+);
+
+const onPickOnMap = () => {
+  // TODO: открыть модалку с картой и выбором ПВЗ.
+  toast({
+    title: "Выбор на карте",
+    description: "Выбор пункта выдачи на карте будет добавлен позже.",
+  });
+};
+
+// Синхронизируем имя метода с выбранным id, чтобы payload в handleCreate
+// продолжал работать (бэкенд резолвит метод по name через delivery_method.name).
+watch(
+  () => formData.delivery_method_id,
+  (newId) => {
+    const method = deliveryMethodOptions.value.find((m) => m.id === newId);
+    formData.delivery_method_name = method?.name || "";
+  },
+);
 
 const getProducts = () => store.dispatch("products/getProducts");
 const getClients = () => store.dispatch("clients/getClients");
@@ -390,13 +468,6 @@ const status = computed(() => store.getters["orderActions/status"]);
 const isLoading = computed(() => store.getters["orderActions/isLoading"]);
 
 const filteredProducts = computed(() => products.value);
-const addressOptions = computed(() => {
-  const rawList = (clients.value || [])
-    .map((client) => client?.profile?.address || client?.address || "")
-    .filter((addr) => typeof addr === "string" && addr.trim().length > 0);
-  const unique = Array.from(new Set(rawList));
-  return unique.map((a) => ({ value: a, label: a }));
-});
 const formFields = computed(() => [
   [
     {
@@ -443,18 +514,6 @@ const formFields = computed(() => [
       optionValue: "value",
     },
   ],
-  [
-    {
-      name: "address",
-      component: "select",
-      label: "Адрес",
-      required: false,
-      placeholder: "Выберите адрес",
-      options: addressOptions.value,
-      optionLabel: "label",
-      optionValue: "value",
-    },
-  ],
 ]);
 
 onMounted(async () => {
@@ -463,6 +522,7 @@ onMounted(async () => {
   getProducts();
   getClients();
   fetchProducts();
+  fetchDeliveryMethods();
 });
 
 const create = (payload) => store.dispatch("orderActions/createOrder", payload);
@@ -491,18 +551,11 @@ const fetchProducts = async (search = "") => {
   const response = await getProductsFromApi({
     per_page: 50,
     paginate: false,
+    admin: true,
     search: search || undefined,
   });
 
   products.value = normalizeProductsResponse(response);
-};
-
-const getDefaultVariantId = (product) => {
-  if (Array.isArray(product?.variants) && product.variants.length) {
-    return product.variants[0].id ?? null;
-  }
-
-  return null;
 };
 
 const getProductById = (productId) => {
@@ -511,16 +564,40 @@ const getProductById = (productId) => {
   );
 };
 
-const getProductName = (productId) => {
-  return getProductById(productId)?.name || `Товар #${productId}`;
+const getVariantById = (productId, variantId) => {
+  if (!variantId) return null;
+  const product = getProductById(productId);
+  if (!product || !Array.isArray(product.variants)) return null;
+  return product.variants.find((v) => `${v?.id ?? ""}` === `${variantId}`) || null;
 };
 
-const getProductSku = (productId) => {
-  return getProductById(productId)?.sku || "—";
+const getItemTitle = (item) => {
+  const productName =
+    getProductById(item.product_id)?.name ||
+    item.product_name ||
+    `Товар #${item.product_id}`;
+  const variant = getVariantById(item.product_id, item.variant_id);
+  const variantName = variant?.name || item.variant_name;
+  return variantName ? `${productName} (${variantName})` : productName;
 };
 
-const getProductStock = (productId) => {
-  return Number(getProductById(productId)?.stock_quantity ?? 0);
+const getItemSku = (item) => {
+  const variant = getVariantById(item.product_id, item.variant_id);
+  return (
+    variant?.sku ||
+    item.variant_sku ||
+    getProductById(item.product_id)?.sku ||
+    item.product_sku ||
+    "—"
+  );
+};
+
+const getItemStock = (item) => {
+  const variant = getVariantById(item.product_id, item.variant_id);
+  if (variant) {
+    return Number(variant.stock_quantity ?? variant.inventory_balance ?? 0);
+  }
+  return Number(getProductById(item.product_id)?.stock_quantity ?? 0);
 };
 
 const formatPrice = (value) => {
@@ -541,10 +618,14 @@ const getApiPrice = (product) => {
   return Number(product?.price ?? 0);
 };
 
-const addPosition = (product) => {
+const addPosition = (payload) => {
+  // Поддерживаем оба варианта: {product, variant} (новый API модалки) и просто product (на всякий случай).
+  const product = payload?.product ?? payload;
+  const variant = payload?.variant ?? null;
+
   if (!product?.id) return;
 
-  const variantId = getDefaultVariantId(product);
+  const variantId = variant?.id ?? null;
   const existingItem = data.items.find(
     (item) =>
       `${item.product_id}` === `${product.id}` &&
@@ -553,14 +634,21 @@ const addPosition = (product) => {
 
   if (existingItem) {
     existingItem.quantity = Number(existingItem.quantity || 0) + 1;
-  } else {
-    data.items.push({
-      product_id: product.id,
-      variant_id: variantId,
-      quantity: 1,
-      price: getApiPrice(product),
-    });
+    return;
   }
+
+  const price = variant ? Number(variant.price ?? 0) : getApiPrice(product);
+
+  data.items.push({
+    product_id: product.id,
+    product_name: product.name,
+    product_sku: product.sku,
+    variant_id: variantId,
+    variant_name: variant?.name ?? null,
+    variant_sku: variant?.sku ?? null,
+    quantity: 1,
+    price,
+  });
 };
 
 const removePosition = (index) => {
@@ -863,6 +951,7 @@ const handleCreate = async () => {
       status: formData.status,
       payment_status: formData.payment_status,
       payment_method: formData.payment_method || null,
+      delivery_method_id: formData.delivery_method_id || null,
       delivery_method: {
         name: formData.delivery_method_name,
       },

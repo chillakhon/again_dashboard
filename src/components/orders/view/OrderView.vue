@@ -60,7 +60,11 @@
           @save="onDeliverySave"
         />
         <OrderTotals :order="order" :summary="summary" />
-        <OrderCustomFields :fields="customFields" />
+        <OrderCustomFields
+          :fields="customFields"
+          :saving="isSavingCustomFields"
+          @save="onCustomFieldsSave"
+        />
         <OrderComments :order="order" />
         <OrderBonuses :order="order" />
         <OrderHistory :history="history" />
@@ -70,7 +74,11 @@
       <!-- Боковая колонка -->
       <aside class="space-y-6">
         <SideApps :order="order" />
-        <SideDelivery :order="order" />
+        <SideDelivery
+          :order="order"
+          :saving="isSavingDelivery"
+          @save="onDeliverySave"
+        />
         <SideClient
           :client="order.client"
           :stats="clientStats"
@@ -147,6 +155,7 @@ const isSavingItems = ref(false);
 const isSavingDelivery = ref(false);
 const isSavingClient = ref(false);
 const isSavingCoupon = ref(false);
+const isSavingCustomFields = ref(false);
 
 // Состояние купона
 const appliedCouponCode = ref("");
@@ -214,10 +223,19 @@ const onItemsSave = async (newItems) => {
 };
 
 // Добавление позиции: сразу аппендим в items и сохраняем
-const onAddPosition = async (product) => {
-  const variantId = Array.isArray(product?.variants) && product.variants.length
-    ? (product.variants[0].id ?? null)
-    : null;
+// Принимает либо {product, variant} (новая модалка с выбором вариантов),
+// либо просто product (на случай старого вызова).
+const onAddPosition = async (payload) => {
+  const product = payload?.product ?? payload;
+  const variant = payload?.variant ?? null;
+  if (!product?.id) return;
+
+  const variantId = variant?.id ?? null;
+  const price = Number(variant?.price ?? product?.price ?? 0);
+  const stockQty = variant
+    ? Number(variant.stock_quantity ?? variant.inventory_balance ?? 0)
+    : Number(product.stock_quantity ?? 0);
+
   const existingItems = Array.isArray(order.value?.items)
     ? order.value.items.map((it) => ({ ...it }))
     : [];
@@ -237,10 +255,10 @@ const onAddPosition = async (product) => {
       product_id: product.id,
       variant_id: variantId,
       product_variant_id: variantId,
-      color_id: null,
+      color_id: variant?.color?.id ?? null,
       quantity: 1,
-      unit_price: Number(product.price ?? 0),
-      price: Number(product.price ?? 0),
+      unit_price: price,
+      price,
       product: {
         id: product.id,
         name: product.name,
@@ -249,6 +267,15 @@ const onAddPosition = async (product) => {
         stock_quantity: product.stock_quantity ?? 0,
         images: product.images ?? [],
       },
+      variant: variant
+        ? {
+            id: variant.id,
+            name: variant.name,
+            sku: variant.sku,
+            price: variant.price,
+            stock_quantity: stockQty,
+          }
+        : null,
     });
   }
 
@@ -266,6 +293,13 @@ const onDeliverySave = async (payload) => {
 const onClientSave = async (payload) => {
   const { onSuccess, ...patch } = payload || {};
   const ok = await applyPatch(patch, isSavingClient);
+  if (ok && typeof onSuccess === "function") onSuccess();
+};
+
+// Поля заказа (кастомные поля)
+const onCustomFieldsSave = async (payload) => {
+  const { onSuccess, ...patch } = payload || {};
+  const ok = await applyPatch(patch, isSavingCustomFields);
   if (ok && typeof onSuccess === "function") onSuccess();
 };
 
